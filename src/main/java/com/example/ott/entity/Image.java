@@ -30,7 +30,7 @@ public class Image {
     private String path;
     private int ord;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Movie movie;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Movie movie;
 
 }
