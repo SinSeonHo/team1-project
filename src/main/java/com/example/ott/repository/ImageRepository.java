@@ -7,11 +7,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 // import com.example.ott.entity.Movie;
-// import com.example.ott.entity.MovieImage;
-// import com.example.ott.repository.total.ImageRepository;
 import com.example.ott.entity.Image;
+import com.example.ott.repository.total.totalImageRepository;
 
-public interface ImageRepository extends JpaRepository<Image, Long>/* , ImageRepository */ {
+public interface ImageRepository extends JpaRepository<Image, Long>, totalImageRepository {
     // movie번호를 기준으로 이미지 제거
 
     // @Modifying // delete, update 시 반드시 작성
