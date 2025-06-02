@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 
 // import com.example.ott.entity.Movie;
 // import com.example.ott.entity.MovieImage;
-import com.example.ott.repository.total.MovieImageReviewRepository;
+// import com.example.ott.repository.total.ImageRepository;
 import com.example.ott.entity.Image;
 
-public interface ImageRepository extends JpaRepository<Image, Long>, ImageReviewRepository {
+public interface ImageRepository extends JpaRepository<Image, Long>/* , ImageRepository */ {
     // movie번호를 기준으로 이미지 제거
 
     // @Modifying // delete, update 시 반드시 작성
