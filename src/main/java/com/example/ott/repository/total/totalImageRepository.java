@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface totalImageRepository {
 
-    Page<Object[]> getTotalList(String type, String keyword, Pageable pageable);
+    // Page<Object[]> getTotalList(String type, String keyword, Pageable pageable);
 
-    List<Object[]> getMovieRow(Long mno);
+    // List<Object[]> getMovieRow(Long mno);
 }
