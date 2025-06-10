@@ -30,4 +30,5 @@ public class GameDTO {
 
     @Builder.Default
     private List<Image> movieImages = new ArrayList<>();
+    // 테스트
 }
