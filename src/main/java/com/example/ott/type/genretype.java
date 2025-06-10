@@ -1,0 +1,22 @@
+package com.example.ott.type;
+
+public enum genretype {
+    RPG,
+FPS,
+ADVENTURE,
+STRATEGY,
+SIMULATION,
+SPORTS,
+PUZZLE,
+ACTION,
+HORROR,
+COMEDY,
+ROMANCE,
+FANTASY,
+DRAMA,
+THRILLER,
+SLICE_OF_LIFE,
+SCHOOL,
+SCI_FI,
+DOCUMENTARY
+}

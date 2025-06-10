@@ -1,41 +1,46 @@
 package com.example.ott.entity;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.example.ott.type.ContentType;
+import com.example.ott.type.genretype;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
+@Builder
+@Getter
 @Entity
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Builder
-
-public class Game {
+public class UserGenre {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gid; // 게임코드
+    private Long id;
 
-    private String title; // 게임명
-    private String developer; // 개발사
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+
     @Enumerated(EnumType.STRING)
-    
-    private String platform; // 플랫폼
-    private int price; // 가격
+    private genretype genretypes;
 
-    // @Builder.Default
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    // private List<Image> img; // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
+
+    @Enumerated(EnumType.STRING)
+    private ContentType contentType;
+
 
 }
