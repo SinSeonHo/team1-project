@@ -79,7 +79,7 @@ public class MovieService {
 
         String apiUrl1 = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
                 + "?key=4cb94726cef5af841db6efd248a5af76"
-                + "&targetDt=" + "20250606";
+                + "&targetDt=" + formattedDate;
 
         try {
             // RestTemplate 외부 API 요청에 사용됨
