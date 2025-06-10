@@ -32,10 +32,8 @@ public class Movie extends BaseEntity {
 
     @Column(nullable = false)
     private String title; // 영화명
-    // private String actors; // 등장 배우들 하나의 칼럼으로 나열만 할 예정
-    // private String director; // 감독
 
-    private String openDate;
+    private String openDate; // 개봉일
 
     @Column(nullable = false)
     private int rank;
