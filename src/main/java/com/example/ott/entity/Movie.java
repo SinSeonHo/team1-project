@@ -32,7 +32,6 @@ public class Movie extends BaseEntity {
 
     @Column(nullable = false)
     private String title; // 영화명
-
     private String openDate; // 개봉일
 
     @Column(nullable = false)

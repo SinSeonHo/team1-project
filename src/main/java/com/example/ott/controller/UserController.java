@@ -14,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Log4j2
 @RestController
 public class UserController {
@@ -24,6 +23,7 @@ public class UserController {
     UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     @GetMapping("/")
     public String getTestHome() {
         return "Home";
@@ -39,10 +39,8 @@ public class UserController {
 
     @GetMapping("/users")
     public List<User> getUsers() {
-        
+
         return userRepository.findAll();
     }
-    
-    
-        
+
 }

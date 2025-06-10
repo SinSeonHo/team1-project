@@ -22,8 +22,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Builder
-
-public class Game {
+public class Game extends BaseEntity {
 
     @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,18 +33,23 @@ public class Game {
     private String developer; // 개발사
     private String platform; // 플랫폼
     private int price; // 가격
+    private int rank; // 순위
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>(); // 댓글
 
     @Builder.Default
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Genre> genres = new ArrayList<>();
+    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 }

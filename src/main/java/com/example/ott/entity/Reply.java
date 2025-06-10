@@ -14,4 +14,12 @@ public class Reply {
     @ManyToOne
     @JoinColumn(name = "movie_id")
     private Movie movie;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    // @ManyToOne
+    // @JoinColumn(name = "movie_id")
+    // private Webtoon webtoon;
 }
