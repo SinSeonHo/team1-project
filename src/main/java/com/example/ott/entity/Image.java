@@ -24,13 +24,13 @@ public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inum;
+    private Long inum; // 이미지 번호
     private String uuid;
     private String imgName;
-    private String path;
+    private String path; // 경로
     private int ord;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Movie movie;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Movie movie;
 
 }
