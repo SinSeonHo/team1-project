@@ -4,9 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
 import com.example.ott.entity.User;
+import com.example.ott.entity.WebToon;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -32,10 +34,29 @@ public class ReplyRepositoryTest {
     @Test
     void testInsertReply() {
         Movie movie = Movie.builder().mid(1L).build();
+        Game game = Game.builder().gid(1L).build();
+        WebToon webtoon = WebToon.builder().wid(1L).build();
         Reply reply = Reply.builder()
-                .replyer(userRepository.findById("user1").get())
+                .replyer(userRepository.findById("user2").get())
                 .movie(movie)
-                .text("test1")
+                .game(null)
+                .webtoon(null)
+                .text("test3")
+                .build();
+        replyRepository.save(reply);
+    }
+
+    @Test
+    void testInsertReReply() {
+        Movie movie = Movie.builder().mid(1L).build();
+        Reply reply = Reply.builder()
+                .replyer(User.builder().id("user1").build())
+                .movie(movie)
+                .game(null)
+                .webtoon(null)
+                .text("test rereply")
+                .ref(11l)
+                .mention("user1")
                 .build();
         replyRepository.save(reply);
     }

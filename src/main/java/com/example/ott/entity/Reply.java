@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,12 +21,10 @@ import lombok.ToString;
 
 @Entity
 @Getter
-@ToString(exclude = { "movie", "replyer" })
+@ToString(exclude = { "game", "webtoon", "movie", "replyer" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "reply")
-
 public class Reply {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,11 +44,19 @@ public class Reply {
     @JoinColumn(name = "mid")
     private Movie movie;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gid")
+    private Game game;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wid")
+    private WebToon webtoon;
+
     // 대상 댓글의 rno
     private Long ref;
 
     // 대상 댓글의 유저 아이디
-    private Long mention;
+    private String mention;
 
     @CreatedDate
     @Column(updatable = false)
