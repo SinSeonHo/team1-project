@@ -22,7 +22,7 @@ import lombok.ToString;
 public class WebToon {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long wid; // 웹툰코드
 
     private String title; // 웹툰명
