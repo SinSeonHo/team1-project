@@ -26,11 +26,14 @@ public class Game extends BaseEntity {
 
     @Id
     // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gid; // 게임코드 ex: g_1 / g_2
+    private String gid; // 게임코드 ex: g_1 / g_2
 
+    @Column(nullable = false)
+    private Long appid; // steam 고유 코드
     @Column(nullable = false)
     private String title; // 게임명
     private String developer; // 개발사
+    private Long usercnt; // 동시접속자 수
     private String platform; // 플랫폼
     private int price; // 가격
     private int rank; // 순위

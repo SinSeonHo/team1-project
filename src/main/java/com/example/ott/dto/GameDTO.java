@@ -25,10 +25,17 @@ public class GameDTO {
     private String title; // 게임명
     private String developer; // 개발사
     private Long usercnt; // 동시접속자 수
+    private String platform; // 플랫폼
     private int price; // 가격
     private int rank; // 순위
 
     @Builder.Default
-    private List<Image> movieImages = new ArrayList<>();
-    // 테스트테스트
+    private List<Image> gameImages = new ArrayList<>();
+
+    @Builder.Default
+    private List<Image> gameGenres = new ArrayList<>();
+
+    @Builder.Default
+    private List<Image> gameReplies = new ArrayList<>();
+
 }

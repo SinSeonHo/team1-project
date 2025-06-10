@@ -37,4 +37,10 @@ public class MovieDTO {
     @Builder.Default
     private List<Image> movieImages = new ArrayList<>();
 
+    @Builder.Default
+    private List<Image> movieGenres = new ArrayList<>();
+
+    @Builder.Default
+    private List<Image> movieReplies = new ArrayList<>();
+
 }
