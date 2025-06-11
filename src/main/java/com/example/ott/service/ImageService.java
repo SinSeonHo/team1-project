@@ -37,7 +37,8 @@ public class ImageService {
     /**
      * 이미지 업로드 처리 및 DB 저장
      *
-     * @param file    업로드된 MultipartFile
+     * //@param file 업로드된 MultipartFile
+     * 
      * @param movieId 연관 저장할 Movie ID (null 허용 시, 없으면 movie 관계 설정 안 함)
      * @param ord     이미지 순서값 (0 이상의 정수; 필요 없다면 0으로 넘기면 됨)
      * @return 저장된 Image 엔티티

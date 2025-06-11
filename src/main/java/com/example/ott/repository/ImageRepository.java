@@ -9,5 +9,4 @@ import com.example.ott.entity.Image;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
-    // List<Image> findAllByMovieInum(Long movieId);
 }
