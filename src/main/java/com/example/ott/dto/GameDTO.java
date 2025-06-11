@@ -21,21 +21,21 @@ import lombok.ToString;
 public class GameDTO {
 
     private String gid; // 게임코드
-    private Long appid; // steam 고유 코드
+    private String appid; // steam 고유 코드
     private String title; // 게임명
     private String developer; // 개발사
-    private Long usercnt; // 동시접속자 수
+    private int ccu; // 동시접속자 수
     private String platform; // 플랫폼
     private int price; // 가격
     private int rank; // 순위
 
-    @Builder.Default
-    private List<Image> gameImages = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> gameImages = new ArrayList<>();
 
-    @Builder.Default
-    private List<Image> gameGenres = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> gameGenres = new ArrayList<>();
 
-    @Builder.Default
-    private List<Image> gameReplies = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> gameReplies = new ArrayList<>();
 
 }

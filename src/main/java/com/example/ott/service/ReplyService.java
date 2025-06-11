@@ -44,9 +44,9 @@ public class ReplyService {
         return null;
     }
 
-    public List<Reply> selectReplies(Long rno) {
-        Movie movie = movieRepository.findById(rno).get();
-        List<Reply> list = replyRepository.findByMovie(movie);
-        return list;
-    }
+    // public List<Reply> selectReplies(Long rno) {
+    // Movie movie = movieRepository.findById(rno).get();
+    // List<Reply> list = replyRepository.findByMovie(movie);
+    // return list;
+    // }
 }

@@ -29,24 +29,28 @@ public class Game extends BaseEntity {
     private String gid; // 게임코드 ex: g_1 / g_2
 
     @Column(nullable = false)
-    private Long appid; // steam 고유 코드
+    private String appid; // steam 고유 코드
     @Column(nullable = false)
     private String title; // 게임명
     private String developer; // 개발사
-    private Long usercnt; // 동시접속자 수
+    private int ccu; // 동시접속자 수
+
     private String platform; // 플랫폼
     private int price; // 가격
     private int rank; // 순위
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    private List<Reply> replies = new ArrayList<>(); // 댓글
+    // @Builder.Default
+    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    // private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    @Builder.Default
-    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
+    // @Builder.Default
+    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
+    // 연동예정
 
-    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
+    // @Builder.Default
+    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
 
     public void setPrice(int price) {
         this.price = price;
@@ -54,5 +58,13 @@ public class Game extends BaseEntity {
 
     public void setRank(int rank) {
         this.rank = rank;
+    }
+
+    public void setCcu(int ccu) {
+        this.ccu = ccu;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
     }
 }

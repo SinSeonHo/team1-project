@@ -12,7 +12,7 @@ public class ReplyDTO {
     private String text;
     private int recommend;
     private String replyer;
-    private Long mno;
+    private String mno;
     private Long ref;
     private String mention;
 }

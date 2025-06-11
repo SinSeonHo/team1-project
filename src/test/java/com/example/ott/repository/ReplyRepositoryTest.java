@@ -31,7 +31,7 @@ public class ReplyRepositoryTest {
 
     @Test
     void testInsertReply() {
-        Movie movie = Movie.builder().mid(1L).build();
+        Movie movie = Movie.builder().mid("").build();
         Reply reply = Reply.builder()
                 .replyer(userRepository.findById("user1").get())
                 .movie(movie)

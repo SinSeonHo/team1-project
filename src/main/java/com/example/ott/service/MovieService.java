@@ -31,7 +31,6 @@ import lombok.extern.log4j.Log4j2;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    // private final ImageRepository imageRepository;
 
     // 영화 등록
     @Transactional

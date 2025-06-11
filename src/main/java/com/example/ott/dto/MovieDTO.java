@@ -34,13 +34,13 @@ public class MovieDTO {
     // 리뷰수
     private Long reviewCnt;
 
-    @Builder.Default
-    private List<Image> movieImages = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> movieImages = new ArrayList<>();
 
-    @Builder.Default
-    private List<Image> movieGenres = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> movieGenres = new ArrayList<>();
 
-    @Builder.Default
-    private List<Image> movieReplies = new ArrayList<>();
+    // @Builder.Default
+    // private List<Image> movieReplies = new ArrayList<>();
 
 }

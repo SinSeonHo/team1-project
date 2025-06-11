@@ -44,15 +44,16 @@ public class Movie extends BaseEntity {
     @Column(length = 1000)
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Reply> replies = new ArrayList<>(); // 댓글
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    @Builder.Default
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
+    // @Builder.Default
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
+    // 연동예정
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Genre> genres = new ArrayList<>();
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Genre> genres = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title;

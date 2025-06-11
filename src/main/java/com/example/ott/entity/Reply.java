@@ -47,6 +47,10 @@ public class Reply {
     @JoinColumn(name = "mid")
     private Movie movie;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gid")
+    private Game game;
+
     // 대상 댓글의 rno
     private Long ref;
 
