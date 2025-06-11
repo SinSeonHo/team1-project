@@ -29,7 +29,7 @@ public class User {
 
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -39,6 +39,11 @@ public class User {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.USER;
+
+    @Setter
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private Socials socials = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
 
     @Builder.Default
     private Long mileage = 0L;
