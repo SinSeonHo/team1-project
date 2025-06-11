@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.example.ott.entity.Image;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.MovieRepository;
+import com.example.ott.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +31,8 @@ public class ImageController {
 
     private final ImageRepository imageRepository;
     private final MovieRepository movieRepository; // 필요 시
+
+    private final ImageService imageService;
 
     @Value("${upload.base-dir}")
     private String baseDir; // application.properties에 설정
@@ -77,6 +80,17 @@ public class ImageController {
             // 로깅 후 에러 응답
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("파일 저장 중 오류 발생");
+        }
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            Image savedImage = imageService.uploadAndSave(file, null, 0);
+            return ResponseEntity.ok(savedImage);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("업로드 실패: " + e.getMessage());
         }
     }
 }

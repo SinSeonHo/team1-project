@@ -25,10 +25,10 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inum; // 이미지 번호
-    private String uuid;
-    private String imgName;
+    private String uuid; // 이미지 고유번호
+    private String imgName; // 이미지이름
     private String path; // 경로
-    private int ord;
+    private int ord; // 이미지순서
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
