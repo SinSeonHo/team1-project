@@ -68,4 +68,12 @@ public class Reply {
     public void changeText(String text) {
         this.text = text;
     }
+
+    public void setRef(Long ref) {
+        this.ref = ref;
+    }
+
+    public void setMention(String mention) {
+        this.mention = mention;
+    }
 }

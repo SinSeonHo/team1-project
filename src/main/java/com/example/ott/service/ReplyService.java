@@ -23,24 +23,19 @@ public class ReplyService {
     private final MovieRepository movieRepository;
 
     public Reply insert(ReplyDTO dto) {
-        Reply reply = Reply.builder()
-                .movie(Movie.builder().mid(dto.getMno()).build())
-                .text(dto.getText())
-                .replyer(User.builder().id(dto.getReplyer()).build())
-                .build();
-        return replyRepository.save(reply);
+        return replyRepository.save(dtoToEntity(dto));
     }
 
     public Reply rereplyInsert(ReplyDTO dto) {
 
         if (replyRepository.findById(dto.getRef()).isPresent()) {
-            Reply reply = Reply.builder()
-                    .movie(Movie.builder().mid(dto.getMno()).build())
-                    .text(dto.getText())
-                    .replyer(User.builder().id(dto.getReplyer()).build())
-                    .ref(dto.getRef())
-                    .build();
-            return replyRepository.save(reply);
+            // Reply reply = Reply.builder()
+            // .movie(Movie.builder().mid(dto.getMno()).build())
+            // .text(dto.getText())
+            // .replyer(User.builder().id(dto.getReplyer()).build())
+            // .ref(dto.getRef())
+            // .build();
+            return replyRepository.save(dtoToEntity(dto));
         }
         return null;
     }
@@ -54,9 +49,16 @@ public class ReplyService {
         return result;
     }
 
-    public Reply updateReply(Long rno) {
-        Reply reply = replyRepository.findById(rno).get();
-        return reply;
+    // 댓글 내용 변경
+    public ReplyDTO updateReply(ReplyDTO dto) {
+        Reply reply = replyRepository.findById(dto.getRno()).get();
+        reply.changeText(dto.getText());
+
+        return entityToDto(replyRepository.save(reply));
+    }
+
+    public void deleteReply(Long id) {
+        replyRepository.deleteById(id);
     }
 
     private ReplyDTO entityToDto(Reply reply) {
@@ -71,9 +73,31 @@ public class ReplyService {
                 .build();
 
         // 멘션이 있으면 추가해줌
-        if (reply.getMention() != null) {
-            dto.setMention(reply.getMention());
-        }
+        // if (reply.getMention() != null) {
+        dto.setMention(reply.getMention());
+        // }
         return dto;
+    }
+
+    private Reply dtoToEntity(ReplyDTO dto) {
+        Reply reply = null;
+
+        if (dto.getRef() == null) {
+            // 대댓글이 아니면
+            reply = Reply.builder()
+                    .rno(dto.getRno())
+                    .text(dto.getText())
+                    .replyer(User.builder().id(dto.getReplyer()).build())
+                    .movie(Movie.builder().mid(dto.getMno()).build())
+                    .build();
+        }
+        if (replyRepository.findById(dto.getRef()).isPresent()) {
+            reply.setRef(dto.getRef());
+            reply.setMention(dto.getMention());
+        } else {
+            // 제거된 댓글에 달 때
+            return null;
+        }
+        return reply;
     }
 }
