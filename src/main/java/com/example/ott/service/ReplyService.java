@@ -1,6 +1,7 @@
 package com.example.ott.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -44,9 +45,36 @@ public class ReplyService {
         return null;
     }
 
+    // 영화의 댓글들 가져오기
+    public List<ReplyDTO> movieReplies(Long rno) {
+        Movie movie = movieRepository.findById(rno).get();
+        List<Reply> list = replyRepository.findByMovie(movie);
+        List<ReplyDTO> result = list.stream().map(reply -> entityToDto(reply))
+                .collect(Collectors.toList());
+        return result;
+    }
+
     public List<Reply> selectReplies(Long rno) {
         Movie movie = movieRepository.findById(rno).get();
         List<Reply> list = replyRepository.findByMovie(movie);
         return list;
+    }
+
+    private ReplyDTO entityToDto(Reply reply) {
+        ReplyDTO dto = ReplyDTO.builder()
+                .rno(reply.getRno())
+                .text(reply.getText())
+                .replyer(reply.getReplyer().getName())
+                .recommend(reply.getRecommend())
+                .ref(reply.getRef())
+                .createdDate(reply.getCreatedDate())
+                .updatedDate(reply.getUpdatedDate())
+                .build();
+
+        // 멘션이 있으면 추가해줌
+        if (reply.getMention() != null) {
+            dto.setMention(reply.getMention());
+        }
+        return dto;
     }
 }
