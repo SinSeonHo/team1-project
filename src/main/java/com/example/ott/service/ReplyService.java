@@ -46,18 +46,17 @@ public class ReplyService {
     }
 
     // 영화의 댓글들 가져오기
-    public List<ReplyDTO> movieReplies(Long rno) {
-        Movie movie = movieRepository.findById(rno).get();
+    public List<ReplyDTO> movieReplies(String mid) {
+        Movie movie = movieRepository.findById(mid).get();
         List<Reply> list = replyRepository.findByMovie(movie);
         List<ReplyDTO> result = list.stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
         return result;
     }
 
-    public List<Reply> selectReplies(Long rno) {
-        Movie movie = movieRepository.findById(rno).get();
-        List<Reply> list = replyRepository.findByMovie(movie);
-        return list;
+    public Reply updateReply(Long rno) {
+        Reply reply = replyRepository.findById(rno).get();
+        return reply;
     }
 
     private ReplyDTO entityToDto(Reply reply) {

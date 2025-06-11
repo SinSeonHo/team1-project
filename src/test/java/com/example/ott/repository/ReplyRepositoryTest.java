@@ -25,15 +25,15 @@ public class ReplyRepositoryTest {
 
     @Test
     void first() {
-        Movie movie = Movie.builder().title("title1").build();
+        Movie movie = Movie.builder().mid("m_1").title("title1").build();
         movieRepository.save(movie);
-        movie = Movie.builder().title("title2").build();
+        movie = Movie.builder().mid("m_2").title("title2").build();
         movieRepository.save(movie);
     }
 
     @Test
     void testInsertReply() {
-        Movie movie = Movie.builder().mid(1L).build();
+        Movie movie = Movie.builder().mid("m_1").build();
         Game game = Game.builder().gid(1L).build();
         WebToon webtoon = WebToon.builder().wid(1L).build();
         Reply reply = Reply.builder()
@@ -48,7 +48,7 @@ public class ReplyRepositoryTest {
 
     @Test
     void testInsertReReply() {
-        Movie movie = Movie.builder().mid(1L).build();
+        Movie movie = Movie.builder().mid("m_1").build();
         Reply reply = Reply.builder()
                 .replyer(User.builder().id("user1").build())
                 .movie(movie)
