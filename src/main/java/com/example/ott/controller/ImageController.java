@@ -83,14 +83,4 @@ public class ImageController {
         }
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            Image savedImage = imageService.uploadAndSave(file, null, 0);
-            return ResponseEntity.ok(savedImage);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("업로드 실패: " + e.getMessage());
-        }
-    }
 }
