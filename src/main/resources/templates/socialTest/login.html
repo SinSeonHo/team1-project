@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>구글 소셜로그인 테스트</title>
+  <title>소셜로그인 테스트</title>
   <style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; }
     button { font-size: 1.5rem; padding: 1rem 2rem; border-radius: 8px; border: none; background: #4285F4; color: #fff; cursor: pointer; }
@@ -11,9 +11,17 @@
 </head>
 <body>
   <button id="google-login">구글로 로그인</button>
+  <button id="kakao-login">카카오로 로그인</button>
+  <button id="naver-login">네이버로 로그인</button>
   <script>
     document.getElementById('google-login').onclick = function() {
       window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    }
+    document.getElementById('kakao-login').onclick = function() {
+      window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
+    }
+    document.getElementById('naver-login').onclick = function() {
+      window.location.href = 'http://localhost:8080/oauth2/authorization/naver';
     }
   </script>
 </body>

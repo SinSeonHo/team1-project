@@ -1,5 +1,7 @@
 package com.example.ott.security;
 
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -10,7 +12,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-
+import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
 import com.example.ott.repository.UserRepository;
@@ -22,61 +24,95 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
-    
+
     // 소셜 로그인 정보 처리 메서드
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        // 로그인 요청 정보 확인
-        log.info("USERNAME TEST : {}", userRequest);
+        // userRequest : Resource server에 요청을 하기 위해 access Token과 client id, Secret,
+        // scope, RedirectionURi을 객체로 감싼 ClientRegistration 정보를 넣어둠
 
         // 클라이언트 이름, 토큰 추출
         String clientName = userRequest.getClientRegistration().getClientName(); // 소셜 종류(Google, Kakao, Naver, ...)
-        log.info("========================OAuth2User가 가지고 있는 값");
-        log.info("clientName{}", clientName);
-        log.info(userRequest.getAdditionalParameters());
-        log.info("========================");
-        
-        OAuth2User oAuth2User = super.loadUser(userRequest); // 소셜에 rest 요청
-        // 소셜 사용자 정보 로드, 키:값 형태로 로깅
-        oAuth2User.getAttributes().forEach((key, value) -> {
-            log.info("{} : {}", key, value);
-        });
 
-        // 사용자 이메일 추출(소셜 계정이 구글일 경우에만)
-        // 소셜 계정 확장시 해당 코드 분기 확장 소요 있음
+        OAuth2User oAuth2User = super.loadUser(userRequest); // Resource server에 Resource 요청
+
+        // oAuth2User : Resource Server에서 제공해준 Resources (Map)
+        // TODO : 요청했는데 받지 못할 경우(1. Access Token 만료, scope 미지정 or 부족, Resource Server의
+        // 오류, 사용자가 소셜 서비스에서 정보 제공을 거부, 잘못된 엔드포인트나 설정 오류, 서비스 정책 변경)
+        // 이 부분을 try-catch로 감싸서 customErrorHandler를 만들어서 별도의 안내 페이지로 리디렉트하는 식으로 처리해야함.
+
         String email = "";
-        if(clientName.equals("Google")) 
-            email = oAuth2User.getAttribute("email");
+        String name = "";
+        Socials socials = Socials.NONE;
 
-        User user = saveSocialUser(email);
+        // 일치하는 소셜에 따라 email, name 정보 추출, User socials 속성 지정
+        switch (clientName) {
+            case "Google":
+                email = oAuth2User.getAttribute("email");
+                name = oAuth2User.getAttribute("name");
+                socials = Socials.GOOGLE;
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(user, oAuth2User.getAttributes());
+                break;
+            case "kakao":
+                // attributes Map 얻기
+                Map<String, Object> attributes = oAuth2User.getAttributes();
+
+                // nickname 꺼내기
+                Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+                name = (String) properties.get("nickname");
+
+                // email 꺼내기
+                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                email = (String) kakaoAccount.get("email");
+                socials = Socials.KAKAO;
+                break;
+
+            case "Naver":
+                Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttribute("response");
+                email = (String) response.get("email");
+                name = (String) response.get("name");
+                socials = Socials.NAVER;
+                log.info("naver 정보들 {} {} {}", response, email, name);
+
+                break;
+
+            default:
+                log.info("일치하는 소셜이 없어요");
+                break;
+        }
+
+        Map<String, Object> customAttributes = new HashMap<String, Object>();
+        customAttributes.put("name", name);
+        customAttributes.put("email", email);
+
+
+        User user = saveSocialUser(email, name, socials);
+
+        CustomUserDetails customUserDetails = new CustomUserDetails(user, customAttributes);
 
         return customUserDetails;
     }
-    
-    private User saveSocialUser(String email) {
+
+    private User saveSocialUser(String email, String name, Socials socials) {
         User user = userRepository.findByEmail(email);
 
         if (user == null) {
-           User saveUser = User.builder()
-            .id(email)
-            .email(email)
-            .name("test")
-            .password(passwordEncoder.encode("1111"))
-            .userRole(UserRole.USER)
-            .build();
+            User saveUser = User.builder()
+                    .id(email)
+                    .email(email)
+                    .name(name)
+                    .password(passwordEncoder.encode("1111"))
+                    .userRole(UserRole.USER)
+                    .socials(socials)
+                    .build();
             userRepository.save(saveUser);
-            
+
             return saveUser;
         }
 
         return user;
     }
-    
 
-    
 }
