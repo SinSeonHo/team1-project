@@ -22,7 +22,7 @@ import lombok.ToString;
 public class Game {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gid; // 게임코드
 
     private String title; // 게임명
