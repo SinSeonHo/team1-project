@@ -28,7 +28,7 @@ public class ReplyService {
 
     public Reply rereplyInsert(ReplyDTO dto) {
 
-        if (replyRepository.findById(dto.getRef()).isPresent()) {
+        if (dto.getRef() != null) {
             // Reply reply = Reply.builder()
             // .movie(Movie.builder().mid(dto.getMno()).build())
             // .text(dto.getText())
@@ -87,14 +87,11 @@ public class ReplyService {
                 .movie(Movie.builder().mid(dto.getMid()).build())
                 .build();
 
-        // 대댓글이 아니면
-
-        if (replyRepository.findById(dto.getRef()).isPresent()) {
+        // 대댓글이면
+        if (dto.getRef() != null) {
+            // if (replyRepository.findById(dto.getRef()).isPresent()) {
             reply.setRef(dto.getRef());
             reply.setMention(dto.getMention());
-        } else {
-            // 제거된 댓글에 달 때
-            return null;
         }
         return reply;
     }
