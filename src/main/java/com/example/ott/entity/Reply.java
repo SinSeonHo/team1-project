@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
@@ -53,9 +54,11 @@ public class Reply {
     private WebToon webtoon;
 
     // 대상 댓글의 rno
+    @Setter
     private Long ref;
 
     // 대상 댓글의 유저 아이디
+    @Setter
     private String mention;
 
     @CreatedDate
@@ -67,13 +70,5 @@ public class Reply {
 
     public void changeText(String text) {
         this.text = text;
-    }
-
-    public void setRef(Long ref) {
-        this.ref = ref;
-    }
-
-    public void setMention(String mention) {
-        this.mention = mention;
     }
 }

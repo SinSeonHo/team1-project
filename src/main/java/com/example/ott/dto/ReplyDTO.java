@@ -14,7 +14,7 @@ public class ReplyDTO {
     private String text;
     private int recommend;
     private String replyer;
-    private String mno;
+    private String mid;
     private Long ref;
     private String mention;
 

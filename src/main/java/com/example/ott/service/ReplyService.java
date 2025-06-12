@@ -80,17 +80,15 @@ public class ReplyService {
     }
 
     private Reply dtoToEntity(ReplyDTO dto) {
-        Reply reply = null;
+        Reply reply = Reply.builder()
+                .rno(dto.getRno())
+                .text(dto.getText())
+                .replyer(User.builder().id(dto.getReplyer()).build())
+                .movie(Movie.builder().mid(dto.getMid()).build())
+                .build();
 
-        if (dto.getRef() == null) {
-            // 대댓글이 아니면
-            reply = Reply.builder()
-                    .rno(dto.getRno())
-                    .text(dto.getText())
-                    .replyer(User.builder().id(dto.getReplyer()).build())
-                    .movie(Movie.builder().mid(dto.getMno()).build())
-                    .build();
-        }
+        // 대댓글이 아니면
+
         if (replyRepository.findById(dto.getRef()).isPresent()) {
             reply.setRef(dto.getRef());
             reply.setMention(dto.getMention());
