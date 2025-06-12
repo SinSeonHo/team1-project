@@ -2,6 +2,8 @@ package com.example.ott.entity;
 
 import java.util.List;
 
+import com.example.ott.type.Platform;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,9 +31,9 @@ public class Game {
 
     private String title; // 게임명
     private String developer; // 개발사
-    @Enumerated(EnumType.STRING)
     
-    private String platform; // 플랫폼
+    @Enumerated(EnumType.STRING)
+    private Platform platform; // 플랫폼
     private int price; // 가격
 
     // @Builder.Default
