@@ -26,19 +26,19 @@ public class ReplyService {
         return replyRepository.save(dtoToEntity(dto));
     }
 
-    public Reply rereplyInsert(ReplyDTO dto) {
+    // public Reply rereplyInsert(ReplyDTO dto) {
 
-        if (dto.getRef() != null) {
-            // Reply reply = Reply.builder()
-            // .movie(Movie.builder().mid(dto.getMno()).build())
-            // .text(dto.getText())
-            // .replyer(User.builder().id(dto.getReplyer()).build())
-            // .ref(dto.getRef())
-            // .build();
-            return replyRepository.save(dtoToEntity(dto));
-        }
-        return null;
-    }
+    // if (dto.getRef() != null) {
+    // // Reply reply = Reply.builder()
+    // // .movie(Movie.builder().mid(dto.getMno()).build())
+    // // .text(dto.getText())
+    // // .replyer(User.builder().id(dto.getReplyer()).build())
+    // // .ref(dto.getRef())
+    // // .build();
+    // return replyRepository.save(dtoToEntity(dto));
+    // }
+    // return null;
+    // }
 
     // 영화의 댓글들 가져오기
     public List<ReplyDTO> movieReplies(String mid) {
@@ -86,10 +86,8 @@ public class ReplyService {
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(Movie.builder().mid(dto.getMid()).build())
                 .build();
-
         // 대댓글이면
         if (dto.getRef() != null) {
-            // if (replyRepository.findById(dto.getRef()).isPresent()) {
             reply.setRef(dto.getRef());
             reply.setMention(dto.getMention());
         }
