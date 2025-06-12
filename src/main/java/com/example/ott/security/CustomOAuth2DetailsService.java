@@ -61,7 +61,8 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
 
                 // nickname 꺼내기
                 Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-                name = (String) properties.get("nickname");
+                // name = (String) properties.get("nickname");
+                name = ""; // kakao 성명 받아오는 권한이 없음
 
                 // email 꺼내기
                 Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
@@ -83,6 +84,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                 break;
         }
 
+        // 필요한 값만 CustomUserDetails의 attributes에 추가
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         customAttributes.put("name", name);
         customAttributes.put("email", email);
@@ -95,6 +97,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         return customUserDetails;
     }
 
+    // 이메일이 DB에 존재할 경우 반환, 존재하지 않을 경우 DB에 추가
     private User saveSocialUser(String email, String name, Socials socials) {
         User user = userRepository.findByEmail(email);
 
@@ -103,6 +106,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                     .id(email)
                     .email(email)
                     .name(name)
+                    .nickname("default")
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)
