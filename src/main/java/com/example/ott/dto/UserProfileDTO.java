@@ -12,11 +12,11 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
+@NoArgsConstructor
 @Builder
-public class UserDTO {
+@AllArgsConstructor
+public class UserProfileDTO {
 
     private String id;
 
@@ -24,11 +24,13 @@ public class UserDTO {
 
     private String email;
 
-    private UserRole userRole;
+    private String nickname; // 별명
 
-    private Socials socials;
+    private Socials socials; // 소셜 계정(Kakao, Naver, Google, X)
 
-    private Long mileage = 0L;
+    private Long mileage;
 
-    // private Struct struct;
+    private String Genres;
+
+    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 }

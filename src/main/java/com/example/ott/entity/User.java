@@ -23,11 +23,15 @@ import lombok.ToString;
 @Table(name="user_table")
 public class User {
     
-    // TODO : UserCode 생성 기능 추가 필요
     @Id
     private String id;
 
-    private String name;
+    @Column(nullable = false)
+    private String name; //  실명
+
+    @Setter
+    @Column(unique = true)
+    private String nickname; // 별명
 
     @Column(unique = true)
     private String email;
@@ -38,7 +42,7 @@ public class User {
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.USER;
+    private UserRole userRole = UserRole.GUEST;
 
     @Setter
     @Builder.Default
@@ -46,7 +50,18 @@ public class User {
     private Socials socials = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
 
     @Builder.Default
+    @Setter
     private Long mileage = 0L;
 
-    // private Struct struct;
+    @Setter
+    private String Genres;
+
+    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
+
+    // profile, 계정 생성일
+
+    public void changeAccountInfo(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
 }
