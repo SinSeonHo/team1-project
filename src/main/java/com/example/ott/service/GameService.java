@@ -52,6 +52,7 @@ public class GameService {
                 .platform(dto.getPlatform())
                 .price(dto.getPrice())
                 .rank(dto.getRank())
+                .genres(dto.getGenres())
                 .build();
 
         gameRepository.save(game);
@@ -164,6 +165,7 @@ public class GameService {
                                 .ccu(ccu)
                                 .price(price)
                                 .platform(platform)
+                                .genres(genres)
                                 .build();
 
                         gameRepository.save(game);

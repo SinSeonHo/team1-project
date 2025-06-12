@@ -28,6 +28,7 @@ public class GameDTO {
     private String platform; // 플랫폼
     private int price; // 가격
     private int rank; // 순위
+    private String genres;
 
     // @Builder.Default
     // private List<Image> gameImages = new ArrayList<>();

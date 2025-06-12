@@ -55,6 +55,7 @@ public class MovieService {
                 .movieCd(dto.getMovieCd())
                 .actors(dto.getActors())
                 .director(dto.getDirector())
+                .genres(dto.getGenres())
                 .build();
 
         movieRepository.save(movie);
@@ -141,6 +142,14 @@ public class MovieService {
                     else
                         actorStr = String.join(", ", actorNames); // "배우1, 배우2, 배우3..."
 
+                    // 장르 정보 추출
+                    JsonNode genres = movieInfo.path("genres");
+                    List<String> genreNames = new ArrayList<>();
+                    for (JsonNode genreNode : genres) {
+                        genreNames.add(genreNode.path("genreNm").asText());
+                    }
+                    String genreStr = genreNames.isEmpty() ? "[장르정보없음]" : String.join(", ", genreNames);
+
                     Optional<Movie> optionalMovie = movieRepository.findByMovieCd(movieCd);
 
                     if (optionalMovie.isPresent()) {
@@ -149,6 +158,7 @@ public class MovieService {
                         existing.setRank(rank);
                         existing.setDirector(directorName);
                         existing.setActors(actorStr);
+                        existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
 
@@ -168,6 +178,7 @@ public class MovieService {
                                 .movieCd(movieCd)
                                 .director(directorName)
                                 .actors(actorStr)
+                                .genres(genreStr)
                                 .build();
 
                         insertMovie(dto);

@@ -39,6 +39,8 @@ public class Game extends BaseEntity {
     private int price; // 가격
     private int rank; // 순위
 
+    private String genres; // 장르
+
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Reply> replies = new ArrayList<>(); // 댓글
@@ -66,5 +68,9 @@ public class Game extends BaseEntity {
 
     public void setPlatform(String platform) {
         this.platform = platform;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 }

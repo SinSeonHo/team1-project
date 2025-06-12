@@ -27,6 +27,7 @@ public class MovieDTO {
     private String director; // 감독
     private String openDate; // 개봉일
     private int rank; // 순위
+    private String genres;
 
     // 평점
     private double avg;

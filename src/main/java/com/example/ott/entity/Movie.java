@@ -44,6 +44,8 @@ public class Movie extends BaseEntity {
     @Column(length = 1000)
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
+    private String genres; // 장르
+
     // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     // private List<Reply> replies = new ArrayList<>(); // 댓글
 
@@ -73,5 +75,9 @@ public class Movie extends BaseEntity {
 
     public void setActors(String actors) {
         this.actors = actors;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 }
