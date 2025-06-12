@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,9 +29,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+
 public class MovieService {
 
     private final MovieRepository movieRepository;
+
+    @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
+    @Transactional
+    public void scheduledMovieImport() {
+        log.info("자동 영화 데이터 수집 시작");
+        importMovies(); // 기존 메서드 호출
+    }
 
     // 영화 등록
     @Transactional
