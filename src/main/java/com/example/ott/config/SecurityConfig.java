@@ -11,6 +11,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.ott.handler.CustomOAuthSuccessHandler;
 import com.example.ott.security.CustomOAuth2DetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class SecurityConfig {
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/login")
-                                                .defaultSuccessUrl("/")
+                                                .successHandler(new CustomOAuthSuccessHandler())
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));
 
