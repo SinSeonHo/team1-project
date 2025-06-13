@@ -71,7 +71,7 @@ public class ImageController {
                     .path(fullPath)
                     .ord(ord);
             if (movieId != null) {
-                movieRepository.findById(movieId).ifPresent(builder::movie);
+                movieRepository.findById(uuid).ifPresent(builder::movie);
             }
             Image saved = imageRepository.save(builder.build());
             return ResponseEntity.ok(saved);

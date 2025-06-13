@@ -100,7 +100,7 @@ public class ImageService {
 
         // 8. movieId가 주어졌으면 연관 Movie 엔티티 설정
         if (movieId != null) {
-            Movie movie = movieRepository.findById(movieId)
+            Movie movie = movieRepository.findById(uuid)
                     .orElseThrow(() -> new IllegalArgumentException("해당 movieId가 존재하지 않습니다: " +
                             movieId));
             builder.movie(movie);
