@@ -11,7 +11,7 @@ import java.util.UUID;
 import com.example.ott.entity.Image;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.MovieRepository;
-import com.example.ott.service.ImageService;
+// import com.example.ott.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class ImageController {
     private final ImageRepository imageRepository;
     private final MovieRepository movieRepository; // 필요 시
 
-    private final ImageService imageService;
+    // private final ImageService imageService;
 
     @Value("${upload.base-dir}")
     private String baseDir; // application.properties에 설정
