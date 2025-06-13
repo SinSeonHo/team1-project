@@ -31,7 +31,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
+    @Scheduled(cron = "0 01 10 * * *") // 매일 오전10시에 실행
     @Transactional
     public void scheduledGameImport() {
         log.info("자동 게임 데이터 수집 시작");
