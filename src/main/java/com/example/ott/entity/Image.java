@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString(exclude = "movie")
+@ToString(exclude = { "movie", "game", "webtoon" })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

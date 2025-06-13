@@ -19,7 +19,6 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-
     @Override
     // 계정의 권한 목록을 리턴?
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -37,5 +36,5 @@ public class CustomUserDetails implements UserDetails {
     public String getUsername() {
         return user.getId();
     }
-    
+
 }
