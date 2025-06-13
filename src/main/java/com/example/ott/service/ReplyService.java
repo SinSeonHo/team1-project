@@ -66,6 +66,7 @@ public class ReplyService {
                 .rno(reply.getRno())
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getName())
+                .mid(reply.getMovie().getMid())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .createdDate(reply.getCreatedDate())
