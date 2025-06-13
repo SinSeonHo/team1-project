@@ -5,6 +5,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.ott.entity.Image;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,7 @@ public class ImageRepositoryTest {
         String originalFileName = "no image.png";
         String uuid = UUID.randomUUID().toString(); // 임의 UUID 생성
         String extension = ".png";
-        String dateFolder = "2025-06-11";
+        String dateFolder = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String savedFileName = uuid + extension;
 
         // 실제 경로: /uploads/2025-06-11/uuid.png
