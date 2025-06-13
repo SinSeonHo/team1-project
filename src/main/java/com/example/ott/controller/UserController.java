@@ -1,48 +1,28 @@
 package com.example.ott.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-import com.example.ott.entity.User;
-import com.example.ott.repository.UserRepository;
+import com.example.ott.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.List;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
+@Controller
 @Log4j2
-@RestController
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private UserService userService;
 
-    UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-    @GetMapping("/")
-    public String getTestHome() {
-        return "Home";
-    }
+    // 회원가입 페이지 호출
 
-    @GetMapping("/auth")
-    public Authentication getAuth() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
+    // 회원가입 요청
 
-        return authentication;
-    }
+    // 프로필 조회
 
-    @GetMapping("/users")
-    public List<User> getUsers() {
-        
-        return userRepository.findAll();
-    }
+    // 프로필 수정
+
     
+
     
-        
 }
