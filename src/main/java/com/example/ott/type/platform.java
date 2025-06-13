@@ -1,6 +1,6 @@
 package com.example.ott.type;
 
-public enum platform {
+public enum Platform {
     PC,
     MOBile,
     XBOX,
