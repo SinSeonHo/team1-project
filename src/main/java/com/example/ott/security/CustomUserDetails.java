@@ -38,6 +38,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         .build();
     }
 
+
     // 소셜 로그인 유저 생성자
     public CustomUserDetails(User user, Map<String, Object> attributes) {
         this.securityUserDTO = SecurityUserDTO.builder()
@@ -50,8 +51,6 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         .build();
         this.attributes = attributes;
     }   
-
- 
 
     @Override
     public String getPassword() {

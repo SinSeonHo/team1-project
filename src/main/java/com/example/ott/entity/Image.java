@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString(exclude = "movie")
+@ToString(exclude = { "movie", "game", "webtoon" })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,14 +23,17 @@ import lombok.ToString;
 public class Image {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inum;
     private String uuid;
     private String imgName;
     private String path;
     private int ord;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Movie movie;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Movie movie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Game game;
 
 }

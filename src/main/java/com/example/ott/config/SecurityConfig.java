@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 public class SecurityConfig {
 
+
         private final CustomOAuth2DetailsService customOAuth2DetailsService;
 
         @Bean
@@ -28,6 +29,7 @@ public class SecurityConfig {
                 // csrf 임시 비활성화
                 http
                                 .csrf(csrf -> csrf.disable());
+
 
                 // localhost:8080/auth 를 제외한 모든 경로 인증 확인
                 http

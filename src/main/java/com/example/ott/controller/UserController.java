@@ -7,12 +7,15 @@ import com.example.ott.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+
 @Controller
+
 @Log4j2
 @RequiredArgsConstructor
 public class UserController {
 
     private UserService userService;
+
 
     // 회원가입 페이지 호출
 
@@ -22,7 +25,5 @@ public class UserController {
 
     // 프로필 수정
 
-    
 
-    
 }
