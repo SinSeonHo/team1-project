@@ -33,4 +33,9 @@ public class Image {
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Game game;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private WebToon webToon;
 }
