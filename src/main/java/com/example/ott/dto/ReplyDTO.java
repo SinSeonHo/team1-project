@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +14,12 @@ public class ReplyDTO {
     private String text;
     private int recommend;
     private String replyer;
-    private String mno;
+
+    private String mid;
+
     private Long ref;
     private String mention;
+
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }

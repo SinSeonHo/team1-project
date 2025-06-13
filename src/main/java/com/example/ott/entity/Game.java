@@ -2,10 +2,11 @@ package com.example.ott.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,9 +34,11 @@ public class Game extends BaseEntity {
     @Column(nullable = false)
     private String title; // 게임명
     private String developer; // 개발사
+
     private int ccu; // 동시접속자 수
 
     private String platform; // 플랫폼
+
     private int price; // 가격
     private int rank; // 순위
 
