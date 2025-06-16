@@ -17,10 +17,11 @@ public class ReplyDTO {
     // 댓글단 유저 아이디
     private String replyer;
     // 영화 아이디
-
     private String mid;
     // 게임 아이디
     private String gid;
+    // 웹툰 아이디
+    private String wid;
     // 부모(대댓글이 달린) 댓글의 id
     private Long ref;
     // 부모(대댓글이 달린) 댓글의 유저명

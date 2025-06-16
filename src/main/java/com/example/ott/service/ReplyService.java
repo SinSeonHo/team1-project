@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
+import com.example.ott.entity.WebToon;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
@@ -24,7 +25,7 @@ public class ReplyService {
     private final MovieRepository movieRepository;
 
     public Reply insert(ReplyDTO dto) {
-        return replyRepository.save(dtoToEntity(dto));
+        return replyRepository.save(dtoToEntityInsert(dto));
     }
 
     // public Reply rereplyInsert(ReplyDTO dto) {
@@ -85,18 +86,46 @@ public class ReplyService {
     private Reply dtoToEntity(ReplyDTO dto) {
         Movie movie = null;
         Game game = null;
+        WebToon webToon = null;
 
         if (dto.getMid() != null) {
             movie = Movie.builder().mid(dto.getMid()).build();
         } else if (dto.getGid() != null) {
-            // Game game = Game.builder().gid(dto.getGid()).build();
+            game = Game.builder().gid(dto.getGid()).build();
+        } else {
+            // webToon = WebToon.builder().wid(dto.getWid()).build();
         }
         Reply reply = Reply.builder()
                 .rno(dto.getRno())
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(movie)
-                // .game(game)
+                .game(game)
+                .webtoon(webToon)
+                .ref(dto.getRef())
+                .mention(dto.getMention())
+                .build();
+        return reply;
+    }
+
+    private Reply dtoToEntityInsert(ReplyDTO dto) {
+        Movie movie = null;
+        Game game = null;
+        WebToon webToon = null;
+
+        if (dto.getMid() != null) {
+            movie = Movie.builder().mid(dto.getMid()).build();
+        } else if (dto.getGid() != null) {
+            game = Game.builder().gid(dto.getGid()).build();
+        } else {
+            // webToon = WebToon.builder().wid(dto.getWid()).build();
+        }
+        Reply reply = Reply.builder()
+                .text(dto.getText())
+                .replyer(User.builder().id(dto.getReplyer()).build())
+                .movie(movie)
+                .game(game)
+                .webtoon(webToon)
                 .ref(dto.getRef())
                 .mention(dto.getMention())
                 .build();
