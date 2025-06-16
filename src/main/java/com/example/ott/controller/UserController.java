@@ -24,11 +24,6 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/")
-    public String getTestHome() {
-        return "Home";
-    }
-
     @GetMapping("/auth")
     public Authentication getAuth() {
         SecurityContext context = SecurityContextHolder.getContext();
