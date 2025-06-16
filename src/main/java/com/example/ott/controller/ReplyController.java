@@ -43,11 +43,11 @@ public class ReplyController {
         return replyService.insert(dto).getRno();
     }
 
-    @PostMapping("/movie/newRe")
-    public Long postMovieRecoment(@RequestBody ReplyDTO dto) {
-        log.info("대댓글 추가 요청: {}", dto);
-        return replyService.rereplyInsert(dto).getRno();
-    }
+    // @PostMapping("/movie/newRe")
+    // public Long postMovieRecoment(@RequestBody ReplyDTO dto) {
+    // log.info("대댓글 추가 요청: {}", dto);
+    // return replyService.rereplyInsert(dto).getRno();
+    // }
 
     @DeleteMapping("/movie/{id}")
     public void deleteReply(@PathVariable Long id) {
