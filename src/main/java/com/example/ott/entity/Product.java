@@ -1,5 +1,8 @@
 package com.example.ott.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -14,14 +17,8 @@ public class Product {
     @Column(name = "badge-name")
     private String badgeName;
 
-    // 기본 생성자
-    public Product() {
-    }
-
-    // 생성자
-    public Product(String badgeName) {
-        this.badgeName = badgeName;
-    }
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Image> images = new ArrayList<>();
 
     // Getter & Setter
     public Long getId() {
