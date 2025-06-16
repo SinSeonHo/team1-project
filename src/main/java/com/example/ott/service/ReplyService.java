@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
+import com.example.ott.entity.WebToon;
+import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
 import com.example.ott.repository.MovieRepository;
@@ -23,22 +25,22 @@ public class ReplyService {
     private final MovieRepository movieRepository;
 
     public Reply insert(ReplyDTO dto) {
-        return replyRepository.save(dtoToEntity(dto));
+        return replyRepository.save(dtoToEntityInsert(dto));
     }
 
-    public Reply rereplyInsert(ReplyDTO dto) {
+    // public Reply rereplyInsert(ReplyDTO dto) {
 
-        if (replyRepository.findById(dto.getRef()).isPresent()) {
-            // Reply reply = Reply.builder()
-            // .movie(Movie.builder().mid(dto.getMno()).build())
-            // .text(dto.getText())
-            // .replyer(User.builder().id(dto.getReplyer()).build())
-            // .ref(dto.getRef())
-            // .build();
-            return replyRepository.save(dtoToEntity(dto));
-        }
-        return null;
-    }
+    // if (dto.getRef() != null) {
+    // // Reply reply = Reply.builder()
+    // // .movie(Movie.builder().mid(dto.getMno()).build())
+    // // .text(dto.getText())
+    // // .replyer(User.builder().id(dto.getReplyer()).build())
+    // // .ref(dto.getRef())
+    // // .build();
+    // return replyRepository.save(dtoToEntity(dto));
+    // }
+    // return null;
+    // }
 
     // 영화의 댓글들 가져오기
     public List<ReplyDTO> movieReplies(String mid) {
@@ -66,37 +68,74 @@ public class ReplyService {
                 .rno(reply.getRno())
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getName())
+                .mid(reply.getMovie().getMid())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
+                .mention(reply.getMention())
                 .createdDate(reply.getCreatedDate())
                 .updatedDate(reply.getUpdatedDate())
                 .build();
 
         // 멘션이 있으면 추가해줌
         // if (reply.getMention() != null) {
-        dto.setMention(reply.getMention());
+        // dto.setMention(reply.getMention());
         // }
         return dto;
     }
 
     private Reply dtoToEntity(ReplyDTO dto) {
-        log.info("dto 정보 {}", dto);
+
+        Movie movie = null;
+        Game game = null;
+        WebToon webToon = null;
+
+        if (dto.getMid() != null) {
+            movie = Movie.builder().mid(dto.getMid()).build();
+        } else if (dto.getGid() != null) {
+            game = Game.builder().gid(dto.getGid()).build();
+        } else {
+            // webToon = WebToon.builder().wid(dto.getWid()).build();
+        }
+
         Reply reply = Reply.builder()
                 // .rno(dto.getRno())
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
-                .movie(Movie.builder().mid(dto.getMid()).build())
+                .movie(movie)
+                .game(game)
+                // .webtoon(webToon)
+                .ref(dto.getRef())
+                .mention(dto.getMention())
                 .build();
+        return reply;
+    }
 
-        // 대댓글이 아니면
+    private Reply dtoToEntityInsert(ReplyDTO dto) {
+        Movie movie = null;
+        Game game = null;
+        WebToon webToon = null;
 
-        if (replyRepository.findById(dto.getRef()).isPresent()) {
-            reply.setRef(dto.getRef());
-            reply.setMention(dto.getMention());
+        if (dto.getMid() != null) {
+            movie = Movie.builder().mid(dto.getMid()).build();
+        } else if (dto.getGid() != null) {
+            game = Game.builder().gid(dto.getGid()).build();
         } else {
-            // 제거된 댓글에 달 때
-            return null;
+            // webToon = WebToon.builder().wid(dto.getWid()).build();
         }
+        Reply reply = Reply.builder()
+                .text(dto.getText())
+                .replyer(User.builder().id(dto.getReplyer()).build())
+                .movie(movie)
+                .game(game)
+                // .webtoon(webToon)
+                .ref(dto.getRef())
+                .mention(dto.getMention())
+                .build();
+        // 대댓글이면
+        // if (dto.getRef() != null) {
+        // reply.setRef(dto.getRef());
+        // reply.setMention(dto.getMention());
+        // }
         return reply;
     }
 
