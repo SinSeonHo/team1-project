@@ -6,7 +6,7 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "product") // 실제 DB 테이블명이 한글인 경우
+@Table(name = "product")
 public class Product {
 
     @Id
@@ -16,6 +16,9 @@ public class Product {
 
     @Column(name = "badge-name")
     private String badgeName;
+
+    @Column(name = "type") // 🔹 타입 컬럼 추가
+    private String type;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
