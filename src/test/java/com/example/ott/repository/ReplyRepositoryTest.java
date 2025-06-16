@@ -41,7 +41,7 @@ public class ReplyRepositoryTest {
                                 .replyer(userRepository.findById("user2").get())
                                 .movie(movie)
                                 .game(null)
-                                .webtoon(null)
+                                // .webtoon(null)
                                 .text("test3")
                                 .build();
                 replyRepository.save(reply);
@@ -54,7 +54,7 @@ public class ReplyRepositoryTest {
                                 .replyer(User.builder().id("user1").build())
                                 .movie(movie)
                                 .game(null)
-                                .webtoon(null)
+                                // .webtoon(null)
                                 .text("test rereply")
                                 .ref(11l)
                                 .mention("user1")

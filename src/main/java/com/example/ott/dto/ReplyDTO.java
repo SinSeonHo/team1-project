@@ -10,6 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ReplyDTO {
+
     private Long rno;
     private String text;
     private int recommend;
@@ -17,7 +18,7 @@ public class ReplyDTO {
 
     private String mid;
 
-    private Long ref;
+    private Long ref; // 대댓글 id
     private String mention;
 
     private LocalDateTime createdDate;

@@ -19,6 +19,7 @@ import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 
 import com.example.ott.repository.MovieRepository;
+import com.example.ott.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

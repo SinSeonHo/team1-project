@@ -80,8 +80,9 @@ public class ReplyService {
     }
 
     private Reply dtoToEntity(ReplyDTO dto) {
+        log.info("dto 정보 {}", dto);
         Reply reply = Reply.builder()
-                .rno(dto.getRno())
+                // .rno(dto.getRno())
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(Movie.builder().mid(dto.getMid()).build())
