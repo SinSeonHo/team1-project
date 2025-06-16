@@ -17,6 +17,7 @@ public class ReplyDTO {
     // 댓글단 유저 아이디
     private String replyer;
     // 영화 아이디
+
     private String mid;
     // 게임 아이디
     private String gid;

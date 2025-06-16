@@ -32,10 +32,7 @@ public class Movie extends BaseEntity {
 
     @Column(nullable = false)
     private String title; // 영화명
-    // private String actors; // 등장 배우들 하나의 칼럼으로 나열만 할 예정
-    // private String director; // 감독
-
-    private String openDate;
+    private String openDate; // 개봉일
 
     @Column(nullable = false)
     private int rank;
@@ -47,15 +44,18 @@ public class Movie extends BaseEntity {
     @Column(length = 1000)
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Reply> replies = new ArrayList<>(); // 댓글
+    private String genres; // 장르
 
-    @Builder.Default
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Genre> genres = new ArrayList<>();
+    // @Builder.Default
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
+    // 연동예정
+
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Genre> genres = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title;
@@ -75,5 +75,9 @@ public class Movie extends BaseEntity {
 
     public void setActors(String actors) {
         this.actors = actors;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
 }

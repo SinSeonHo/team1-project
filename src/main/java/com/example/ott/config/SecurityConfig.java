@@ -19,12 +19,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable());
 
         // localhost:8080/auth 를 제외한 모든 경로 인증 확인
+        // http
+        // .authorizeHttpRequests(authorize -> authorize
+        // .requestMatchers("/auth").permitAll()
+        // .anyRequest().authenticated());
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // .requestMatchers("/auth")
-                        .anyRequest().permitAll()
-                // .anyRequest().authenticated()
-                );
+                        .anyRequest().permitAll());
 
         // 현재 로그인 페이지는 security 기본 제공, 로그인 성공 시 "localhost:8080/"로 이동
         http

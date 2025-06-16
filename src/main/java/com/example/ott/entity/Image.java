@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString(exclude = "movie")
+@ToString(exclude = { "movie", "game", "webtoon" })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,5 +32,8 @@ public class Image {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Game game;
 
 }

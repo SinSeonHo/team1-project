@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,10 +29,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    // private final ImageRepository imageRepository;
+
+    @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
+    @Transactional
+    public void scheduledMovieImport() {
+        log.info("자동 영화 데이터 수집 시작");
+        importMovies(); // 기존 메서드 호출
+    }
 
     // 영화 등록
     @Transactional
@@ -56,6 +64,7 @@ public class MovieService {
                 .movieCd(dto.getMovieCd())
                 .actors(dto.getActors())
                 .director(dto.getDirector())
+                .genres(dto.getGenres())
                 .build();
 
         movieRepository.save(movie);
@@ -79,7 +88,7 @@ public class MovieService {
 
         String apiUrl1 = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
                 + "?key=4cb94726cef5af841db6efd248a5af76"
-                + "&targetDt=" + "20250606";
+                + "&targetDt=" + formattedDate;
 
         try {
             // RestTemplate 외부 API 요청에 사용됨
@@ -142,6 +151,14 @@ public class MovieService {
                     else
                         actorStr = String.join(", ", actorNames); // "배우1, 배우2, 배우3..."
 
+                    // 장르 정보 추출
+                    JsonNode genres = movieInfo.path("genres");
+                    List<String> genreNames = new ArrayList<>();
+                    for (JsonNode genreNode : genres) {
+                        genreNames.add(genreNode.path("genreNm").asText());
+                    }
+                    String genreStr = genreNames.isEmpty() ? "[장르정보없음]" : String.join(", ", genreNames);
+
                     Optional<Movie> optionalMovie = movieRepository.findByMovieCd(movieCd);
 
                     if (optionalMovie.isPresent()) {
@@ -150,6 +167,7 @@ public class MovieService {
                         existing.setRank(rank);
                         existing.setDirector(directorName);
                         existing.setActors(actorStr);
+                        existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
 
@@ -169,6 +187,7 @@ public class MovieService {
                                 .movieCd(movieCd)
                                 .director(directorName)
                                 .actors(actorStr)
+                                .genres(genreStr)
                                 .build();
 
                         insertMovie(dto);
