@@ -18,9 +18,11 @@ public class ReplyDTO {
     private String replyer;
     // 영화 아이디
     private String mid;
-    // 대댓글이 달린 댓글의 id
+    // 게임 아이디
+    private String gid;
+    // 부모(대댓글이 달린) 댓글의 id
     private Long ref;
-    // 대댓글이 달린 댓글의 유저명
+    // 부모(대댓글이 달린) 댓글의 유저명
     private String mention;
 
     private LocalDateTime createdDate;

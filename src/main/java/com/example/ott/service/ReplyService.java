@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
+import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
 import com.example.ott.repository.MovieRepository;
@@ -69,29 +70,41 @@ public class ReplyService {
                 .mid(reply.getMovie().getMid())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
+                .mention(reply.getMention())
                 .createdDate(reply.getCreatedDate())
                 .updatedDate(reply.getUpdatedDate())
                 .build();
 
         // 멘션이 있으면 추가해줌
         // if (reply.getMention() != null) {
-        dto.setMention(reply.getMention());
+        // dto.setMention(reply.getMention());
         // }
         return dto;
     }
 
     private Reply dtoToEntity(ReplyDTO dto) {
+        Movie movie = null;
+        Game game = null;
+
+        if (dto.getMid() != null) {
+            movie = Movie.builder().mid(dto.getMid()).build();
+        } else if (dto.getGid() != null) {
+            // Game game = Game.builder().gid(dto.getGid()).build();
+        }
         Reply reply = Reply.builder()
                 .rno(dto.getRno())
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
-                .movie(Movie.builder().mid(dto.getMid()).build())
+                .movie(movie)
+                // .game(game)
+                .ref(dto.getRef())
+                .mention(dto.getMention())
                 .build();
         // 대댓글이면
-        if (dto.getRef() != null) {
-            reply.setRef(dto.getRef());
-            reply.setMention(dto.getMention());
-        }
+        // if (dto.getRef() != null) {
+        // reply.setRef(dto.getRef());
+        // reply.setMention(dto.getMention());
+        // }
         return reply;
     }
 }
