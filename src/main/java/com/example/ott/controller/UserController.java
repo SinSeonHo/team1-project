@@ -1,5 +1,8 @@
 package com.example.ott.controller;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -31,7 +34,6 @@ public class UserController {
 
         // 추후 회원가입 페이지 반영
     }
-
     // 회원가입 요청
 
     @PostMapping("/register")
@@ -62,11 +64,11 @@ public class UserController {
     @PostMapping("/modifyUserProfile")
     public String postUserProfile(UserProfileDTO userProfileDTO, RedirectAttributes rttr) {
         userService.updateUserProfile(userProfileDTO);
-        
+
         log.info("변경된 userProfile 정보 {}", userProfileDTO);
         rttr.addAttribute("id", userProfileDTO.getId());
-        
+
         return "redirect:/user/userProfile";
     }
-    
+
 }
