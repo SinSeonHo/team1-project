@@ -1,6 +1,7 @@
 package com.example.ott.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -62,12 +63,11 @@ public class MovieController {
 
     // 하나의 movie 상세정보
     @GetMapping("/read/{mid}")
-    public String getMovieInfo(@PathVariable String mid, PageRequestDTO pageRequestDTO, Model model) {
-        log.info("영화 상세정보 요청(댓글 포함) {}", mid);
-        Movie movie = movieService.getMovie(mid).orElseThrow(() -> new RuntimeException("영화 정보 없음"));
-        List<ReplyDTO> replies = replyService.movieReplies(mid);
-        model.addAttribute("movieInfo", movie);
-        model.addAttribute("replies", replies);
+    public String getMovieInfo(@PathVariable String mid, Model model) {
+        Map<String, Object> data = movieService.getMovie(mid);
+        model.addAttribute("movieInfo", data.get("movie"));
+        model.addAttribute("replies", data.get("replies"));
+        log.info("로그확인 {}", model);
         return "ssh_contents/movieInfo";
     }
 

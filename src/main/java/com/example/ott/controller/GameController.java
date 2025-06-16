@@ -41,7 +41,7 @@ public class GameController {
         // DB에 저장된 전체 게임 목록 조회
         List<Game> gameList = gameService.getGameAll();
         model.addAttribute("games", gameList);
-        return "redirect:/ssh_contents/importGameResult"; // templates/importResult.html 로 포워딩
+        return "ssh_contents/importGameResult"; // templates/importResult.html 로 포워딩
     }
 
     // game 전체 리스트
