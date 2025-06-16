@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling // 스케쥴링을 위한 어노테이션
 public class OttApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(OttApplication.class, args);
 	}

@@ -15,13 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
-
+import com.example.ott.entity.Reply;
+import com.example.ott.entity.Reply;
 import com.example.ott.repository.MovieRepository;
+import com.example.ott.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +37,8 @@ import lombok.extern.log4j.Log4j2;
 public class MovieService {
 
     private final MovieRepository movieRepository;
+    private final ReplyRepository replyRepository;
+    private final ReplyService replyService;
 
     @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -44,7 +50,7 @@ public class MovieService {
     // 영화 등록
     @Transactional
     public String insertMovie(MovieDTO dto) {
-        log.info("영화 등록");
+        log.info("db에 영화 저장");
 
         // 현재 가장 마지막 mid 확인
         String lastId = movieRepository.findLastMovieId();
@@ -205,10 +211,24 @@ public class MovieService {
         }
     }
 
-    // 영화 단건 조회
-    public Optional<Movie> getMovie(String mid) {
-        log.info("영화 한편 조회");
-        return movieRepository.findById(mid);
+    // 영화단건 상세정보 + 해당 영화 댓글리스트 조회
+    // 영화 + 댓글 DTO 리스트 함께 반환
+    public Map<String, Object> getMovie(String mid) {
+        log.info("영화정보 상세조회");
+
+        // 1. 영화 조회
+        Movie movie = movieRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("영화 없음"));
+
+        // 2. 댓글 DTO 리스트 조회
+        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+
+        // 3. Map에 담아서 리턴
+        Map<String, Object> result = new HashMap<>();
+        result.put("movie", movie);
+        result.put("replies", replyDTOList);
+
+        return result;
     }
 
     // 전체 영화 목록 조회

@@ -46,8 +46,8 @@ public class Movie extends BaseEntity {
 
     private String genres; // 장르
 
-    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    // private List<Reply> replies = new ArrayList<>(); // 댓글
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    private List<Reply> replies = new ArrayList<>(); // 댓글
 
     // @Builder.Default
     // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)

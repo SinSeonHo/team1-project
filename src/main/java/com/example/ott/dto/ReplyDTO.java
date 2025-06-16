@@ -5,11 +5,14 @@ import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class ReplyDTO {
+
     private Long rno;
     private String text;
     // 댓글의 추천수 지금은 안씀
@@ -25,6 +28,7 @@ public class ReplyDTO {
     // 부모(대댓글이 달린) 댓글의 id
     private Long ref;
     // 부모(대댓글이 달린) 댓글의 유저명
+
     private String mention;
 
     private LocalDateTime createdDate;
