@@ -106,14 +106,15 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                     .id(email)
                     .email(email)
                     .name(name)
-                    .nickname("default")
+                    .nickname(name)
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)
                     .build();
             userRepository.save(saveUser);
+            System.out.println("saveUser 정보" + userRepository.findById(email));
 
-            return saveUser;
+            return userRepository.findByEmail(email);
         }
 
         return user;

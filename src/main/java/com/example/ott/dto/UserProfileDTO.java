@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import java.time.LocalDateTime;
+
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.UserRole;
 
@@ -31,6 +33,10 @@ public class UserProfileDTO {
     private Long mileage;
 
     private String Genres;
+
+    private LocalDateTime createdDate;
+
+    private LocalDateTime updatedDate;
 
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 }

@@ -1,5 +1,6 @@
 package com.example.ott.security;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,34 +23,47 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     // User Entity 정보
     private SecurityUserDTO securityUserDTO;
+
+    private LocalDateTime createdDate;
+
+    private LocalDateTime updatedDate;
     
     // 소셜 로그인시 해당 소셜에서 제공해주는 모든 정보
     private Map<String, Object> attributes;
 
     // 일반 유저 생성자
     public CustomUserDetails(User user) {
+        this.createdDate = user.getCreatedDate();
+        this.updatedDate = user.getUpdatedDate();
+
         this.securityUserDTO = SecurityUserDTO.builder()
         .id(user.getId())
         .email(user.getEmail())
         .name(user.getName())
-        .nickname(user.getNickname())
         .socials(user.getSocials())
         .userRole(user.getUserRole())
         .build();
+
+        
     }
 
 
     // 소셜 로그인 유저 생성자
     public CustomUserDetails(User user, Map<String, Object> attributes) {
+        System.out.println("Social user 정보 " + user);
         this.securityUserDTO = SecurityUserDTO.builder()
         .id(user.getId())
         .email(user.getEmail())
         .name(user.getName())
-        .nickname(user.getNickname())
+        .createdDate(user.getCreatedDate())
+        .updatedDate(user.getUpdatedDate())
         .socials(user.getSocials())
         .userRole(user.getUserRole())
         .build();
+
         this.attributes = attributes;
+        this.createdDate = user.getCreatedDate();
+        this.updatedDate = user.getUpdatedDate();
     }   
 
     @Override
@@ -70,7 +84,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     // 최초 로그인 판별용
     @Override
     public String getName() {
-        return securityUserDTO.getNickname();
+        return "";
     }
 
     @Override
@@ -80,5 +94,11 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
         return authorities;
     }
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
 
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
 }

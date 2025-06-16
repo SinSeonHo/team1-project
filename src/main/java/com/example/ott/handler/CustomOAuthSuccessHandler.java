@@ -1,6 +1,8 @@
 package com.example.ott.handler;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,14 +18,16 @@ public class CustomOAuthSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
-                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-                boolean isFirstLogin = userDetails.getName().equals("default");
-            
+        // 데이터 생성일과 데이터 변경일이 동일할 경우 계정 최초 로그인으로 인식
+        boolean isFirstLogin = userDetails.getCreatedDate().equals(userDetails.getUpdatedDate());
 
-                if (isFirstLogin) {
-                    response.sendRedirect("/user/updateProfile"); // 최초 로그인일시 프로필 설정으로 이동
-                }
-                response.sendRedirect("/");
+        if (isFirstLogin) {
+            response.sendRedirect("/user/modifyUserProfile" + "?id=" + userDetails.getUsername())        ; // 최초 로그인일시 프로필 설정으로 이동
+        } else {
+            response.sendRedirect("/");
+
+        }
     }
 }

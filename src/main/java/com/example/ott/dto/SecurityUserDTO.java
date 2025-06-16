@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import java.time.LocalDateTime;
+
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.UserRole;
 
@@ -22,8 +24,6 @@ public class SecurityUserDTO {
 
     private String name;
 
-    private String nickname;    
-
     private String email;
 
     private String password;
@@ -31,6 +31,10 @@ public class SecurityUserDTO {
     private UserRole userRole;
 
     private Socials socials;
+
+    private LocalDateTime createdDate;
+
+    private LocalDateTime updatedDate;
 
     // private Struct struct;
 }

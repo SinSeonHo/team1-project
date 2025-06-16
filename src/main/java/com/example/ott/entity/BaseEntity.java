@@ -10,11 +10,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@MappedSuperclass // 테이블과 매핑되지 않고 자식 클래스에 엔티티의 매핑 정보 상속
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @EntityListeners(value = AuditingEntityListener.class)
 public abstract class BaseEntity {
 
