@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ott.entity.User;
 import com.example.ott.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
@@ -17,25 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Log4j2
 @RestController
+@RequiredArgsConstructor
 public class UserDataController {
 
     private final UserRepository userRepository;
 
-    UserDataController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-    @GetMapping("/")
-    public String getTestHome() {
-        return "Home";
-    }
-
-    @GetMapping("/auth")
-    public Authentication getAuth() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-
-        return authentication;
-    }
 
     @GetMapping("/users")
     public List<User> getUsers() {

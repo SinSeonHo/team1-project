@@ -40,12 +40,12 @@ public class SecurityConfig {
                 http
                                 // 일반 로그인
                                 .formLogin(login -> login
-                                                .loginPage("/login")
+                                                .loginPage("/user/login")
                                                 .defaultSuccessUrl("/")
                                                 .permitAll())
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
-                                                .loginPage("/login")
+                                                .loginPage("/user/login")
                                                 .successHandler(new CustomOAuthSuccessHandler())
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));

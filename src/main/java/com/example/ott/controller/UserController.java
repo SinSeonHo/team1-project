@@ -71,4 +71,9 @@ public class UserController {
         return "redirect:/user/userProfile";
     }
 
+    @GetMapping("/login")
+    public void getLogin() {
+    }
+    
+
 }
