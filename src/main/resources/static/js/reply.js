@@ -1,28 +1,53 @@
+// 날짜 포맷 함수
+const formatDate = (str) => {
+  const date = new Date(str);
+  return (
+    date.getFullYear() +
+    "/" +
+    (date.getMonth() + 1) +
+    "/" +
+    date.getDate() +
+    " " +
+    date.getHours() +
+    ":" +
+    date.getMinutes()
+  );
+};
+// 댓글 수
 const replyCnt = document.querySelector("#replyCnt");
-const replyCon = document.querySelector(".reply");
-const reply = document.querySelector(".");
-
-no = 1;
+// 댓글 컨테이너
+const replyCon = document.querySelector(".replyList");
 
 const replyList = () => {
   //리뷰 가져오기
-  axios.get(`/replies/movie/m_1`).then((res) => {
-    console.log(res.data);
+  axios.get(`/replies/movie/${mid}`).then((res) => {
     const data = res.data;
+    // 날짜 내림차순으로 정렬
+    const sorted = data.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
 
     replyCnt.innerHTML = "댓글 " + data.length + "개";
 
+    // 하나씩 출력
     let result = ``;
-    data.forEach((dto) => {
-      result += `<div class="d-flex justify-content-between" data-id="${dto.rno}" >`;
-      result += `   ${no} 이름 : ${dto.replyer}`;
-      result += `   내용 ${dto.text}</div>`;
-      result += `\t${dto.createdDate} </div>`;
+    sorted.forEach((dto) => {
+      if (dto.ref == null) {
+        result += `<div class="reply `;
+      } else {
+        result += `<div class="reply re-reply`;
+      }
+      result += `d-flex justify-content-between" data-id="${dto.rno}" >`;
+      result += `  <h6>${dto.replyer} -  `;
+      result += `<span>${formatDate(dto.createdDate)}</span></h6> 내용 : <p>`;
+
+      if (dto.ref != null) {
+        result += `<b>@${dto.mention}</b> `;
+      }
+      result += ` ${dto.text}</p></div>`;
+
       // 로그인 사용자 == 댓글작성자
       //   if (loginUser == replyer) {
-      //   result += `<div class="mb-2"><button class="btn btn-outline-danger btn-sm">삭제</button></div>`;
-      //   result += `<div><button class="btn btn-outline-success btn-sm">수정</button></div>`;
-      no += 1;
+      result += `<div class="mb-2"><button class="btn btn-outline-danger btn-sm">삭제</button></div>`;
+      result += `<div><button class="btn btn-outline-success btn-sm">수정</button></div>`;
     });
     replyCon.innerHTML = result;
   });
@@ -35,18 +60,17 @@ reply.addEventListener("click", (e) => {
   const btn = e.target;
 
   // rno 가져오기
-  const rno = btn.closest(".review-row").dataset.rno;
-  console.log(rno);
+  const rno = btn.closest(".reply").dataset.rno;
+  console.log(rno + "수정");
   // 리뷰 작성자 가져오기
-  const email = btn.closest(".review-row").dataset.email;
+  const replyerId = btn.closest(".reply").dataset.replyer;
+
   // 삭제 or 수정
   if (btn.classList.contains("btn-outline-danger")) {
     // 삭제
     if (!confirm("정말로 삭제하시겠습니까?")) return;
-
     axios
-      .delete(`/reviews/${mno}/${rno}`, {
-        //data: { email: email },
+      .delete(`/r/${rno}`, {
         headers: {
           //"Content-Type": "application/json",
           "X-CSRF-TOKEN": csrf,
@@ -55,22 +79,22 @@ reply.addEventListener("click", (e) => {
       .then((res) => {
         console.log(res.data);
         //리뷰 다시 불러오기
-        reviewList();
+        replyList();
       });
   } else if (btn.classList.contains("btn-outline-success")) {
     // 수정
     // 리뷰 하나 가져오기
-    axios.get(`/reviews/${mno}/${rno}`).then((res) => {
+    axios.get(`/re/${rno}`).then((res) => {
       console.log(res.data);
       const data = res.data;
 
-      //reviewForm 안에 보여주기
-      reviewForm.rno.value = data.rno;
-      reviewForm.nickname.value = data.nickname;
+      //replyForm 안에 보여주기
+      replyForm.rno.value = data.rno;
+      replyForm.replyer.value = data.replyer;
       // 멤버 아이디
-      reviewForm.mid.value = data.mid;
-      reviewForm.querySelector(".starrr a:nth-child(" + data.grade + ")").click();
-      reviewForm.text.value = data.text;
+      replyForm.mid.value = data.mid;
+      // replyForm.querySelector(".starrr a:nth-child(" + data.grade + ")").click();
+      replyForm.text.value = data.text;
     });
   }
 });

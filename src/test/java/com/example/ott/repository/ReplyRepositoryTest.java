@@ -61,4 +61,10 @@ public class ReplyRepositoryTest {
                                 .build();
                 replyRepository.save(reply);
         }
+
+        @Test
+        void select() {
+                Reply re = replyRepository.findById(42L).get();
+                log.info(re);
+        }
 }

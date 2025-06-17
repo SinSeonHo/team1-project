@@ -8,18 +8,21 @@
   </head>
   <body>
     <p>title</p>
-    <input type="text" th:value="${dto.mid}" readonly />
     <input type="text" th:value="${dto.title}" readonly />
+    <input type="text" th:value="${dto.openDate}" readonly />
+    <input type="text" th:value="${dto.genre}" readonly />
     <div>reply</div>
     <p id="replyCnt"></p>
-    <div class="reply"></div>
-    <form action="" method="post" id="reply">
+    <div class="replyList"></div>
+    <form action="" method="post" id="replyForm">
       <!--input type="hidden" id="mid" th:value="${dto.mid}" />
       <input type="text" id="text" th:value="${dto.text}" />
       <input type="text" id="mention" th:value="${dto.mention}" />
       <input type="hidden" id="replyer" th:value="${dto.replyer}" /-->
     </form>
-
+    <script>
+      const mid = "[[${dto.mid}]]";
+    </script>
     <script th:src="@{/js/reply.js}"></script>
   </body>
 </html>

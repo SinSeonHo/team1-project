@@ -69,6 +69,7 @@ public class ReplyService {
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getName())
                 .mid(reply.getMovie().getMid())
+                .gid(reply.getGame().getGid())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
