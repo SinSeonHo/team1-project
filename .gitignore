@@ -39,3 +39,6 @@ build/
 
 ### draw.io 파일무시 ###
 *.drawio
+
+### application properties 민감정보 ###
+application-oauth.properties
