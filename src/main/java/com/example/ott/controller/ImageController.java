@@ -21,10 +21,9 @@ public class ImageController {
 
     @PostMapping("/upload")
     public ResponseEntity<Image> uploadImage(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "ord", defaultValue = "0") int ord) throws IOException {
-
-        Image image = imageService.uploadImage(file, ord);
+            @RequestParam("file") MultipartFile file) throws IOException {
+        // ord 제거: 기본값 0으로 처리하거나, 서비스에서 설정
+        Image image = imageService.uploadImage(file); // 또는 메서드를 오버로딩해서 ord 없이도 동작하도록 변경
         return ResponseEntity.ok(image);
     }
 
@@ -40,7 +39,7 @@ public class ImageController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedName + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 또는 확장자에 따라 처리
+                .contentType(MediaType.IMAGE_JPEG) // 확장자 따라 변경 필요
                 .body(image);
     }
 }

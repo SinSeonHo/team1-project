@@ -25,5 +25,4 @@ public class Image {
     private String uuid; // 이미지 고유번호
     private String imgName; // 이미지이름
     private String path; // 경로
-    private int ord; // 이미지순서
 }
