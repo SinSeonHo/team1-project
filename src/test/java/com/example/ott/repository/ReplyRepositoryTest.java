@@ -38,11 +38,11 @@ public class ReplyRepositoryTest {
                 Game game = Game.builder().gid("g_1").build();
                 WebToon webtoon = WebToon.builder().wid(1L).build();
                 Reply reply = Reply.builder()
-                                .replyer(userRepository.findById("user2").get())
+                                .replyer(userRepository.findById("user1").get())
                                 .movie(movie)
                                 .game(null)
                                 // .webtoon(null)
-                                .text("test3")
+                                .text("test test")
                                 .build();
                 replyRepository.save(reply);
         }

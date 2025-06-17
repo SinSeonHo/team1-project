@@ -1,27 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>movieInfo</title>
-  </head>
-  <body>
-    <div>
-      <p>movieInfo</p>
-    </div>
-    <div>
-      <p th:text="${movieInfo.mid}"></p>
-      <p th:text="${movieInfo.title}"></p>
-      <p th:text="${movieInfo.genres}"></p>
-    </div>
-    <div>
-      <h2>댓글 목록</h2>
-      <ul>
-        <li th:each="reply : ${replies}">
-          <p th:text="${reply.text}"></p>
-          <!-- <small th:text="${reply.writer}"></small> -->
-        </li>
-      </ul>
-    </div>
-  </body>
+<html layout:decorate="~{layouts/layout}">
+  <main layout:fragment="content">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>movieInfo</title>
+    </head>
+    <body>
+      <div>
+        <p>movieInfo</p>
+      </div>
+      <div>
+        <p th:text="${movieInfo.mid}"></p>
+        <p th:text="${movieInfo.title}"></p>
+        <p th:text="${movieInfo.genres}"></p>
+      </div>
+      <div>
+        <div>
+        <!-- 댓글 -->
+        <div class="col-lg-8">
+          <div class="anime__details__review">
+            <div class="section-title">
+              <h5>Reviews</h5>
+            </div>
+            <!-- 댓글 시작 -->
+            <div th:each="reply : ${replies}" class="anime__review__item">
+              <div class="anime__review__item__pic">
+                <img src="img/anime/review-1.jpg" alt="" />
+              </div>
+              <div class="anime__review__item__text">
+                <h6 th:text="${reply.replyer}">작성자 - <span>1 Hour ago</span></h6>
+                <p th:text="${reply.text}">댓글 텍스트</p>
+              </div>
+            </div>
+          </div>          
+           <!-- 댓글 리스트 끝-->
+          <!-- 댓글 작성 폼 -->
+          <div class="anime__details__form">
+            <div class="section-title">
+              <h5>Your Comment</h5>
+            </div>
+            <form action="#">
+              <textarea placeholder="Your Comment"></textarea>
+              <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+            </form>
+          <!-- 댓글 작성 폼 끝 -->
+          </div>
+        </div>
+      </div>
+
+      <script>
+        const mid = "[[${movieInfo.mid}]]";
+        // 날짜 포맷 함수
+        const formatDate = (str) => {
+          const date = new Date(str);
+          return (
+            date.getFullYear() +
+            "/" +
+            (date.getMonth() + 1) +
+            "/" +
+            date.getDate() +
+            " " +
+            date.getHours() +
+            ":" +
+            date.getMinutes()
+          );
+        };
+      </script>
+      <script th:src="@{/js/reply.js}"></script>
+    </body>
+  </main>
 </html>

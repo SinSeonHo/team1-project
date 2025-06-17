@@ -17,6 +17,8 @@ const formatDate = (str) => {
 const replyCnt = document.querySelector("#replyCnt");
 // 댓글 컨테이너
 const replyCon = document.querySelector(".replyList");
+// 댓글 폼
+const replyForm = document.querySelector(".replyForm");
 
 const replyList = () => {
   //리뷰 가져오기
@@ -33,9 +35,9 @@ const replyList = () => {
       if (dto.ref == null) {
         result += `<div class="reply `;
       } else {
-        result += `<div class="reply re-reply`;
+        result += `<div class="reply re-reply `;
       }
-      result += `d-flex justify-content-between" data-id="${dto.rno}" >`;
+      result += `anime__review__item__text" data-id="${dto.rno}" >`;
       result += `  <h6>${dto.replyer} -  `;
       result += `<span>${formatDate(dto.createdDate)}</span></h6> 내용 : <p>`;
 
@@ -56,7 +58,7 @@ const replyList = () => {
 replyList();
 
 // 리뷰 삭제 및 수정
-reply.addEventListener("click", (e) => {
+replyCon.addEventListener("click", (e) => {
   const btn = e.target;
 
   // rno 가져오기
@@ -98,3 +100,59 @@ reply.addEventListener("click", (e) => {
     });
   }
 });
+
+// 리뷰 등록 및 수정
+if (replyForm) {
+  replyForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const rno = form.rno.value;
+
+    form.grade.value = grade;
+
+    if (rno) {
+      //수정
+      axios
+        .put(`/reviews/${mid}/${rno}`, form, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf,
+          },
+        })
+        .then((res) => {
+          console.log(res.data);
+          alert("리뷰 수정 완료");
+
+          // form 기존 내용 지우기
+          replyForm.rno.value = "";
+          replyForm.mid.value = "";
+          replyForm.replyer.value = "";
+          replyForm.text.value = "";
+          replyForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
+
+          // 수정 내용 반영
+          reviewList();
+        });
+    } else {
+      // 삽입
+      axios
+        .post(`/replies/${mid}`, form, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf,
+          },
+        })
+        .then((res) => {
+          alert(res.data + " 리뷰 등록");
+
+          // form 기존 내용 지우기
+          replyForm.rno.value = "";
+          replyForm.text.value = "";
+
+          // 삽입 내용 반영
+          replyList();
+        });
+    }
+  });
+}

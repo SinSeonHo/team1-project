@@ -64,19 +64,22 @@ public class ReplyService {
     }
 
     private ReplyDTO entityToDto(Reply reply) {
+
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getName())
-                .mid(reply.getMovie().getMid())
-                .gid(reply.getGame().getGid())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(reply.getCreatedDate())
                 .updatedDate(reply.getUpdatedDate())
                 .build();
-
+        if (reply.getMovie() != null) {
+            dto.setMid(reply.getMovie().getMid());
+        } else if (reply.getGame() != null) {
+            dto.setGid(reply.getGame().getGid());
+        }
         // 멘션이 있으면 추가해줌
         // if (reply.getMention() != null) {
         // dto.setMention(reply.getMention());
