@@ -29,7 +29,10 @@ public class SecurityConfig {
 
         // 현재 로그인 페이지는 security 기본 제공, 로그인 성공 시 "localhost:8080/"로 이동
         http
-                .formLogin(login -> login.defaultSuccessUrl("/"));
+                .formLogin(login -> login
+                .defaultSuccessUrl("/")
+                .loginPage("/user/login")
+                .permitAll());
 
         return http.build();
     }
