@@ -20,9 +20,6 @@ public class Product {
     @Column(name = "type") // 🔹 타입 컬럼 추가
     private String type;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<>();
-
     // Getter & Setter
     public Long getId() {
         return id;
