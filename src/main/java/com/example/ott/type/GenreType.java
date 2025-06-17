@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public enum genretype {
+public enum GenreType {
     RPG,
     FPS,
     ADVENTURE,
@@ -24,7 +24,7 @@ public enum genretype {
     SCI_FI,
     DOCUMENTARY;
 
-    public static Set<genretype> enumGenre(String pgenre) {
+    public static Set<GenreType> enumGenre(String pgenre) {
         if (pgenre == null || pgenre.isBlank())
             return Set.of();
 
@@ -32,13 +32,13 @@ public enum genretype {
                 .map(String::toUpperCase)
                 .filter(name -> {
                     try {
-                        genretype.valueOf(name);
+                        GenreType.valueOf(name);
                         return true;
                     } catch (IllegalArgumentException e) {
                         return false;
                     }
                 })
-                .map(genretype::valueOf)
+                .map(GenreType::valueOf)
                 .collect(Collectors.toSet());
 
     }

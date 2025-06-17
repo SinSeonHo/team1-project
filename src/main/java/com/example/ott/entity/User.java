@@ -1,7 +1,14 @@
 package com.example.ott.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -12,24 +19,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @ToString
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 
+@EntityListeners(value = AuditingEntityListener.class)
 @Entity
-@Table(name="user_table")
+@Table(name = "user_table")
 public class User {
-    
-    // TODO : UserCode 생성 기능 추가 필요
+
     @Id
     private String id;
 
-    private String name;
+    @Column(nullable = false)
+    private String name; // 실명
 
-    @Column(nullable = false, unique = true)
+    @Setter
+    @Column(unique = true)
+    private String nickname; // 별명
+
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -38,10 +51,33 @@ public class User {
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.USER;
+    private UserRole userRole = UserRole.GUEST;
+
+    @Setter
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private Socials socials = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
 
     @Builder.Default
+    @Setter
     private Long mileage = 0L;
 
-    // private Struct struct;
+    @Setter
+    private String Genres;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
+
+    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
+
+    // profile, 계정 생성일
+
+    public void changeAccountInfo(String id, String password) {
+        this.id = id;
+        this.password = password;
+    }
 }

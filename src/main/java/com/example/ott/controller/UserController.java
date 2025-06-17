@@ -1,41 +1,74 @@
 package com.example.ott.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.ott.entity.User;
-import com.example.ott.repository.UserRepository;
-import lombok.extern.log4j.Log4j2;
-
-import java.util.List;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+
+import com.example.ott.dto.SecurityUserDTO;
+import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.service.UserService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+@Controller
 
 @Log4j2
-@RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    // 회원가입 페이지 호출
+    @GetMapping("/register")
+    public void getRegister() {
+
+        // 추후 회원가입 페이지 반영
+    }
+    // 회원가입 요청
+
+    @PostMapping("/register")
+    public String postRegister(SecurityUserDTO userDTO, RedirectAttributes rttr) {
+        log.info("회원가입 신청 {}", userDTO);
+        userService.register(userDTO);
+
+        userService.getUser(userDTO.getId());
+        rttr.addAttribute("userId", userDTO.getId());
+        return "redirect:/user/modifyUserProfile";
     }
 
-    @GetMapping("/auth")
-    public Authentication getAuth() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
+    // login page 호출
 
-        return authentication;
+    // login 요청 = 시큐리티가 해준다!
+
+    // 프로필 조회
+    @GetMapping({ "/userProfile", "/modifyUserProfile" })
+    public void getUserProfile(String id, Model model) {
+        UserProfileDTO userProfileDTO = userService.getUserProfile(id);
+        log.info("user Profile 조회 : {}", userProfileDTO);
+        // rttr.addAttribute("userProfileDTO", userProfileDTO);
+        model.addAttribute("userProfileDTO", userProfileDTO);
+
     }
 
-    @GetMapping("/users")
-    public List<User> getUsers() {
+    // 프로필 수정
+    @PostMapping("/modifyUserProfile")
+    public String postUserProfile(UserProfileDTO userProfileDTO, RedirectAttributes rttr) {
+        userService.updateUserProfile(userProfileDTO);
 
-        return userRepository.findAll();
+        log.info("변경된 userProfile 정보 {}", userProfileDTO);
+        rttr.addAttribute("id", userProfileDTO.getId());
+
+        return "redirect:/user/userProfile";
     }
 
 }
