@@ -85,6 +85,7 @@ public class ReplyService {
     }
 
     private Reply dtoToEntity(ReplyDTO dto) {
+
         Movie movie = null;
         Game game = null;
         WebToon webToon = null;
@@ -96,13 +97,14 @@ public class ReplyService {
         } else {
             // webToon = WebToon.builder().wid(dto.getWid()).build();
         }
+
         Reply reply = Reply.builder()
-                .rno(dto.getRno())
+                // .rno(dto.getRno())
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(movie)
                 .game(game)
-                .webtoon(webToon)
+                // .webtoon(webToon)
                 .ref(dto.getRef())
                 .mention(dto.getMention())
                 .build();
@@ -126,7 +128,7 @@ public class ReplyService {
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(movie)
                 .game(game)
-                .webtoon(webToon)
+                // .webtoon(webToon)
                 .ref(dto.getRef())
                 .mention(dto.getMention())
                 .build();

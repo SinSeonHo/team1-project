@@ -24,7 +24,7 @@ import lombok.ToString;
 
 @Entity
 @Getter
-@ToString(exclude = { "game", "webtoon", "movie", "replyer" })
+@ToString(exclude = { "game", "movie", "replyer" })
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(value = AuditingEntityListener.class)
@@ -52,9 +52,9 @@ public class Reply {
     @JoinColumn(name = "gid")
     private Game game;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "wid")
-    private WebToon webtoon;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "wid")
+    // private WebToon webtoon;
 
     // 대상 댓글의 rno
     @Setter

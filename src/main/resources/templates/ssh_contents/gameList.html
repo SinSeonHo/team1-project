@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gameList</title>
+  </head>
+  <body>
+    <div>
+      <p>gameList</p>
+    </div>
+    <!-- api 응답 값 추출 -->
+    <div th:each="game : ${games}">
+      <p th:text="${game.gid}"></p>
+      <p th:text="${game.title}"></p>
+      <p th:text="${game.genres}"></p>
+    </div>
+  </body>
+</html>

@@ -18,6 +18,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     @Query("select r from Reply r where r.game = :game")
     List<Reply> findByGame(Game Game);
 
-    @Query("select r from Reply r where r.webtoon = :webtoon")
-    List<Reply> findByWebToon(WebToon webtoon);
+    // @Query("select r from Reply r where r.webtoon = :webtoon")
+    // List<Reply> findByWebToon(WebToon webtoon);
 }
