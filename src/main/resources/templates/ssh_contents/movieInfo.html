@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layouts/layout}">
-  <main layout:fragment="content">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>movieInfo</title>
     </head>
+  <main layout:fragment="content">
+    <script>
+        const mid = "[[${movieInfo.mid}]]";
+      </script>
     <body>
       <div>
         <p>movieInfo</p>
@@ -21,53 +24,40 @@
         <div class="col-lg-8">
           <div class="anime__details__review">
             <div class="section-title">
-              <h5>Reviews</h5>
+              <h5>댓글</h5>
             </div>
             <!-- 댓글 시작 -->
             <div th:each="reply : ${replies}" class="anime__review__item">
-              <div class="anime__review__item__pic">
+              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're_reply'">
                 <img src="img/anime/review-1.jpg" alt="" />
               </div>
               <div class="anime__review__item__text">
-                <h6 th:text="${reply.replyer}">작성자 - <span>1 Hour ago</span></h6>
-                <p th:text="${reply.text}">댓글 텍스트</p>
+                <h6 th:text="${reply.replyer}">
+                  <span th:text="${reply.createdDate}"></span> 작성자 - 1 Hour ago
+                </h6>
+                <b th:if="${reply.mention}" th:text="${reply.mention}+에게"></b>
+                <p th:text="' ' + ${reply.text}">댓글 텍스트</p>
               </div>
             </div>
-          </div>          
-           <!-- 댓글 리스트 끝-->
+            <!-- 댓글 리스트 끝-->
+          </div>
+          
           <!-- 댓글 작성 폼 -->
           <div class="anime__details__form">
             <div class="section-title">
-              <h5>Your Comment</h5>
+              <h5>댓글 작성</h5>
             </div>
-            <form action="#">
-              <textarea placeholder="Your Comment"></textarea>
-              <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+            <form action="">
+              <input type="hidden" name="mid" th:value="${movieInfo.mid}">
+              <input type="hidden" name="replyer" th:value="user1">
+              <textarea name="text" placeholder="Your Comment"></textarea>
+              <button type="submit">등록</button>
             </form>
           <!-- 댓글 작성 폼 끝 -->
           </div>
         </div>
       </div>
-
-      <script>
-        const mid = "[[${movieInfo.mid}]]";
-        // 날짜 포맷 함수
-        const formatDate = (str) => {
-          const date = new Date(str);
-          return (
-            date.getFullYear() +
-            "/" +
-            (date.getMonth() + 1) +
-            "/" +
-            date.getDate() +
-            " " +
-            date.getHours() +
-            ":" +
-            date.getMinutes()
-          );
-        };
-      </script>
-      <script th:src="@{/js/reply.js}"></script>
+      <!--script th:src="@{/js/reply.js}"></script-->
     </body>
   </main>
 </html>

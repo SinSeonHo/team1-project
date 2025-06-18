@@ -1,5 +1,6 @@
 package com.example.ott.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,8 @@ public class ReplyService {
     }
 
     private ReplyDTO entityToDto(Reply reply) {
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDate = reply.getCreatedDate().format(formatter);
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
@@ -72,7 +74,7 @@ public class ReplyService {
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
-                .createdDate(reply.getCreatedDate())
+                .createdDate(formattedDate)
                 .updatedDate(reply.getUpdatedDate())
                 .build();
         if (reply.getMovie() != null) {

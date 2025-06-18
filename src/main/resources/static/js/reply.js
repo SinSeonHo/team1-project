@@ -16,9 +16,9 @@ const formatDate = (str) => {
 // 댓글 수
 const replyCnt = document.querySelector("#replyCnt");
 // 댓글 컨테이너
-const replyCon = document.querySelector(".replyList");
+const replyCon = document.querySelector(".anime__review__item");
 // 댓글 폼
-const replyForm = document.querySelector(".replyForm");
+const replyForm = document.querySelector(".anime__details__form");
 
 const replyList = () => {
   //리뷰 가져오기
@@ -132,27 +132,44 @@ if (replyForm) {
           replyForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
 
           // 수정 내용 반영
-          reviewList();
+          // reviewList();
         });
     } else {
       // 삽입
-      axios
-        .post(`/replies/${mid}`, form, {
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": csrf,
-          },
-        })
-        .then((res) => {
-          alert(res.data + " 리뷰 등록");
+      // axios
+      //   .post(`/replies/movie/${mid}`, form, {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       "X-CSRF-TOKEN": csrf,
+      //     },
+      //   })
+      //   .then((res) => {
+      //     alert(res.data + " 리뷰 등록");
 
-          // form 기존 내용 지우기
-          replyForm.rno.value = "";
-          replyForm.text.value = "";
+      // form 기존 내용 지우기
+      replyForm.rno.value = "";
+      replyForm.text.value = "";
 
-          // 삽입 내용 반영
-          replyList();
-        });
+      // 삽입 내용 반영
+      // replyList();
+      // anime-review div 생성
+      const animeReviewDiv = document.createElement("div");
+      animeReviewDiv.className = "anime__review__item";
+      animeReviewDiv.innerHTML = `<div class="anime__review__item__pic" th:classappend="${
+        reply.ref != null
+      } ? 're_reply'">
+                <img src="img/anime/review-1.jpg" alt="" />
+              </div>`;
+
+      // review-item 클래스 중 마지막 요소 찾기
+      const reviewItems = document.querySelectorAll(".anime__review__item");
+      const lastReviewItem = reviewItems[reviewItems.length - 1];
+
+      // 마지막 review-item 뒤에 삽입
+      if (lastReviewItem && lastReviewItem.parentNode) {
+        lastReviewItem.parentNode.insertBefore(animeReviewDiv, lastReviewItem.nextSibling);
+      }
+      // });
     }
   });
 }
