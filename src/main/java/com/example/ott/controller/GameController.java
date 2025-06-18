@@ -41,7 +41,7 @@ public class GameController {
         // DB에 저장된 전체 게임 목록 조회
         List<Game> gameList = gameService.getGameAll();
         model.addAttribute("games", gameList);
-        return "ssh_contents/importGameResult"; // templates/importResult.html 로 포워딩
+        return "ott_contents/importGameResult"; // templates/importResult.html 로 포워딩
     }
 
     // game 전체 리스트
@@ -50,7 +50,7 @@ public class GameController {
         log.info("gameList 요청 {}", pageRequestDTO);
         List<Game> list = gameService.getGameAll();
         model.addAttribute("games", list);
-        return "ssh_contents/gameList";
+        return "ott_contents/gameList";
     }
 
     // 하나의 game 상세정보
@@ -59,7 +59,7 @@ public class GameController {
         log.info("영화 상세정보 요청 {}", gid);
         Game game = gameService.getGame(gid).orElseThrow(() -> new RuntimeException("게임 정보 없음"));
         model.addAttribute("gameInfo", game);
-        return "ssh_contents/gameInfo";
+        return "ott_contents/gameInfo";
     }
 
 }

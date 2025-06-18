@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>movieInfo</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <section class="hero">
+        <div class="container">
+          <div class="hero__slider owl-carousel owl-loaded">
+            <div class="hero__items set-bg" style="background-image: url('/img/sample.png')">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="hero__text">
+                    <div class="label">Adventure</div>
+                    <h2>Fate / Stay Night: Unlimited Blade Works</h2>
+                    <p>After 30 days of travel across the world...</p>
+                    <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- .hero__items -->
+          </div>
+          <!-- .hero__slider -->
+        </div>
+        <!-- .container -->
+      </section>
+
+      <h2>movieInfo</h2>
+      <h5>
+        <p th:text="${movieInfo.title}"></p>
+      </h5>
+      <p th:text="${movieInfo.mid}"></p>
+      <p th:text="${movieInfo.title}"></p>
+      <p th:text="${movieInfo.genres}"></p>
+
+      <h2>댓글 목록</h2>
+      <ul>
+        <li th:each="reply : ${replies}">
+          <p th:text="${reply.text}"></p>
+          <p th:text="${reply.replyer}"></p>
+        </li>
+      </ul>
+    </div>
+    <!-- layout:fragment="content" 닫기 -->
+  </body>
+</html>

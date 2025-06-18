@@ -10,8 +10,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,10 +51,9 @@ public class Movie extends BaseEntity {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    // @Builder.Default
-    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
-    // 연동예정
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
+    private Image image;
 
     // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>();

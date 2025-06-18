@@ -46,10 +46,10 @@ public class MovieController {
             model.addAttribute("message", "에러 발생: " + e.getMessage());
         }
 
-        // DB에 저장된 전체 게임 목록 조회
+        // DB에 저장된 전체 영화 목록 조회
         List<Movie> movieList = movieService.getMovieAll();
         model.addAttribute("movies", movieList);
-        return "ssh_contents/importMovieResult"; // templates/importMovieResult.html 로 포워딩
+        return "ott_contents/importMovieResult"; // templates/importMovieResult.html 로 포워딩
     }
 
     // movie 전체 리스트
@@ -58,7 +58,7 @@ public class MovieController {
         log.info("movieList 요청 {}", pageRequestDTO);
         List<Movie> list = movieService.getMovieAll();
         model.addAttribute("movies", list);
-        return "ssh_contents/movieList";
+        return "ott_contents/movieList";
     }
 
     // 하나의 movie 상세정보
@@ -68,7 +68,7 @@ public class MovieController {
         model.addAttribute("movieInfo", data.get("movie"));
         model.addAttribute("replies", data.get("replies"));
         log.info("로그확인 {}", model);
-        return "ssh_contents/movieInfo";
+        return "ott_contents/movieInfo";
     }
 
 }

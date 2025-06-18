@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <!-- <html> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block layout:fragment="css">
+      <!-- 개별 페이지 css 작성 -->
+      <style>
+        .trending__product {
+          padding: 0 10%;
+        }
+      </style>
+    </th:block>
+    <th:block layout:fragment="title">
+      <title>MovieList</title>
+    </th:block>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="trending__product">
+        <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="section-title">
+              <h4>영화리스트</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="btn__all">
+              <!-- <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a> -->
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
+            <div class="product__item">
+              <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
+                <!-- <div class="ep">18 / 18</div> -->
+                <!-- 추후 평점위치 <div class="comment"><i class="fa fa-comments"></i> 11</div> -->
+                <!-- 추후 댓글갯수위치 <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
+              </div>
+              <div class="product__item__text">
+                <ul>
+                  <!-- <li th:text="${movie.title}"></li> -->
+                  <li th:text="${movie.genres}"></li>
+                </ul>
+                <h5>
+                  <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}"></a>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- api 응답 값 추출 -->
+      <div th:each="movie : ${movies}">
+        <p th:text="${movie.mid}"></p>
+        <p th:text="${movie.title}"></p>
+        <p th:text="${movie.genres}"></p>
+      </div>
+    </div>
+
+    <th:block layout:fragment="script">
+      <!-- 개별 페이지 script 작성 -->
+      <script>
+        //
+      </script>
+    </th:block>
+  </body>
+</html>

@@ -3,8 +3,10 @@ package com.example.ott.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
@@ -30,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final ReplyService replyService;
 
     @Scheduled(cron = "0 01 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -40,7 +44,7 @@ public class GameService {
 
     // 게임 등록
     public String insertGame(GameDTO dto) {
-        log.info("게임 등록");
+        log.info("db에 게임 저장");
 
         // 현재 가장 마지막 gid 확인
         String lastId = gameRepository.findLastGameId();
@@ -187,10 +191,29 @@ public class GameService {
         }
     }
 
-    // 게임 단건 조회
+    // 게임단건 상세정보 + 해당 게임 댓글리스트 조회
+    // 게임 + 댓글 DTO 리스트 함께 반환
     public Optional<Game> getGame(String gid) {
         return gameRepository.findById(gid);
     }
+
+    // public Map<String, Object> getGame2(String gid) {
+    // log.info("영화정보 상세조회");
+
+    // // 1. 게임 조회
+    // Game game = gameRepository.findById(gid)
+    // .orElseThrow(() -> new RuntimeException("영화 없음"));
+
+    // // 2. 댓글 DTO 리스트 조회
+    // List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
+
+    // // 3. Map에 담아서 리턴
+    // Map<String, Object> result = new HashMap<>();
+    // result.put("game", game);
+    // result.put("replies", replyDTOList);
+
+    // return result;
+    // }
 
     // 전체 게임 목록 조회
     public List<Game> getGameAll() {
