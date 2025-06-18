@@ -45,8 +45,8 @@ public class Game extends BaseEntity {
     private String genres; // 장르
 
     // @Builder.Default
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    // private List<Reply> replies = new ArrayList<>(); // 댓글
+    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    private List<Reply> replies = new ArrayList<>(); // 댓글
 
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)

@@ -15,6 +15,7 @@ import com.example.ott.entity.Reply;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -60,7 +61,10 @@ public class ReplyService {
         return entityToDto(replyRepository.save(reply));
     }
 
+    @Transactional
     public void deleteReply(Long id) {
+        List<Reply> list = replyRepository.findByRef(id);
+        list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
         replyRepository.deleteById(id);
     }
 

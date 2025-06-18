@@ -16,9 +16,56 @@ const formatDate = (str) => {
 // 댓글 수
 const replyCnt = document.querySelector("#replyCnt");
 // 댓글 컨테이너
-const replyCon = document.querySelector(".anime__review__item");
+const replyCon = document.querySelectorAll(".anime__review__item");
 // 댓글 폼
 const replyForm = document.querySelector(".anime__details__form");
+
+document.addEventListener("DOMContentLoaded", function () {
+  // 댓글 작성
+  const replyForm = document.getElementById("anime__details__form");
+
+  replyForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(replyForm);
+    const data = {
+      mid: formData.get("mid"),
+      replyer: formData.get("replyer"),
+      text: formData.get("text"),
+    };
+
+    axios
+      .post(`/replies/movie/new`, data)
+      .then((res) => {
+        alert("댓글이 등록되었습니다.");
+        location.reload(); // 또는 동적으로 추가
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("댓글 등록 실패");
+      });
+  });
+
+  // 댓글 삭제
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const rno = this.getAttribute("data-id");
+
+      if (!confirm("정말 삭제하시겠습니까?")) return;
+
+      axios
+        .delete(`/replies/movie/${rno}`)
+        .then((res) => {
+          alert("댓글이 삭제되었습니다.");
+          location.reload(); // 또는 DOM에서 제거
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("댓글 삭제 실패");
+        });
+    });
+  });
+});
 
 const replyList = () => {
   //리뷰 가져오기
@@ -51,14 +98,16 @@ const replyList = () => {
       result += `<div class="mb-2"><button class="btn btn-outline-danger btn-sm">삭제</button></div>`;
       result += `<div><button class="btn btn-outline-success btn-sm">수정</button></div>`;
     });
-    replyCon.innerHTML = result;
+    // replyCon.innerHTML = result;
   });
 };
 
 replyList();
+console.log("js");
 
 // 리뷰 삭제 및 수정
 replyCon.addEventListener("click", (e) => {
+  e.preventDefault();
   const btn = e.target;
 
   // rno 가져오기
@@ -70,11 +119,11 @@ replyCon.addEventListener("click", (e) => {
   // 삭제 or 수정
   if (btn.classList.contains("btn-outline-danger")) {
     // 삭제
-    if (!confirm("정말로 삭제하시겠습니까?")) return;
+    if (!confirm("대댓글까지 삭제됩니다. 정말로 삭제하시겠습니까?")) return;
     axios
-      .delete(`/r/${rno}`, {
+      .delete(`/replies/movie/${rno}`, {
         headers: {
-          //"Content-Type": "application/json",
+          "Content-Type": "application/json",
           "X-CSRF-TOKEN": csrf,
         },
       })
@@ -83,7 +132,7 @@ replyCon.addEventListener("click", (e) => {
         //리뷰 다시 불러오기
         replyList();
       });
-  } else if (btn.classList.contains("btn-outline-success")) {
+  } else if (btn.classList.contains("btn-insert")) {
     // 수정
     // 리뷰 하나 가져오기
     axios.get(`/re/${rno}`).then((res) => {
@@ -114,7 +163,7 @@ if (replyForm) {
     if (rno) {
       //수정
       axios
-        .put(`/reviews/${mid}/${rno}`, form, {
+        .put(`/reviews/movie/update`, form, {
           headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": csrf,
@@ -132,44 +181,45 @@ if (replyForm) {
           replyForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
 
           // 수정 내용 반영
-          // reviewList();
+          replyList();
         });
     } else {
       // 삽입
-      // axios
-      //   .post(`/replies/movie/${mid}`, form, {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "X-CSRF-TOKEN": csrf,
-      //     },
-      //   })
-      //   .then((res) => {
-      //     alert(res.data + " 리뷰 등록");
+      axios
+        .post(`/replies/movie/${mid}`, form, {
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrf,
+          },
+        })
+        .then((res) => {
+          alert(res.data + " 리뷰 등록");
 
-      // form 기존 내용 지우기
-      replyForm.rno.value = "";
-      replyForm.text.value = "";
+          // form 기존 내용 지우기
+          replyForm.rno.value = "";
+          replyForm.text.value = "";
 
-      // 삽입 내용 반영
-      // replyList();
-      // anime-review div 생성
-      const animeReviewDiv = document.createElement("div");
-      animeReviewDiv.className = "anime__review__item";
-      animeReviewDiv.innerHTML = `<div class="anime__review__item__pic" th:classappend="${
-        reply.ref != null
-      } ? 're_reply'">
+          // 삽입 내용 반영
+          // replyList();
+          // anime-review div 생성
+          const animeReviewDiv = document.createElement("div");
+          animeReviewDiv.className = "anime__review__item__text";
+          animeReviewDiv.innerHTML = `<div class="anime__review__item__pic" th:classappend="${
+            reply.ref != null
+          } ? 're-reply'">
                 <img src="img/anime/review-1.jpg" alt="" />
               </div>`;
+          animeReviewDiv.innerHTML += `</div>`;
 
-      // review-item 클래스 중 마지막 요소 찾기
-      const reviewItems = document.querySelectorAll(".anime__review__item");
-      const lastReviewItem = reviewItems[reviewItems.length - 1];
+          // review-item 클래스 중 마지막 요소 찾기
+          const reviewItems = document.querySelectorAll(".anime__review__item");
+          const lastReviewItem = reviewItems[reviewItems.length - 1];
 
-      // 마지막 review-item 뒤에 삽입
-      if (lastReviewItem && lastReviewItem.parentNode) {
-        lastReviewItem.parentNode.insertBefore(animeReviewDiv, lastReviewItem.nextSibling);
-      }
-      // });
+          // 마지막 review-item 뒤에 삽입
+          if (lastReviewItem && lastReviewItem.parentNode) {
+            lastReviewItem.parentNode.insertBefore(animeReviewDiv, lastReviewItem.nextSibling);
+          }
+        });
     }
   });
 }

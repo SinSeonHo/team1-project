@@ -37,7 +37,6 @@ import lombok.extern.log4j.Log4j2;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    private final ReplyRepository replyRepository;
     private final ReplyService replyService;
 
     @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieInfo</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <section class="hero">
+        <div class="container">
+          <div class="col-lg-6">
+            <div class="anime__details__text">
+              <div class="anime__details__title">
+                <h3 th:text="${movieInfo.title}"></h3>
+                <p th:text="${movieInfo.genres}"></p>
+              </div>
+            </div>
+            <div class="hero__slider owl-carousel owl-loaded">
+              <div class="hero__items set-bg" style="background-image: url('/img/sample.png')">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="hero__text">
+                      <div class="label">Adventure</div>
+
+                      <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- .hero__items -->
+            </div>
+            <!-- .hero__slider -->
+          </div>
+        </div>
+        <!-- .container -->
+      </section>
+
+      <div class="col-lg-6">
+        <div class="anime__details__review">
+          <div class="section-title">
+            <h5 id="replyCnt"></h5>
+          </div>
+          <!-- 댓글 시작 -->
+          <div th:each="reply : ${replies}" class="anime__review__item">
+            <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
+              <img src="img/anime/review-1.jpg" alt="" />
+            </div>
+            <div class="anime__review__item__text" data-id="${reply.rno}">
+              <h6 th:text="${reply.replyer}"><span th:text="${reply.createdDate}"></span> 작성자 - 1 Hour ago</h6>
+              <p th:if="${reply.mention}" th:text="${reply.mention}+에게"></p>
+              <p th:text="${reply.text}">댓글 텍스트</p>
+              <button type="button" class="btn delete-btn btn-outline-danger" th:data-id="${reply.rno}">x</button>
+            </div>
+          </div>
+          <!-- 댓글 리스트 끝-->
+        </div>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="anime__details__form">
+          <div class="section-title">
+            <h5>댓글 작성</h5>
+          </div>
+          <form id="replyForm" method="post">
+            <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
+            <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+            <input type="hidden" name="replyer" th:value="user1" />
+            <textarea name="text" placeholder="Your Comment"></textarea>
+            <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+          </form>
+        </div>
+        <!-- 댓글 작성 폼 끝 -->
+      </div>
+
+      <script>
+        const mid = "[[${movieInfo.mid}]]";
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script th:src="@{/js/reply.js}"></script>
+    </div>
+    <!-- layout:fragment="content" 닫기 -->
+  </body>
+</html>
