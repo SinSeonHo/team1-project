@@ -30,6 +30,8 @@ public class Movie {
     private String director; // 감독
     private String story; // 줄거리
 
+
+    private String genres;
     // @Builder.Default
     // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     // private List<Image> img; // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정

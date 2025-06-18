@@ -34,6 +34,8 @@ public class Game {
     private String platform; // 플랫폼
     private int price; // 가격
 
+
+    private String genres;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Image> img; // 이미지 리스트로 관리필요 추후 이미지 작성 후 연동예정
