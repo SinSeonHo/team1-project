@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
-import com.example.ott.entity.WebToon;
 
 import java.util.List;
 

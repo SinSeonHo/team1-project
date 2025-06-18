@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,16 +15,13 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.ReplyDTO;
-import com.example.ott.entity.Image;
+
 import com.example.ott.entity.Movie;
-import com.example.ott.entity.Reply;
-import com.example.ott.entity.Reply;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    private final ReplyRepository replyRepository;
+    // private final ReplyRepository replyRepository;
     private final ReplyService replyService;
 
     @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
