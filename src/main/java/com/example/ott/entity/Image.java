@@ -19,12 +19,15 @@ public class Image {
     private String imgName; // 이미지 이름
     private String path; // 경로
 
-    @OneToOne(mappedBy = "image")
+    @ManyToOne
+    @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    @OneToOne(mappedBy = "image")
+    @ManyToOne
+    @JoinColumn(name = "game_id")
     private Game game;
 
-    @OneToOne(mappedBy = "image")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

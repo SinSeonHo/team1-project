@@ -76,7 +76,7 @@ public class ImageService {
      * 
      * @param filename 저장된 파일명 (예: 2025-06-11/uuid.jpg)
      * @return Resource
-     */
+     **/
     public Resource getImageFile(String filename) {
         Path filePath = Paths.get(baseDir).resolve(filename);
         if (!Files.exists(filePath) || !Files.isReadable(filePath)) {
