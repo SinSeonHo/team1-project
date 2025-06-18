@@ -24,7 +24,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
-    @Value("${upload.base-dir}")
+    @Value("${upload}")
     private String baseDir;
 
     /**
@@ -34,10 +34,6 @@ public class ImageService {
      * @return 저장된 Image
      * @throws IOException 파일 저장 실패 시
      */
-
-    public Image uploadAndSave(MultipartFile file, Long movieId) throws IOException {
-        return uploadAndSave(file, movieId);
-    }
 
     public Image uploadImage(MultipartFile file) throws IOException {
         // 1. 파일명 확인

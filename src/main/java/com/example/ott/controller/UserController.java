@@ -38,4 +38,8 @@ public class UserController {
         return userRepository.findAll();
     }
 
+    @GetMapping("/myprofile")
+    public String myPage() {
+        return "myprofile"; // templates/mypage.html
+    }
 }
