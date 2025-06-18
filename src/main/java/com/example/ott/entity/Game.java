@@ -10,7 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +46,9 @@ public class Game extends BaseEntity {
 
     private String genres; // 장르
 
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Reply> replies = new ArrayList<>(); // 댓글
@@ -76,4 +81,5 @@ public class Game extends BaseEntity {
     public void setGenres(String genres) {
         this.genres = genres;
     }
+
 }

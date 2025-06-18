@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,14 +22,18 @@ import lombok.ToString;
 @Builder
 
 @Entity
-@Table(name="user_table")
+@Table(name = "user_table")
 public class User {
-    
+
     // TODO : UserCode 생성 기능 추가 필요
     @Id
     private String id;
 
     private String name;
+
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
     @Column(nullable = false, unique = true)
     private String email;

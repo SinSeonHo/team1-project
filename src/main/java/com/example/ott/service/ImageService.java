@@ -24,7 +24,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
-    @Value("${upload}")
+    @Value("${upload.base-dir}")
     private String baseDir;
 
     /**
