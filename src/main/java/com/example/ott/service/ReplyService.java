@@ -1,7 +1,11 @@
 package com.example.ott.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -48,7 +52,8 @@ public class ReplyService {
     public List<ReplyDTO> movieReplies(String mid) {
         Movie movie = movieRepository.findById(mid).get();
         List<Reply> list = replyRepository.findByMovie(movie);
-        List<ReplyDTO> result = list.stream().map(reply -> entityToDto(reply))
+        List<Reply> sortedReplies = sortRepliesWithChildren(list);
+        List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
         return result;
     }
@@ -147,6 +152,48 @@ public class ReplyService {
         // reply.setMention(dto.getMention());
         // }
         return reply;
+    }
+
+    public List<Reply> sortRepliesWithChildren(List<Reply> allReplies) {
+        // Map<부모 ID, List<자식 댓글>>
+        Map<Long, List<Reply>> childrenMap = new HashMap<>();
+        List<Reply> topLevel = new ArrayList<>();
+
+        // 댓글 분류: 최상위 vs 자식 댓글
+        for (Reply reply : allReplies) {
+            if (reply.getRef() == null) {
+                topLevel.add(reply);
+            } else {
+                childrenMap
+                        .computeIfAbsent(reply.getRef(), k -> new ArrayList<>())
+                        .add(reply);
+            }
+        }
+
+        // 날짜 순 정렬
+        Comparator<Reply> byDate = Comparator.comparing(Reply::getCreatedDate);
+        topLevel.sort(byDate);
+        for (List<Reply> list : childrenMap.values()) {
+            list.sort(byDate);
+        }
+
+        // 재귀적으로 계층을 평탄화
+        List<Reply> sortedReplies = new ArrayList<>();
+        for (Reply parent : topLevel) {
+            addWithChildren(parent, childrenMap, sortedReplies);
+        }
+
+        return sortedReplies;
+    }
+
+    private void addWithChildren(Reply parent, Map<Long, List<Reply>> childrenMap, List<Reply> result) {
+        result.add(parent);
+        List<Reply> children = childrenMap.get(parent.getRno());
+        if (children != null) {
+            for (Reply child : children) {
+                addWithChildren(child, childrenMap, result); // 재귀: 자식의 자식까지 정렬
+            }
+        }
     }
 
 }
