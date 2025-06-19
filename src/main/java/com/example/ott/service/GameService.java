@@ -123,7 +123,7 @@ public class GameService {
                     Optional<Game> optionalGame = gameRepository.findByAppid(appid);
 
                     if (optionalGame.isPresent()) {
-                        // ✔ update: rank, price만 수정
+                        // update: rank, price만 수정
                         Game existing = optionalGame.get();
                         existing.setRank(rank);
 
@@ -139,7 +139,7 @@ public class GameService {
                         gameRepository.save(existing);
 
                     } else {
-                        // ✔ insert: gid, appid, title, developer, rank, ccu, price, platform 저장
+                        // insert: gid, appid, title, developer, rank, ccu, price, platform 저장
 
                         String lastId = gameRepository.findLastGameId();
                         int nextIdNum = 1;

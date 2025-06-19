@@ -53,18 +53,15 @@
         </div>
       </div>
       <!-- api 응답 값 추출 -->
-      <div th:each="movie : ${movies}">
+      <!-- <div th:each="movie : ${movies}">
         <p th:text="${movie.mid}"></p>
         <p th:text="${movie.title}"></p>
         <p th:text="${movie.genres}"></p>
-      </div>
+      </div> -->
     </div>
 
     <th:block layout:fragment="script">
       <!-- 개별 페이지 script 작성 -->
-      <script>
-        //
-      </script>
     </th:block>
   </body>
 </html>
