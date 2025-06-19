@@ -57,9 +57,13 @@
     />
     <link rel="stylesheet" th:href="@{/css/slicknav.min.css}" type="text/css" />
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css" />
+    
+    <th:block layout:fragment="css"></th:block>
   </head>
   <body>
-    <div th:replace="./fragments/header::header"></div>
+    <div th:replace="~{fragments/header::header}"></div>
     <main th:layout:fragment="content"></main>
+
+    <th:block layout:fragment="script"></th:block>
   </body>
 </html>

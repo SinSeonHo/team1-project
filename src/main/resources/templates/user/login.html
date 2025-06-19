@@ -1,106 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+  </th:block>
   <main layout:fragment="content">
-    <div class="container text-center mt-3" style="max-width: 340px; background: #dbe2ef;">
-      <div class="row justify-content-center mt-5 pt-2">
-        <h2 class="row mb-3 text-light justify-content-center w-100">로그인</h2>
-        <div class="col-12">
-          <form action="#">
-            <input
-              type="text"
-              class="form-control mb-3 w-100"
-              placeholder="아이디 입력"
+    
+<div class="login-block container d-block">
+  <!-- Heading -->
+  <h1 class="title text-center fw-bold mt-3">로그인</h1>
+  
+  <!-- Links -->
+  <ul class="links d-flex w-100 list-unstyled my-4">
+    <li class="link d-inline text-center mr-5 active" id="loginTab">
+      <span id="signin"><strong>로그인</strong></span>
+    </li>
+    <li class="link d-inline text-center mr-4" id="registerTab">
+      <span id="signup"><strong>회원가입</strong></span>
+    </li>
+    <li class="link d-inline ms-auto text-center ">
+      <span id="reset"><strong>초기화</strong></span>
+    </li>
+  </ul>
 
-            />
-
-            <input
-              type="text"
-              class="form-control mb-3 w-100"
-              placeholder="비밀번호 입력"
-            />
-
-            <button type="submit" class="site-btn">로그인</button>
-          </form>
-          <a href="#" class="forget_pass">Forgot Your Password?</a>
-        </div>
-      </div>
-
-      <div
-        class="d-flex flex-column gap-2 row"
-        style="margin: 0 auto"
-      >
+  
+  <!-- Form display-none이 적용 안됨. 기존에 존재하던 css 파일이 덮어쓰는 확률 무시 못함 -->
+  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column d-none">
+       <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="username" name="username"/>
+       <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" id="password" name="password"/>
+       <input type="password" placeholder="Repeat password" class="form-control-lg mb-3" name=""/>
+    <!-- sign in button -->
+    <button class="site-btn w-100 mt-1">
+      로그인
+    </button>
+  </form >
+  <!-- separator -->
+  <div class="separator w-100">
+    <p class="w-100" style="color: white;">OR</p>
+  </div>
         <!-- Google -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #fff;
-            color: #444;
-            border: 1px solid #ddd;
-            font-weight: 600;
-            border-radius: 6px;
-          "
-        >
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="구글로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>Google로 로그인</span>
+        <button id="google-login" class="social-login-btn google-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/googleSquare.png}" alt="구글로고" class="social-login-img"/>
+          <span class="social-login-text">구글로 로그인</span>
         </button>
-
         <!-- Kakao -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #fee500;
-            color: #3c1e1e;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-          "
-        >
-          <img
-            src="https://cdn.jsdelivr.net/gh/basskung/kakaologin/assets/kakao_icon.png"
-            alt="카카오로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>카카오로 로그인</span>
+        <button id="kakao-login" class="social-login-btn kakao-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/kakaoSquareReal.png}" alt="카카오로고" class="social-login-img"/>
+          <span class="social-login-text">카카오로 로그인</span>
         </button>
-
         <!-- Naver -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #03c75a;
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-          "
-        >
-          <img
-            th:src="@{/social/naverSquare.png}"
-            alt="네이버로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>네이버로 로그인</span>
+        <button id="naver-login" class="social-login-btn naver-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/naverSquare.png}" alt="네이버로고" class="social-login-img"/>
+          <span class="social-login-text">네이버로 로그인</span>
         </button>
-      </div>
-    </div>
+      
+</div>
+
+    
+    <th:block layout:fragment="script">
+      <script th:src="@{/js/login.js}"></script>
+    </th:block>
   </main>
 </html>
