@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
+    List<Reply> findByRef(Long ref);
+
     @Query("select r from Reply r where r.movie = :movie")
     List<Reply> findByMovie(Movie movie);
 

@@ -31,6 +31,6 @@ public class ReplyDTO {
 
     private String mention;
 
-    private LocalDateTime createdDate;
+    private String createdDate;
     private LocalDateTime updatedDate;
 }
