@@ -38,6 +38,23 @@ body {
   -webkit-font-smoothing: antialiased;
   background: #0b0c2a;
 }
+/* 컨텐츠 상세정보창 경로 텍스트색상 */
+.col-lg-12 a {
+  color: #ffffff;
+}
+
+/* .col-lg-6  {
+  
+} */
+/* gameInfo 상세페이지 게임정보리스트 양쪽으로 나누기 */
+ul.list-unstyled li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+ul.list-unstyled li span:first-child {
+  font-weight: 600;
+  margin-right: 8px;
+}
 
 h1,
 h2,
@@ -947,12 +964,31 @@ ol {
   Anime Details
 -----------------------*/
 
+.gradient-bg {
+  background: linear-gradient(to right, rgb(18, 20, 51), rgb(16, 17, 73), rgb(18, 20, 51));
+  color: white;
+  border-radius: 12px;
+  padding-left: 5%;
+  padding-right: 5%;
+  /* max-width: 70%; */
+  margin: 0 auto;
+}
+
+.center-line {
+  height: 1px;
+  background-color: white;
+  width: 100%;
+  margin: 20px 0; /* 위아래 여백 */
+}
+
 .anime-details {
   padding-top: 60px;
 }
 
 .anime__details__content {
   margin-bottom: 65px;
+
+  /* background-color: red; */
 }
 
 .anime__details__text {
@@ -1006,7 +1042,7 @@ ol {
 }
 
 .anime__details__title span {
-  font-size: 15px;
+  font-size: 16.5px;
   color: #b7b7b7;
   display: block;
 }

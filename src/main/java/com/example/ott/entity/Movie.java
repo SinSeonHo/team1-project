@@ -37,7 +37,7 @@ public class Movie extends BaseEntity {
     private String openDate; // 개봉일
 
     @Column(nullable = false)
-    private int rank;
+    private int rank; // 순위
 
     @Column(unique = true)
     private String movieCd; // KOBIS 고유 코드
@@ -47,6 +47,11 @@ public class Movie extends BaseEntity {
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
     private String genres; // 장르
+    private int showTm; // 상영시간
+    private String nationNm; // 제작국가
+    private String gradeNm; // 이용등급
+    @Column(length = 3000)
+    private String synopsis; // 줄거리
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>(); // 댓글
@@ -54,9 +59,6 @@ public class Movie extends BaseEntity {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
     private Image image;
-
-    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    // private List<Genre> genres = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title;
@@ -80,5 +82,9 @@ public class Movie extends BaseEntity {
 
     public void setGenres(String genres) {
         this.genres = genres;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
     }
 }

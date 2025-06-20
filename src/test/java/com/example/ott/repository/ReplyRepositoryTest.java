@@ -40,7 +40,7 @@ public class ReplyRepositoryTest {
                 Reply reply = Reply.builder()
                                 .replyer(userRepository.findById("user1").get())
                                 .movie(movie)
-                                .game(null)
+                                .game(game)
                                 // .webtoon(null)
                                 .text("test test")
                                 .build();

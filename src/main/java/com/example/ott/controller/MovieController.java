@@ -65,10 +65,26 @@ public class MovieController {
     @GetMapping("/read/{mid}")
     public String getMovieInfo(@PathVariable String mid, Model model) {
         Map<String, Object> data = movieService.getMovie(mid);
-        model.addAttribute("movieInfo", data.get("movie"));
+        Movie movie = (Movie) data.get("movie");
+
+        // 상영시간 분 -> n시간 n분형태 변환메소드 호출
+        String showTm = convertShowTm(movie.getShowTm());
+
+        model.addAttribute("movieInfo", movie);
         model.addAttribute("replies", data.get("replies"));
+        model.addAttribute("showTm", showTm); // 시간 분으로 변환된 상영시간 추가
         log.info("로그확인 {}", model);
+
         return "ott_contents/movieInfo";
+    }
+
+    // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
+    private String convertShowTm(Integer minutes) {
+        if (minutes == null || minutes == 0)
+            return "[상영시간없음]";
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return hrs + "시간 " + mins + "분";
     }
 
 }

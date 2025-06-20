@@ -4,235 +4,255 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MovieInfo</title>
+    <style>
+      /* 강제 덮어쓰기 */
+      .anime__details__widget ul li span {
+        width: auto !important;
+        display: inline !important;
+        color: inherit !important;
+      }
+      .anime__details__widget li {
+        list-style: none;
+        font-size: 16px;
+        line-height: 32px;
+        color: #ffffff;
+        font-weight: 400;
+      }
+
+      .anime__details__widget li span:first-child {
+        color: #b7b7b7; /* 라벨(왼쪽) 색상 */
+        font-weight: 600;
+        margin-right: 10px;
+        display: inline-block;
+        min-width: 100px; /* 라벨 길이 통일 */
+      }
+
+      .anime__details__widget li span:last-child {
+        color: #ffffff; /* 값(오른쪽) 색상 */
+        font-weight: 400;
+      }
+
+      .synopsis {
+        display: block; /* span은 인라인 요소이므로 block으로 전환 */
+        white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
+        word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
+        line-height: 1.5;
+        color: #ffffff !important; /* 글자색 흰색 */
+        font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
+      }
+
+      .synopsis_t {
+        font-weight: 600;
+      }
+    </style>
   </head>
   <body>
     <div layout:fragment="content">
-      <section class="hero">
-        <div class="container">
-          <!-- <div class="hero__slider owl-carousel owl-loaded"> -->
-
-          <!-- .hero__items -->
-          <!-- </div> -->
-          <!-- .hero__slider -->
-
-          <div class="col-lg-6">
-            <div class="anime__details__text">
-              <div class="anime__details__title">
-                <h3 th:text="${movieInfo.title}"></h3>
-                <p th:text="${movieInfo.genres}"></p>
-              </div>
+      <div class="gradient-bg">
+        <!-- Breadcrumb Begin -->
+        <div class="breadcrumb-option">
+          <div class="container">
+            <div class="col-lg-12">
+              <a th:href="@{/}">Home</a>
+              <a href="#">></a>
+              <a th:href="@{/api/movies/list}">MovieList</a>
+              <a href="#">></a>
+              <a href="#">MovieInfo</a>
             </div>
-            <div class="hero__slider owl-carousel owl-loaded">
-              <div class="hero__items set-bg" style="background-image: url('/img/sample.png')">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="hero__text">
-                      <div class="label">Adventure</div>
-
-                      <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- .hero__items -->
-            </div>
-            <!-- .hero__slider -->
           </div>
         </div>
-        <!-- .container -->
-      </section>
+        <!-- Anime Section Begin -->
 
-      <!-- Anime Section Begin -->
-      <section class="anime-details spad">
-        <div class="container">
-          <div class="anime__details__content">
-            <div class="row">
-              <div class="col-lg-3">
-                <div class="anime__details__pic set-bg" style="background-image: url('/img/sample.png')">
-                  <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                  <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
-                </div>
-              </div>
-              <div class="col-lg-9">
-                <div class="anime__details__text">
-                  <div class="anime__details__title">
-                    <h3 th:text="${movieInfo.title}"></h3>
-                    <!-- <span th:text="'감독 : ' + ${movieInfo.director}"></span>
-                    <span th:text="'배우 : ' + ${movieInfo.actors}"></span> -->
+        <section class="anime-details spad">
+          <div class="container">
+            <div class="anime__details__content">
+              <div class="row">
+                <div class="col-lg-3">
+                  <div class="anime__details__pic set-bg" style="background-image: url('/img/sample.png')">
+                    <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
+                    <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
                   </div>
-                  <!-- 별점 추후 적용 -->
-                  <!-- <div class="anime__details__rating">
-                    <div class="rating">
-                      <a href="#"><i class="fa fa-star"></i></a>
-                      <a href="#"><i class="fa fa-star"></i></a>
-                      <a href="#"><i class="fa fa-star"></i></a>
-                      <a href="#"><i class="fa fa-star"></i></a>
-                      <a href="#"><i class="fa fa-star-half-o"></i></a>
+                </div>
+                <div class="col-lg-9">
+                  <div class="anime__details__text">
+                    <div class="anime__details__title">
+                      <h3 th:text="${movieInfo.title}"></h3>
+                      <span th:text="'감독 : ' + ${movieInfo.director}"></span>
+                      <span th:text="'배우 : ' + ${movieInfo.actors}"></span>
+                      <br />
+                      <h4 th:text="시놉시스" class="synopsis_t"></h4>
+                      <span th:text="${movieInfo.synopsis}" class="synopsis"></span>
                     </div>
-                    <span>1.029 Votes</span>
-                  </div> -->
-                  <!-- <p>
-                    Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
-                    For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
-                    her mother’s last words send Hina on a quest to find a legendary hero from the Waste War - the
-                    fabled Ace!
-                  </p> -->
-                  <div class="anime__details__widget">
-                    <div class="row">
-                      <div class="col-lg-6 col-md-6">
-                        <ul>
-                          <li><span>감독</span> <span th:text="${movieInfo.director}"></span></li>
-                          <li><span>배우 및 성우</span> <span th:text="${movieInfo.actors}"></span></li>
-                          <li><span>개봉일</span> <span th:text="${movieInfo.openDate}"></span></li>
-                          <li><span>장르</span><span th:text="${movieInfo.genres}"></span></li>
-                        </ul>
+                    <!-- 별점 추후 적용 -->
+                    <!-- <div class="anime__details__rating">
+                      <div class="rating">
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star-half-o"></i></a>
                       </div>
-                      <!-- <div class="col-lg-6 col-md-6">
-                        <ul>
-                          <li><span>Scores:</span> 7.31 / 1,515</li>
-                          <li><span>Rating:</span> 8.5 / 161 times</li>
-                          <li><span>Duration:</span> 24 min/ep</li>
-                          <li><span>Quality:</span> HD</li>
-                          <li><span>Views:</span> 131,541</li>
-                        </ul>
-                      </div> -->
+                      <span>1.029 Votes</span>
+                    </div> -->
+                    <!-- <p>
+                      Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
+                      For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
+                      her mother’s last words send Hina on a quest to find a legendary hero from the Waste War - the
+                      fabled Ace!
+                    </p> -->
+                    <div class="anime__details__widget">
+                      <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                          <ul>
+                            <!-- <li><span>감독</span> <span th:text="${movieInfo.director}"></span></li>
+                            <li><span>배우 및 성우</span> <span th:text="${movieInfo.actors}"></span></li> -->
+                            <li><span>개봉일</span> <span th:text="${movieInfo.openDate}"></span></li>
+                            <li><span>장르</span><span th:text="${movieInfo.genres}"></span></li>
+                            <li><span>상영시간</span><span th:text="${showTm}"></span></li>
+                            <li><span>적정관람등급</span><span th:text="${movieInfo.gradeNm}"></span></li>
+                            <li><span>개봉국가</span><span th:text="${movieInfo.nationNm}"></span></li>
+                          </ul>
+                        </div>
+                        <!-- <div class="col-lg-6 col-md-6">
+                          <ul>
+                            <li><span>Scores:</span> 7.31 / 1,515</li>
+                            <li><span>Rating:</span> 8.5 / 161 times</li>
+                            <li><span>Duration:</span> 24 min/ep</li>
+                            <li><span>Quality:</span> HD</li>
+                            <li><span>Views:</span> 131,541</li>
+                          </ul>
+                        </div> -->
+                      </div>
+                    </div>
+                    <!-- <div class="anime__details__btn">
+                      <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
+                      <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
+                    </div> -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="center-line"></div>
+            <!-- <div class="row">
+              <div class="col-lg-8 col-md-8">
+                <div class="anime__details__review">
+                  <div class="section-title">
+                    <h5>Reviews</h5>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-1.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
                     </div>
                   </div>
-                  <div class="anime__details__btn">
-                    <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
-                    <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-2.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                      <p>Finally it came out ages ago</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-3.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
+                      <p>Where is the episode 15 ? Slow update! Tch</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-4.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-5.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                      <p>Finally it came out ages ago</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-6.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
+                      <p>Where is the episode 15 ? Slow update! Tch</p>
+                    </div>
                   </div>
                 </div>
+                <div class="anime__details__form">
+                  <div class="section-title">
+                    <h5>Your Comment</h5>
+                  </div>
+                  <form action="#">
+                    <textarea placeholder="Your Comment"></textarea>
+                    <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+                  </form>
+                </div>
               </div>
-            </div>
+            </div> -->
           </div>
-          <!-- <div class="row">
-            <div class="col-lg-8 col-md-8">
-              <div class="anime__details__review">
-                <div class="section-title">
-                  <h5>Reviews</h5>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-1.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                    <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                  </div>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-2.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                    <p>Finally it came out ages ago</p>
-                  </div>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-3.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                    <p>Where is the episode 15 ? Slow update! Tch</p>
-                  </div>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-4.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                    <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                  </div>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-5.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                    <p>Finally it came out ages ago</p>
-                  </div>
-                </div>
-                <div class="anime__review__item">
-                  <div class="anime__review__item__pic">
-                    <img src="img/anime/review-6.jpg" alt="" />
-                  </div>
-                  <div class="anime__review__item__text">
-                    <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                    <p>Where is the episode 15 ? Slow update! Tch</p>
-                  </div>
-                </div>
+        </section>
+
+        <!-- Anime Section End -->
+        <!-- 댓글 영역 -->
+
+        <div class="col-lg-6 mx-auto">
+          <div class="anime__details__review">
+            <div class="section-title">
+              <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
+            </div>
+            <div class="p-4"></div>
+            <!-- 댓글 시작 -->
+            <div th:each="reply : ${replies}" class="anime__review__item">
+              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
+                <img src="img/anime/review-1.jpg" alt="" />
               </div>
-              <div class="anime__details__form">
-                <div class="section-title">
-                  <h5>Your Comment</h5>
-                </div>
-                <form action="#">
-                  <textarea placeholder="Your Comment"></textarea>
-                  <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
-                </form>
+              <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
+                <a class="replyer text-light" th:text="${reply.replyer}"></a>
+                <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+                <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
+                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
+                <p th:text="${reply.text}">댓글 텍스트</p>
               </div>
             </div>
-          </div> -->
+
+            <!-- 댓글 리스트 끝-->
+          </div>
+
+          <!-- 댓글 작성 폼 -->
+          <div class="anime__details__form">
+            <div class="section-title">
+              <h5>댓글 작성</h5>
+            </div>
+            <a class="mention text-light"></a>
+            <form id="replyForm" method="post">
+              <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
+              <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+              <input type="hidden" name="replyer" th:value="user1" />
+              <input type="hidden" name="mention" />
+              <input type="hidden" name="ref" />
+              <textarea name="text" placeholder="Your Comment"></textarea>
+              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+            </form>
+          </div>
+          <!-- 댓글 작성 폼 끝 -->
         </div>
-      </section>
-      <!-- Anime Section End -->
-      <!-- 댓글 영역 -->
-      <div class="reply">
-        <h2>댓글 목록</h2>
-        <ul>
-          <li th:each="reply : ${replies}">
-            <p th:text="${reply.text}"></p>
-            <p th:text="${reply.replyer}"></p>
-          </li>
-        </ul>
       </div>
-
-      <div class="col-lg-6">
-        <div class="anime__details__review">
-          <div class="section-title">
-            <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
-          </div>
-          <div class="p-4"></div>
-          <!-- 댓글 시작 -->
-          <div th:each="reply : ${replies}" class="anime__review__item">
-            <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
-              <img src="img/anime/review-1.jpg" alt="" />
-            </div>
-            <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
-              <a class="replyer text-light" th:text="${reply.replyer}"></a>
-              <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-              <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
-              <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
-              <p th:text="${reply.text}">댓글 텍스트</p>
-            </div>
-          </div>
-          <!-- 댓글 리스트 끝-->
-        </div>
-
-        <!-- 댓글 작성 폼 -->
-        <div class="anime__details__form">
-          <div class="section-title">
-            <h5>댓글 작성</h5>
-          </div>
-          <a class="mention text-light"></a>
-          <form id="replyForm" method="post">
-            <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
-            <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
-            <input type="hidden" name="replyer" th:value="user1" />
-            <input type="hidden" name="mention" />
-            <input type="hidden" name="ref" />
-            <textarea name="text" placeholder="Your Comment"></textarea>
-            <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
-          </form>
-        </div>
-        <!-- 댓글 작성 폼 끝 -->
-      </div>
-
       <script>
         const mid = "[[${movieInfo.mid}]]";
       </script>

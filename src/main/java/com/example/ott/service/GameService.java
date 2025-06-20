@@ -65,6 +65,13 @@ public class GameService {
                 .price(dto.getPrice())
                 .rank(dto.getRank())
                 .genres(dto.getGenres())
+                .originalPrice(dto.getOriginalPrice())
+                .discountRate(dto.getDiscountRate())
+                .publisher(dto.getPublisher())
+                .ageRating(dto.getAgeRating())
+                .positive(dto.getPositive())
+                .negative(dto.getNegative())
+                .reviewSummary(dto.getReviewSummary())
                 .build();
 
         gameRepository.save(game);
@@ -78,7 +85,6 @@ public class GameService {
         String apiUrl1 = "https://steamspy.com/api.php?request=top100owned";
 
         try {
-            // RestTemplate 외부 API 요청에 사용됨
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.getForEntity(apiUrl1, String.class);
 
@@ -88,29 +94,23 @@ public class GameService {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode root = objectMapper.readTree(json);
 
-                int rank = 1; // 순위는 JSON에 없으므로 반복 순서로 사용
+                int rank = 1;
 
                 Iterator<String> fieldNames = root.fieldNames();
                 while (fieldNames.hasNext()) {
-                    String appid = fieldNames.next(); // 예: "730"
+                    String appid = fieldNames.next();
                     JsonNode gameNode = root.path(appid);
 
                     String name = gameNode.path("name").asText();
                     String developer = gameNode.path("developer").asText();
-                    // String publisher = gameNode.path("publisher").asText();
-                    // String owners = gameNode.path("owners").asText();
-                    // int positive = gameNode.path("positive").asInt();
-                    // int negative = gameNode.path("negative").asInt();
                     int ccu = gameNode.path("ccu").asInt();
 
-                    // 게임 상세 정보 요청
                     String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid;
-
                     ResponseEntity<String> detailResponse = restTemplate.getForEntity(apiUrl2, String.class);
 
                     JsonNode detailRoot = objectMapper.readTree(detailResponse.getBody());
-
                     JsonNode dataNode = detailRoot.path(appid).path("data");
+
                     String genres = "[장르정보없음]";
                     if (dataNode != null && dataNode.has("genres")) {
                         List<String> genreList = new ArrayList<>();
@@ -120,27 +120,77 @@ public class GameService {
                         genres = String.join(", ", genreList);
                     }
 
+                    int originalPrice = 0;
+                    int discountRate = 0;
+                    int discountPrice = 0;
+
+                    if (dataNode != null) {
+                        JsonNode priceOverview = dataNode.path("price_overview");
+                        if (!priceOverview.isMissingNode()) {
+                            originalPrice = priceOverview.path("initial").asInt(0);
+                            discountPrice = priceOverview.path("final").asInt(0);
+                            discountRate = priceOverview.path("discount_percent").asInt(0);
+                        }
+                    }
+
+                    String publisher = "[배급사정보없음]";
+                    if (dataNode != null) {
+                        JsonNode publishersNode = dataNode.path("publishers");
+                        if (publishersNode.isArray() && publishersNode.size() > 0) {
+                            publisher = publishersNode.get(0).asText();
+                        }
+                    }
+
+                    String ageRating = "[이용연령정보없음]";
+                    if (dataNode != null) {
+                        int requiredAge = dataNode.path("required_age").asInt(0);
+                        if (requiredAge > 0) {
+                            ageRating = requiredAge + "세 이상";
+                        } else {
+                            JsonNode contentDesc = dataNode.path("content_descriptors").path("ids");
+                            if (!contentDesc.isMissingNode() && contentDesc.isArray() && contentDesc.size() > 0) {
+                                ageRating = "청소년 이용불가";
+                            }
+                        }
+                    }
+
+                    // 새로 추가한 리뷰 관련 필드 초기화
+                    int positive = 0;
+                    int negative = 0;
+                    String reviewSummary = "[평론정보없음]";
+
+                    // SteamSpy API에 긍정/부정 평가 정보 있음
+                    positive = gameNode.path("positive").asInt(0);
+                    negative = gameNode.path("negative").asInt(0);
+
+                    // Steam Storefront API의 review_summary 정보도 받아오기
+                    if (dataNode != null) {
+                        JsonNode reviewNode = dataNode.path("reviews");
+                        if (!reviewNode.isMissingNode()) {
+                            reviewSummary = reviewNode.path("review_score_desc").asText("[평론정보없음]");
+                        }
+                    }
+
                     Optional<Game> optionalGame = gameRepository.findByAppid(appid);
 
                     if (optionalGame.isPresent()) {
-                        // update: rank, price만 수정
                         Game existing = optionalGame.get();
+
                         existing.setRank(rank);
+                        existing.setOriginalPrice(originalPrice / 100);
+                        existing.setPrice(discountPrice / 100);
+                        existing.setDiscountRate(discountRate);
+                        existing.setPublisher(publisher);
+                        existing.setAgeRating(ageRating);
 
-                        String priceStr = gameNode.path("price").asText(); // 예: "0" 또는 "1999"
-                        int price = 0;
-                        try {
-                            price = Integer.parseInt(priceStr);
-                        } catch (NumberFormatException e) {
-                            // 가격이 숫자가 아니면 0으로 처리
-                        }
+                        // 새 필드 업데이트
+                        existing.setPositive(positive);
+                        existing.setNegative(negative);
+                        existing.setReviewSummary(reviewSummary);
 
-                        existing.setPrice(price);
                         gameRepository.save(existing);
 
                     } else {
-                        // insert: gid, appid, title, developer, rank, ccu, price, platform 저장
-
                         String lastId = gameRepository.findLastGameId();
                         int nextIdNum = 1;
                         if (lastId != null && lastId.startsWith("g_")) {
@@ -148,17 +198,7 @@ public class GameService {
                         }
                         String gid = "g_" + nextIdNum;
 
-                        // 가격 파싱
-                        String priceStr = gameNode.path("price").asText();
-                        int price = 0;
-                        try {
-                            price = Integer.parseInt(priceStr);
-                        } catch (NumberFormatException e) {
-                            // 가격이 숫자가 아니면 0으로 처리
-                        }
-
-                        // 플랫폼 정보 (예: "windows", "mac", "linux" 등)
-                        JsonNode platformsNode = detailRoot.path(appid).path("data").path("platforms");
+                        JsonNode platformsNode = dataNode.path("platforms");
                         List<String> platformList = new ArrayList<>();
                         if (platformsNode.path("windows").asBoolean(false))
                             platformList.add("Windows");
@@ -166,7 +206,7 @@ public class GameService {
                             platformList.add("Mac");
                         if (platformsNode.path("linux").asBoolean(false))
                             platformList.add("Linux");
-                        String platform = String.join(", ", platformList); // 예: "Windows, Mac"
+                        String platform = String.join(", ", platformList);
 
                         Game game = Game.builder()
                                 .gid(gid)
@@ -175,15 +215,23 @@ public class GameService {
                                 .developer(developer)
                                 .rank(rank)
                                 .ccu(ccu)
-                                .price(price)
+                                .originalPrice(originalPrice / 100)
+                                .price(discountPrice / 100)
+                                .discountRate(discountRate)
                                 .platform(platform)
                                 .genres(genres)
+                                .publisher(publisher)
+                                .ageRating(ageRating)
+                                // 새 필드 포함
+                                .positive(positive)
+                                .negative(negative)
+                                .reviewSummary(reviewSummary)
                                 .build();
 
                         gameRepository.save(game);
                     }
 
-                    rank++; // 다음 게임 순위
+                    rank++;
                 }
             }
         } catch (Exception e) {
@@ -193,27 +241,24 @@ public class GameService {
 
     // 게임단건 상세정보 + 해당 게임 댓글리스트 조회
     // 게임 + 댓글 DTO 리스트 함께 반환
-    public Optional<Game> getGame(String gid) {
-        return gameRepository.findById(gid);
+
+    public Map<String, Object> getGame(String gid) {
+        log.info("영화정보 상세조회");
+
+        // 1. 게임 조회
+        Game game = gameRepository.findById(gid)
+                .orElseThrow(() -> new RuntimeException("영화 없음"));
+
+        // 2. 댓글 DTO 리스트 조회
+        List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
+
+        // 3. Map에 담아서 리턴
+        Map<String, Object> result = new HashMap<>();
+        result.put("game", game);
+        result.put("replies", replyDTOList);
+
+        return result;
     }
-
-    // public Map<String, Object> getGame2(String gid) {
-    // log.info("영화정보 상세조회");
-
-    // // 1. 게임 조회
-    // Game game = gameRepository.findById(gid)
-    // .orElseThrow(() -> new RuntimeException("영화 없음"));
-
-    // // 2. 댓글 DTO 리스트 조회
-    // List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
-
-    // // 3. Map에 담아서 리턴
-    // Map<String, Object> result = new HashMap<>();
-    // result.put("game", game);
-    // result.put("replies", replyDTOList);
-
-    // return result;
-    // }
 
     // 전체 게임 목록 조회
     public List<Game> getGameAll() {

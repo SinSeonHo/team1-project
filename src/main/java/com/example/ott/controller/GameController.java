@@ -1,6 +1,7 @@
 package com.example.ott.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -55,10 +56,14 @@ public class GameController {
 
     // 하나의 game 상세정보
     @GetMapping("/read/{gid}")
-    public String getGameInfo(@PathVariable String gid, PageRequestDTO pageRequestDTO, Model model) {
-        log.info("영화 상세정보 요청 {}", gid);
-        Game game = gameService.getGame(gid).orElseThrow(() -> new RuntimeException("게임 정보 없음"));
+    public String getGameInfo(@PathVariable String gid, Model model) {
+        Map<String, Object> data = gameService.getGame(gid);
+        Game game = (Game) data.get("game");
+
         model.addAttribute("gameInfo", game);
+        model.addAttribute("replies", data.get("replies"));
+        log.info("로그확인 {}", model);
+
         return "ott_contents/gameInfo";
     }
 

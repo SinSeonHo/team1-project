@@ -17,8 +17,11 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     @Query("select r from Reply r where r.movie = :movie")
     List<Reply> findByMovie(Movie movie);
 
+    // @Query("select r from Reply r where r.game = :game")
+    // List<Reply> findByGame(Game Game);
+    // 0619 신선호 임의로 수정함
     @Query("select r from Reply r where r.game = :game")
-    List<Reply> findByGame(Game Game);
+    List<Reply> findByGame(@org.springframework.data.repository.query.Param("game") Game game);
 
     // @Query("select r from Reply r where r.webtoon = :webtoon")
     // List<Reply> findByWebToon(WebToon webtoon);

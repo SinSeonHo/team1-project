@@ -27,13 +27,11 @@ public class MovieDTO {
     private String director; // 감독
     private String openDate; // 개봉일
     private int rank; // 순위
-    private String genres;
-
-    // 평점
-    private double avg;
-
-    // 리뷰수
-    private Long reviewCnt;
+    private String genres; // 장르
+    private int showTm; // 상영시간
+    private String nationNm; // 제작국가
+    private String gradeNm; // 이용등급
+    private String synopsis; // 줄거리
 
     // @Builder.Default
     // private List<Image> movieImages = new ArrayList<>();

@@ -16,6 +16,7 @@ import com.example.ott.entity.WebToon;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
 
@@ -29,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 public class ReplyService {
     private final ReplyRepository replyRepository;
     private final MovieRepository movieRepository;
+    private final GameRepository gameRepository;
 
     public Reply insert(ReplyDTO dto) {
         return replyRepository.save(dtoToEntityInsert(dto));
@@ -52,6 +54,16 @@ public class ReplyService {
     public List<ReplyDTO> movieReplies(String mid) {
         Movie movie = movieRepository.findById(mid).get();
         List<Reply> list = replyRepository.findByMovie(movie);
+        List<Reply> sortedReplies = sortRepliesWithChildren(list);
+        List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    // 게임의 댓글들 가져오기 0619 신선호 임의로 추가해봄 추후 수정필요
+    public List<ReplyDTO> gameReplies(String gid) {
+        Game game = gameRepository.findById(gid).get();
+        List<Reply> list = replyRepository.findByGame(game);
         List<Reply> sortedReplies = sortRepliesWithChildren(list);
         List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
