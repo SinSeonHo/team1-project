@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>업로드 페이지</title>
 </head>
 
 <body>
     <h1>파일 업로드</h1>
-    <form method="post" action="/uploads/upload" enctype="multipart/form-data">
+
+    <!-- 메시지 출력 -->
+    <div th:if="${message}">
+        <p th:text="${message}" style="color: green;"></p>
+    </div>
+
+    <form method="post" action="/images/upload" enctype="multipart/form-data">
         <input type="file" name="file" required>
         <button type="submit">업로드</button>
+    </form>
 </body>
 
 </html>

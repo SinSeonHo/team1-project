@@ -1,6 +1,5 @@
 package com.example.ott.controller;
 
-import com.example.ott.entity.Image;
 import com.example.ott.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -8,8 +7,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -35,14 +34,15 @@ public class ImageController {
     // }
 
     @PostMapping("/upload")
-    @ResponseBody
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+    public String uploadImage(@RequestParam("file") MultipartFile file,
+            RedirectAttributes redirectAttributes) {
         try {
-            imageService.uploadImages(file); // 실제 저장과 DB 등록 수행
-            return ResponseEntity.ok("업로드 성공");
+            imageService.uploadImages(file);
+            redirectAttributes.addFlashAttribute("message", "업로드 성공!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("업로드 실패");
+            redirectAttributes.addFlashAttribute("message", "업로드 실패: " + e.getMessage());
         }
+        return "redirect:/images/upload"; // 업로드 페이지로 다시 이동
     }
 
     @GetMapping("/view/{filename}")
