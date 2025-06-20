@@ -16,6 +16,7 @@ import com.example.ott.entity.WebToon;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
 
@@ -29,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 public class ReplyService {
     private final ReplyRepository replyRepository;
     private final MovieRepository movieRepository;
+    private final GameRepository gameRepository;
 
     public Reply insert(ReplyDTO dto) {
         return replyRepository.save(dtoToEntityInsert(dto));
@@ -58,6 +60,15 @@ public class ReplyService {
         return result;
     }
 
+    // 게임의 댓글들 가져오기
+    public List<ReplyDTO> gameReplies(String id) {
+        Game game = gameRepository.findById(id).get();
+        List<Reply> list = replyRepository.findByGame(game);
+        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
+                .collect(Collectors.toList());
+        return result;
+    }
+
     // 댓글 내용 변경
     public ReplyDTO updateReply(ReplyDTO dto) {
         Reply reply = replyRepository.findById(dto.getRno()).get();
@@ -76,6 +87,7 @@ public class ReplyService {
     private ReplyDTO entityToDto(Reply reply) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
+        String formattedUpDate = reply.getUpdatedDate().format(formatter);
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
@@ -84,7 +96,7 @@ public class ReplyService {
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
-                .updatedDate(reply.getUpdatedDate())
+                .updatedDate(formattedUpDate)
                 .build();
         if (reply.getMovie() != null) {
             dto.setMid(reply.getMovie().getMid());

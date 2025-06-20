@@ -47,11 +47,23 @@
             <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
               <img src="img/anime/review-1.jpg" alt="" />
             </div>
-            <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
-              <a class="replyer text-light" th:text="${reply.replyer}"></a>
-              <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-              <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
-              <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
+            <div
+              class="anime__review__item__text reply"
+              th:data-rno="${reply.rno}"
+              th:data-replyer="${reply.replyer}"
+              th:data-text="${reply.text}"
+              th:data-id="${reply.mid}"
+              th:data-mention="${reply.mention}"
+              th:data-ref="${reply.ref}"
+            >
+              <span class="replyer text-light" th:text="${reply.replyer}"></span>
+              <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
+              <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+              <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">x</button>
+              <button type="button" class="update-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">수정</button>
+              <button type="button" class="mention-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">
+                대댓글 달기
+              </button>
               <p th:text="${reply.text}">댓글 텍스트</p>
             </div>
           </div>
@@ -63,15 +75,17 @@
           <div class="section-title">
             <h5>댓글 작성</h5>
           </div>
-          <a class="mention text-light"></a>
+          <span class="mention text-light"></span>
           <form id="replyForm" method="post">
             <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
             <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+            <input type="hidden" name="rno" />
             <input type="hidden" name="replyer" th:value="user1" />
             <input type="hidden" name="mention" />
             <input type="hidden" name="ref" />
             <textarea name="text" placeholder="Your Comment"></textarea>
             <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+            <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
           </form>
         </div>
         <!-- 댓글 작성 폼 끝 -->
