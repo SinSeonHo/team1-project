@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -263,6 +264,19 @@ public class GameService {
     // 전체 게임 목록 조회
     public List<Game> getGameAll() {
         return gameRepository.findAll();
+    }
+
+    // 인기 게임 목록 조회
+    public List<Game> getGameRank(int num) {
+        List<Game> list = gameRepository.findAll(Sort.by("rank"));
+        List<Game> result;
+        // originalList에 10개 이상 있으면 0~9까지 자르고, 아니면 전부 복사
+        if (list.size() > num) {
+            result = new ArrayList<>(list.subList(0, num));
+        } else {
+            result = new ArrayList<>(list);
+        }
+        return result;
     }
 
     // 게임 삭제

@@ -32,7 +32,7 @@ public class MovieDTO {
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
     private String synopsis; // 줄거리
-
+    private int reply;
     // @Builder.Default
     // private List<Image> movieImages = new ArrayList<>();
 

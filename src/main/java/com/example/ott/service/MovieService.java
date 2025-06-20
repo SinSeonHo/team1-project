@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -252,6 +253,18 @@ public class MovieService {
     public List<Movie> getMovieAll() {
         log.info("영화 전체목록 조회");
         return movieRepository.findAll();
+    }
+
+    // 영화 목록 조회
+    public List<Movie> getMovieRank(int num) {
+        List<Movie> result;
+        List<Movie> list = movieRepository.findAll(Sort.by("rank"));
+        if (list.size() > num) {
+            result = new ArrayList<>(list.subList(0, num));
+        } else {
+            result = new ArrayList<>(list);
+        }
+        return result;
     }
 
     // 영화 삭제
