@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/images")
+@RequestMapping("/image")
 public class ImageController {
 
     private final ImageService imageService;
@@ -23,15 +23,6 @@ public class ImageController {
     public String showUploadPage() {
         return "uploads/upload"; // templates/upload-form.html
     }
-
-    // @PostMapping("/upload")
-    // public ResponseEntity<Image> uploadImage(
-    // @RequestParam("file") MultipartFile file) throws IOException {
-    // // ord 제거: 기본값 0으로 처리하거나, 서비스에서 설정
-    // Image image = imageService.uploadImage(file); // 또는 메서드를 오버로딩해서 ord 없이도 동작하도록
-    // 변경
-    // return ResponseEntity.ok(image);
-    // }
 
     @PostMapping("/upload")
     public String uploadImage(@RequestParam("file") MultipartFile file,
