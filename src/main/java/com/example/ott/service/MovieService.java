@@ -34,14 +34,14 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
 
-    @Scheduled(cron = "30 16 14 * * *") // 매일 오전10:00에 실행
+    @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
     @Transactional
     public void scheduledMovieImport() {
         log.info("자동 영화 데이터 수집 시작");
         importMovies();
     }
 
-    @Scheduled(cron = "00 17 14 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 01 10 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 반영");
