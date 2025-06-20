@@ -1,12 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
 from urllib.request import urlretrieve
 import cx_Oracle
-import re
 import time
 
 # 다운로드 경로 설정
@@ -30,29 +28,64 @@ driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 10)  # 최대 10초 대기
 
 for mid, title in movies:
-    # 검색 페이지 접속
+    print(f"[{title}] 이미지 검색 중...")
+
     search_url = f"https://search.naver.com/search.naver?query={title}+포토"
     driver.get(search_url)
     time.sleep(2)  # 페이지 로딩 대기
 
-    # 이미지 추출
     try:
-        img = driver.find_elements(
-            By.CSS_SELECTOR, "._image_base_poster li.item._item img"
-        )[0]
-        poster_url = img.get_attribute("src")
+        # 이미지 리스트 중 첫번째 유효 이미지 src 가져오기
+        imgs = driver.find_elements(
+            By.CSS_SELECTOR, ".area_card._image_base_poster ul li a img"
+        )
 
-        # 저장
-        file_name = f"{title}.jpg"
+        poster_url = None
+        for img in imgs:
+            poster_url = img.get_attribute("src") or img.get_attribute("data-src")
+            if poster_url and poster_url.strip() != "":
+                break
+
+        if not poster_url:
+            print(f"[{title}] 유효한 이미지 없음 - 건너뜀")
+            continue
+
+        # 파일명 안전하게 처리 (특수문자 제거)
+        safe_title = "".join(c for c in title if c.isalnum() or c in " _-")
+        ext = poster_url.split(".")[-1].split("?")[0]
+        file_name = f"{safe_title}.{ext}"
         full_path = os.path.join(BASE_PATH, file_name)
+
+        # 이미지 다운로드
         urlretrieve(poster_url, full_path)
-        print(f"{full_path} 저장 완료")
+        print(f"[{title}] 이미지 저장 완료: {full_path}")
+
+        # DB 삽입 (컬럼명 img_name, path 기준)
+        cursor.execute(
+            """
+            INSERT INTO image (img_name, path)
+            VALUES (:img_name, :path)
+            """,
+            {"img_name": file_name, "path": full_path},
+        )
+
+        # image_id 가져오기
+        cursor.execute("SELECT MAX(inum) FROM image")
+        image_id = cursor.fetchone()[0]
+
+        # movie 테이블에 image_id 업데이트
+        cursor.execute(
+            "UPDATE movie SET image_id = :imgid WHERE mid = :mid",
+            {"imgid": image_id, "mid": mid},
+        )
+
+        conn.commit()
+        print(f"[{title}] 이미지 저장 및 연결 완료")
 
     except Exception as e:
-        print(f"[ERROR] {title} - {e}")
+        print(f"[ERROR] {title} 처리 실패: {e}")
 
 driver.quit()
-
-
 cursor.close()
 conn.close()
+print("모든 작업 완료")
