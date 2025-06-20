@@ -35,7 +35,7 @@ public class ImageService {
      * @throws IOException 파일 저장 실패 시
      */
 
-    public Image uploadImage(MultipartFile file) throws IOException {
+    public Image uploadImages(MultipartFile file) throws IOException {
         // 1. 파일명 확인
         String originalFileName = file.getOriginalFilename();
         if (originalFileName == null || originalFileName.isBlank()) {
@@ -56,7 +56,8 @@ public class ImageService {
         Files.createDirectories(saveFolder); // 폴더 없으면 생성
 
         // 5. 파일 저장
-        Path targetPath = saveFolder.resolve(savedFileName);
+        Path targetPath = saveFolder
+                .resolve(savedFileName);
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
         // 6. DB 저장용 상대 경로
