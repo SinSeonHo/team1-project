@@ -24,20 +24,26 @@ import lombok.extern.log4j.Log4j2;
 public class ReplyController {
     private final ReplyService replyService;
 
+    // @GetMapping("/{rno}")
+    // public List<ReplyDTO> getReply(@PathVariable Long rno) {
+    // log.info("{}번 댓글 요청", rno);
+    // return replyService.reply(rno);
+    // }
+
     @GetMapping("/movie/{mid}")
     public List<ReplyDTO> getMovieReplies(@PathVariable String mid) {
         log.info("{}번 영화 댓글 요청", mid);
         return replyService.movieReplies(mid);
     }
 
-    @PutMapping("/movie/update")
+    @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
         log.info("댓글 내용 수정 요청: {}", dto);
 
         return replyService.updateReply(dto);
     }
 
-    @PostMapping("/movie/new")
+    @PostMapping("/new")
     public Long postMovie(@RequestBody ReplyDTO dto) {
         log.info("댓글 추가 요청: {}", dto);
         return replyService.insert(dto).getRno();
@@ -49,7 +55,7 @@ public class ReplyController {
     // return replyService.rereplyInsert(dto).getRno();
     // }
 
-    @DeleteMapping("/movie/{id}")
+    @DeleteMapping("/{id}")
     public void deleteReply(@PathVariable Long id) {
         replyService.deleteReply(id);
     }

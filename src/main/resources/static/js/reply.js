@@ -5,47 +5,105 @@ const replyCon = document.querySelectorAll(".anime__review__item");
 // 댓글 폼
 
 // document.addEventListener("DOMContentLoaded", function () {
-// 댓글 작성
+// 댓글 작성, 수정 폼
 const replyForm = document.getElementById("replyForm");
-
-replyForm.addEventListener("submit", function (e) {
+// 댓글 작성 또는 수정
+replyForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const formData = new FormData(replyForm);
-  const data = {
-    mid: formData.get("mid"),
-    replyer: formData.get("replyer"),
-    text: formData.get("text"),
-    ref: formData.get("ref"),
-    mention: formData.get("mention"),
-  };
+  // const formData = new FormData(replyForm);
+  // const data = {
+  //   rno: formData.get("rno"),
+  //   replyer: formData.get("replyer"),
+  //   text: formData.get("text"),
+  //   mid: formData.get("mid"),
+  //   ref: formData.get("ref"),
+  //   mention: formData.get("mention"),
+  // };
+  const data = e.target;
+  // undefined 처리
+  if (data.ref.value === "undefined" || data.ref.value === "") {
+    data.ref.value = null;
+  }
 
-  axios
-    .post(`/replies/movie/new`, data)
-    .then((res) => {
-      alert("댓글이 등록되었습니다.");
-      location.reload(); // 또는 동적으로 추가
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("댓글 등록 실패");
-    });
+  if (data.rno.value) {
+    axios
+      .put(`/replies/update`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          // "X-CSRF-TOKEN": csrf,
+        },
+      })
+      .then((res) => {
+        alert("댓글이 수정되었습니다.");
+        location.reload();
+      })
+      .catch(() => {
+        alert("댓글 수정 실패");
+      });
+  } else {
+    axios
+      .post(`/replies/new`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          // "X-CSRF-TOKEN": csrf,
+        },
+      })
+      .then((res) => {
+        // alert("댓글이 등록되었습니다.");
+        location.reload(); // 또는 동적으로 추가
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("댓글 등록 실패");
+      });
+  }
+});
+
+// 수정 버튼으로 정보 가져오기
+document.querySelectorAll(".update-btn").forEach((e) => {
+  e.addEventListener("click", (btn) => {
+    // replyCon.forEach((e) => {
+    //   e.addEventListener("click", (btn) => {
+    // console.log(btn.target);
+
+    // 댓글 요소 가져오기
+    const reply = e.closest(".reply");
+    // 데이터 가져오기
+    const data = reply.dataset;
+
+    // 수정 버튼 눌렀는지
+    // if (e.classList.contains(".update-btn")) {
+    // 수정
+    //replyForm 안에 보여주기
+    replyForm.rno.value = data.rno;
+    replyForm.text.value = data.text;
+    replyForm.replyer.value = data.replyer;
+    // 컨텐츠 아이디
+    replyForm.mid.value = data.id;
+    replyForm.mention.value = data.mention;
+    replyForm.ref.value = data.ref;
+  });
 });
 
 // 댓글 삭제
 document.querySelectorAll(".delete-btn").forEach((btn) => {
   btn.addEventListener("click", function () {
-    const rno = this.getAttribute("data-id");
+    const rno = this.getAttribute("data-rno");
+    if (!confirm("정말 삭제하시겠습니까? 대댓글까지 삭제됩니다.")) return;
 
-    if (!confirm("정말 삭제하시겠습니까?")) return;
-
+    // if (ref == null) {
+    //   if (!confirm("정말 삭제하시겠습니까?")) return;
+    // } else {
+    //   if (!confirm("정말 삭제하시겠습니까? 대댓글까지 삭제됩니다.")) return;
+    // }
     axios
-      .delete(`/replies/movie/${rno}`)
+      .delete(`/replies/${rno}`)
       .then((res) => {
         location.reload(); // 또는 DOM에서 제거
       })
       .catch((err) => {
-        console.error(err);
+        // console.error(err);
         alert("댓글 삭제 실패");
       });
   });
@@ -83,20 +141,18 @@ const replyList = () => {
   // });
 };
 
-// replyList();
 // 리뷰 멘션 추가
-replyCon.forEach((re) => {
+document.querySelectorAll(".mention-btn").forEach((re) => {
   re.addEventListener("click", (e) => {
     const id = e.target;
-    const rno = id.closest(".anime__review__item__text").dataset.id;
+    const rno = id.closest(".anime__review__item__text").dataset.rno;
     const replyer = id.closest(".anime__review__item__text").dataset.replyer;
 
     replyForm.mention.value = replyer;
     replyForm.ref.value = rno;
-    console.log(replyForm.ref.value);
     const mention = document.querySelector(".mention");
-    mention.innerHTML = "멘션: " + replyer;
-    mention.addEventListener("click", (e) => {
+    mention.innerHTML = "멘션: " + replyer + "<button type='button' class='btn btn-secondary btn-sm'>X</button>";
+    mention.querySelector(".btn").addEventListener("click", (e) => {
       replyForm.mention.value = null;
       replyForm.ref.value = null;
       mention.innerHTML = "";
@@ -104,48 +160,14 @@ replyCon.forEach((re) => {
   });
 });
 
-// 리뷰 삭제 및 수정
-replyCon.addEventListener("click", (e) => {
-  e.preventDefault();
+// 취소 버튼
+replyForm.addEventListener("click", (e) => {
   const btn = e.target;
-
-  // rno 가져오기
-  const rno = btn.closest(".reply").dataset.rno;
-  console.log(rno + "수정");
-  // 리뷰 작성자 가져오기
-  const replyerId = btn.closest(".reply").dataset.replyer;
-
-  // 삭제 or 수정
-  if (btn.classList.contains("btn-outline-danger")) {
-    // 삭제
-    if (!confirm("대댓글까지 삭제됩니다. 정말로 삭제하시겠습니까?")) return;
-    axios
-      .delete(`/replies/movie/${rno}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": csrf,
-        },
-      })
-      .then((res) => {
-        console.log(res.data);
-        //리뷰 다시 불러오기
-        // replyList();
-        location.reload();
-      });
-  } else if (btn.classList.contains("btn-insert")) {
-    // 수정
-    // 리뷰 하나 가져오기
-    axios.get(`/re/${rno}`).then((res) => {
-      console.log(res.data);
-      const data = res.data;
-
-      //replyForm 안에 보여주기
-      replyForm.rno.value = data.rno;
-      replyForm.replyer.value = data.replyer;
-      // 멤버 아이디
-      replyForm.mid.value = data.mid;
-      // replyForm.querySelector(".starrr a:nth-child(" + data.grade + ")").click();
-      replyForm.text.value = data.text;
-    });
+  if (btn.classList.contains("btn-cancel")) {
+    replyForm.rno.value = null;
+    replyForm.mention.value = null;
+    replyForm.ref.value = null;
+    replyForm.text.value = null;
+    document.querySelector(".mention").innerHTML = "";
   }
 });
