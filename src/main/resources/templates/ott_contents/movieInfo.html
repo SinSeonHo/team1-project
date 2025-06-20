@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MovieInfo</title>
+  
+<th:block layout:fragment="css">
+
     <style>
       /* 강제 덮어쓰기 */
       .anime__details__widget ul li span {
@@ -45,7 +44,9 @@
         font-weight: 600;
       }
     </style>
-  </head>
+<link rel="stylesheet" th:href="@{/css/abc.css}">
+    </th:block>
+  
   <body>
     <div layout:fragment="content">
       <div class="gradient-bg">
@@ -208,7 +209,7 @@
           </div>
         </section>
 
-      <div class="col-lg-6">
+      <div class="col-lg-6 mx-auto">
         <div class="anime__details__review">
           <div class="section-title">
             <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
