@@ -1,14 +1,13 @@
 .link {
-  color:gray;
+  color: gray;
   cursor: pointer;
 }
 .link.active {
   color: white;
   font-weight: bold;
   border-bottom: 2px solid #e53637;
-      text-shadow:
-    0 2px 16px #fff,   /* 아래쪽으로 부드럽게 퍼지는 흰색 그림자 */
-    0 1px 2px #fff; 
+  text-shadow: 0 0 16px #eec334, /* 중앙에서 퍼지는 노란색 빛 */ 0 0 32px #eec334,
+    /* 더 넓게 퍼지는 효과 추가 */ 0 0 8px #eec334; /* 살짝 더 진하게 */
 }
 .link:focus,
 .link:active {
@@ -20,8 +19,7 @@
 }
 .title {
   color: #fff;
-    text-shadow:
-0 2px 8px rgba(255, 255, 255, 0.322);
+  text-shadow: 0 2px 8px rgba(255, 255, 255, 0.322);
 }
 
 .link {
@@ -35,7 +33,7 @@
 }
 
 .login-block {
-    width: 40%;
+  width: 40%;
 }
 
 .separator {
@@ -78,7 +76,7 @@
   height: 48px;
   border-radius: 12px;
   font-size: 1em;
-  font-family: 'Noto Sans', 'Roboto', Arial, sans-serif;
+  font-family: "Noto Sans", "Roboto", Arial, sans-serif;
   font-weight: 700;
   padding: 0 16px;
   box-shadow: none;
@@ -114,7 +112,6 @@
   border: 1px solid #dadce0;
   /* font-family: 'Roboto', Arial, sans-serif;
   font-weight: 500; */
-  
 }
 
 .kakao-login {
@@ -122,7 +119,6 @@
   color: #191600;
   /* font-family: 'Noto Sans', sans-serif;
   font-weight: 700; */
-  
 }
 
 .naver-login {
@@ -130,7 +126,6 @@
   color: #fff;
   /* font-family: 'Noto Sans', sans-serif;
   font-weight: 700; */
-  
 }
 
 /* 호버 효과 */
@@ -146,4 +141,3 @@
 .naver-login:hover {
   filter: brightness(0.93);
 }
-

@@ -35,7 +35,6 @@ public class User {
     @Id
     private String id;
 
-    @Column(nullable = false)
     private String name; // 실명
 
     @Setter

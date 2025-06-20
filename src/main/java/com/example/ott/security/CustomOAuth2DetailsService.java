@@ -80,7 +80,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                 break;
 
             default:
-                log.info("일치하는 소셜이 없어요");
+                socials = Socials.NONE;
                 break;
         }
 
@@ -88,7 +88,6 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         customAttributes.put("name", name);
         customAttributes.put("email", email);
-
 
         User user = saveSocialUser(email, name, socials);
 
@@ -106,7 +105,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                     .id(email)
                     .email(email)
                     .name(name)
-                    .nickname(name)
+                    .nickname(name) // TODO : nickname unique 라서 랜덤 문자열 생성해야함
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)

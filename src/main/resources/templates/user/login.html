@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
   <th:block layout:fragment="css">
+    
     <link rel="stylesheet" th:href="@{/css/login.css}">
   </th:block>
   <main layout:fragment="content">
@@ -10,7 +11,7 @@
   <h1 class="title text-center fw-bold mt-3">로그인</h1>
   
   <!-- Links -->
-  <ul class="links d-flex w-100 list-unstyled my-4">
+  <ul class="links d-flex w-100 list-unstyled mr-4 my-4">
     <li class="link d-inline text-center mr-5 active" id="loginTab">
       <span id="signin"><strong>로그인</strong></span>
     </li>
@@ -24,10 +25,21 @@
 
   
   <!-- Form display-none이 적용 안됨. 기존에 존재하던 css 파일이 덮어쓰는 확률 무시 못함 -->
-  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column d-none">
+  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column" id="loginForm">
        <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="username" name="username"/>
        <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" id="password" name="password"/>
-       <input type="password" placeholder="Repeat password" class="form-control-lg mb-3" name=""/>
+       
+    <!-- sign in button -->
+    <button class="site-btn w-100 mt-1">
+      로그인
+    </button>
+  </form >
+  <!-- 회원가입 -->
+  <form  th:action="@{/user/register}" method="post" class="w-100 mx-auto d-flex flex-column d-none" id="registerForm">
+       <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+       <input type="text" placeholder="Repeat password" class="form-control-lg mb-3" name="name"/>
+       <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="id" name="id"/>
+       <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" name="password"/>
     <!-- sign in button -->
     <button class="site-btn w-100 mt-1">
       로그인
