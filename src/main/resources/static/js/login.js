@@ -4,12 +4,16 @@
           const registerTab = document.getElementById("registerTab");
           const loginForm = document.getElementById("loginForm");
           const registerForm = document.getElementById("registerForm");
+          const title = document.getElementById("title");
+
           // 로그인 탭을 누를 시
           loginTab.addEventListener("click", function () {
             loginTab.classList.add("active");
             registerTab.classList.remove("active");
             loginForm.classList.remove("d-none");
             registerForm.classList.add("d-none");
+            // title.innerText("로그인")
+            title.textContent = "로그인"
           });
           // 회원가입 탭을 누를 시
           registerTab.addEventListener("click", function () {
@@ -17,5 +21,27 @@
             loginTab.classList.remove("active");
             registerForm.classList.remove("d-none");
             loginForm.classList.add("d-none");
+            title.textContent = "회원가입"
           });
+
+          const googleBtn = document.querySelector("#google-login");
+          const kakaoBtn = document.querySelector("#kakao-login");
+          const naverBtn = document.querySelector("#naver-login");
+
+          googleBtn.addEventListener("click", () => {
+          url = "/oauth2/authorization/google"
+          window.location.href = url;
+          })
+
+          kakaoBtn.addEventListener("click", () => {
+          url = "/oauth2/authorization/kakao"
+          window.location.href = url;
+          })
+
+          naverBtn.addEventListener("click", () => {
+          url = "/oauth2/authorization/naver"
+          window.location.href = url;
+          })
         });
+
+        

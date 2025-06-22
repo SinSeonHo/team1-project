@@ -55,18 +55,15 @@ public class UserController {
         return "redirect:/";
     }
 
-    // login page 호출
-
-    // login 요청 = 시큐리티가 해준다!
-
     // 프로필 조회
     @GetMapping({ "/userProfile", "/modifyUserProfile" })
-    public void getUserProfile(String id, Model model) {
-        UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        log.info("user Profile 조회 : {}", userProfileDTO);
-        // rttr.addAttribute("userProfileDTO", userProfileDTO);
-        model.addAttribute("userProfileDTO", userProfileDTO);
-
+    public String getUserProfile() {
+        //String id, Model model
+        // UserProfileDTO userProfileDTO = userService.getUserProfile(id);
+        // log.info("user Profile 조회 : {}", userProfileDTO);
+        // // rttr.addAttribute("userProfileDTO", userProfileDTO);
+        // model.addAttribute("userProfileDTO", userProfileDTO);
+        return "/user/userProfile";
     }
 
     // 프로필 수정
