@@ -1,103 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
   <th:block layout:fragment="css">
-    <style>
-      body {
-        background: #14153b;
-      }
-
-      /* 정보 표시 블록 */
-      .user-info-list {
-        padding: 32px 0 24px 0;
-        font-size: 1.15rem;
-      }
-      .user-info-item {
-        position: relative;
-        display: flex;
-        align-items: center;
-        margin-bottom: 18px;
-        padding-left: 20px; /* 선과 내용 간격 */
-      }
-      .user-info-item::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: 32px;
-        width: 4px;
-        background: #e53637;
-        border-radius: 3px;
-      }
-      .user-info-label {
-        min-width: 90px;
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.08em;
-        margin-bottom: 0;
-        margin-right: 12px;
-        letter-spacing: 0.01em;
-      }
-      .user-info-value {
-        flex: 1 1 auto;
-        background: #fff !important;
-        border: none;
-        border-radius: 7px;
-        color: #1a1a2a !important;
-        font-size: 1.08em;
-        padding: 10px 15px;
-        opacity: 0.85;
-        pointer-events: none;
-        margin-bottom: 0;
-      }
-      .user-info-item input[readonly] {
-        background: #e8e9ed !important;
-        color: #303143 !important;
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .user-info-item .form-check-input[disabled] {
-        background-color: #277aff;
-        border-color: #277aff;
-        opacity: 0.7;
-      }
-      .user-info-item .form-check-label {
-        margin-right: 12px;
-        color: #444 !important;
-        font-weight: 500;
-      }
-
-      /* 버튼 스타일 (기존 유지) */
-      .btn-outline-primary {
-        border-color: #277aff;
-        color: #277aff;
-        background: transparent;
-      }
-      .btn-outline-primary:hover {
-        background: #277aff;
-        color: #fff;
-      }
-      .btn-outline-secondary {
-        border-color: #aaa;
-        color: #aaa;
-        background: transparent;
-      }
-      .btn-outline-secondary:hover,
-      .btn-outline-secondary:focus {
-        background: #333;
-        color: #fff;
-      }
-      .btn-outline-danger {
-        border-color: #d22;
-        color: #d22;
-      }
-      .btn-outline-danger:hover {
-        background: #d22;
-        color: #fff;
-      }
-
-      
-    </style>
+    <link rel="stylesheet" th:href="@{/css/userProfile.css}">
   </th:block>
 
   <main layout:fragment="content">
@@ -111,11 +15,17 @@
             <div class="mb-3">
               <img th:src="@{/img/sample.png}" alt="프로필" class="rounded-circle shadow" style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee" />
             </div>
+
             <!-- 프로필 관련 버튼 -->
-            <div class="d-flex flex-column gap-2 w-100 px-4">
-              <button type="button" class="btn btn-outline-primary mb-1">사진 변경</button>
-              <button type="button" class="btn btn-outline-secondary mb-1">수정</button>
-              <button type="button" class="btn btn-outline-danger">회원탈퇴</button>
+            <div class="d-flex flex-column w-100 px-4" style="gap: 8px">
+              <button type="button" class="profile-btn profile-btn-secondary">사진 변경</button>
+              <button type="button"
+                class="profile-btn profile-btn-lightgray"
+                 th:onclick="|location.href='@{/user/modifyUserProfile(id=${userProfileDTO.id})}'|">
+                수정
+              </button>
+
+            <button type="button" class="profile-btn profile-btn-danger">회원탈퇴</button>
             </div>
           </div>
           <!-- 정보 표시 블록 (readonly input) -->
@@ -123,47 +33,44 @@
             <div class="user-info-list mb-4">
               <div class="user-info-item">
                 <label for="name" class="user-info-label">이름</label>
-                <input type="text" class="form-control user-info-value" id="name" value="홍길동" readonly />
+                <input type="text" class="form-control user-info-value" id="name" th:value="${userProfileDTO.name}?: ''" readonly />
               </div>
               <div class="user-info-item">
                 <label for="nickname" class="user-info-label">닉네임</label>
-                <input type="text" class="form-control user-info-value" id="nickname" value="길동이" readonly />
+                <input type="text" class="form-control user-info-value" id="nickname"th:value="${userProfileDTO.nickname}?:''" readonly />
               </div>
               <div class="user-info-item">
                 <label for="userid" class="user-info-label">아이디</label>
-                <input type="text" class="form-control user-info-value" id="userid" value="hong123" readonly />
+                <input type="text" class="form-control user-info-value" id="userid"th:value="${userProfileDTO.id}" readonly />
               </div>
               <div class="user-info-item">
                 <label for="email" class="user-info-label">이메일</label>
-                <input type="email" class="form-control user-info-value" id="email" value="hong123@email.com" readonly />
+                <input type="email" class="form-control user-info-value" id="email"th:value="${userProfileDTO.email}?:'인증받지 않음'" readonly />
+              </div>
+              <div class="user-info-item">
+                <label for="grade" class="user-info-label">마일리지 등급</label>
+                <input type="text" class="form-control user-info-value" id="grade"th:value="${userProfileDTO.grade}?:''" readonly />
               </div>
             </div>
             <!-- 필요하다면 하단에 버튼 추가 가능 -->
           </div>
         </div>
-        <!-- 프로필 사진 아래 -->
-        <div class="interest-carousel my-4 d-flex justify-content-center align-items-center">
-          <div class="interest-wheel">
-            <label class="interest-item" title="스포츠">
-              <input type="checkbox" name="interests" value="스포츠" hidden />
-              <img th:src="@{/img/sample.png}" alt="스포츠" />
-            </label>
-            <label class="interest-item" title="음악">
-              <input type="checkbox" name="interests" value="음악" hidden />
-              <img th:src="@{/img/sample.png}" alt="음악" />
-            </label>
-            <label class="interest-item" title="독서">
-              <input type="checkbox" name="interests" value="독서" hidden />
-              <img th:src="@{/img/sample.png}" alt="독서" />
-            </label>
-            <label class="interest-item" title="여행">
-              <input type="checkbox" name="interests" value="여행" hidden />
-              <img th:src="@{/img/sample.png}" alt="여행" />
-            </label>
-            <!-- 필요시 더 추가 -->
-          </div>
-        </div>
+        <section class="user-gallery-section mt-4">
+  <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem;">좋아하는 영화/게임들</h3>
+  <div class="user-gallery-grid">
+    <!-- 샘플 사진, 실제로는 반복문 돌리면 됨 -->
+    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
+    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
+    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
+    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
+    <!-- ... -->
+  </div>
+</section>
+
       </div>
     </div>
   </main>
+  <th:block layout:fragment="script">
+    <script th:src="@{/js/userProfile.js}"></script>
+  </th:block>
 </html>

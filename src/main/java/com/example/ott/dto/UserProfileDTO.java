@@ -2,6 +2,7 @@ package com.example.ott.dto;
 
 import java.time.LocalDateTime;
 
+import com.example.ott.entity.Image;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.UserRole;
 
@@ -37,6 +38,10 @@ public class UserProfileDTO {
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
+
+    private String grade;
+
+    private Image profileImageUrl;
 
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 }

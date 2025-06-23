@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -98,24 +100,37 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
 
     // 이메일이 DB에 존재할 경우 반환, 존재하지 않을 경우 DB에 추가
     private User saveSocialUser(String email, String name, Socials socials) {
-        User user = userRepository.findByEmail(email);
+        // 1. 현재 로그인된 유저 체크
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+            // User currentUser = ((CustomUserDetails) auth.getPrincipal()).getUsername();
+            String currentUserId = ((CustomUserDetails) auth.getPrincipal()).getUsername();
+            User currentUser = userRepository.findById(currentUserId).get();
+            if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+                // 이메일 없는 기존 회원 → 소셜 이메일 추가
+                currentUser.setEmail(email);
+                currentUser.setSocials(socials);
+                userRepository.save(currentUser);
+                return currentUser;
+            }
+        }
 
+        // 2. 기존 방식
+        User user = userRepository.findByEmail(email);
         if (user == null) {
+            // 신규 회원
             User saveUser = User.builder()
                     .id(email)
                     .email(email)
                     .name(name)
-                    .nickname(name) // TODO : nickname unique 라서 랜덤 문자열 생성해야함
+                    .nickname(name) // TODO : nickname unique
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)
                     .build();
             userRepository.save(saveUser);
-            System.out.println("saveUser 정보" + userRepository.findById(email));
-
             return userRepository.findByEmail(email);
         }
-
         return user;
     }
 

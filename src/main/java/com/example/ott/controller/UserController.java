@@ -56,14 +56,22 @@ public class UserController {
     }
 
     // 프로필 조회
-    @GetMapping({ "/userProfile", "/modifyUserProfile" })
-    public String getUserProfile() {
-        //String id, Model model
-        // UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        // log.info("user Profile 조회 : {}", userProfileDTO);
-        // // rttr.addAttribute("userProfileDTO", userProfileDTO);
-        // model.addAttribute("userProfileDTO", userProfileDTO);
+    @GetMapping("/userProfile")
+    public String getUserProfile(String id, Model model) {
+        
+        UserProfileDTO userProfileDTO = userService.getUserProfile(id);
+        log.info("user Profile 조회 : {}", userProfileDTO);
+        model.addAttribute("userProfileDTO", userProfileDTO);
         return "/user/userProfile";
+    }
+
+    @GetMapping("/modifyUserProfile")
+    public String getModifyUserProfile(String id, Model model) {
+        
+        UserProfileDTO userProfileDTO = userService.getUserProfile(id);
+        log.info("user Profile 조회 : {}", userProfileDTO);
+        model.addAttribute("userProfileDTO", userProfileDTO);
+        return "/user/modifyUserProfile";
     }
 
     // 프로필 수정

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +42,7 @@ public class User {
     @Column(unique = true)
     private String nickname; // 별명
 
+    @Setter
     @Column(unique = true)
     private String email;
 
@@ -64,6 +66,8 @@ public class User {
     @Setter
     private String Genres;
 
+    
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
@@ -71,9 +75,14 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
+    @Setter
+    private String grade;
+
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 
-    // profile, 계정 생성일
+    @Setter
+    @OneToOne
+    private Image profileImageUrl;
 
     public void changeAccountInfo(String id, String password) {
         this.id = id;

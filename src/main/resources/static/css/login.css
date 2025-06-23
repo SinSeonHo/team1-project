@@ -14,8 +14,7 @@
   color: white;
   font-weight: bold;
   border-bottom: 2px solid #e53637;
-  text-shadow: 0 0 16px #eec334, /* 중앙에서 퍼지는 노란색 빛 */ 0 0 32px #eec334,
-    /* 더 넓게 퍼지는 효과 추가 */ 0 0 8px #eec334; /* 살짝 더 진하게 */
+  text-shadow: 0 0 16px #eec334, 0 0 32px #eec334, 0 0 8px #eec334; 
 }
 .link:focus,
 .link:active {
@@ -32,10 +31,9 @@
 
 .link {
   list-style-type: none;
-  /* height: 38px; */
   font-size: 1.25em;
 
-  position: relative; /* 밑줄을 위한 기준 */
+  position: relative;
   cursor: pointer;
   transition: color 0.15s;
 }
@@ -77,7 +75,6 @@
 .social-login-wrap {
   max-width: 680px;
   margin: 0 auto;
-  /* w-100, d-grid, gap-2 등은 Bootstrap에서 이미 적용됨 */
 }
 
 .social-login-btn {
@@ -105,7 +102,6 @@
   display: block;
   background: none;
   border-radius: 4px;
-  vertical-align: middle;
 }
 
 .social-login-text {
@@ -118,22 +114,16 @@
   background: #fff;
   color: #757575;
   border: 1px solid #dadce0;
-  /* font-family: 'Roboto', Arial, sans-serif;
-  font-weight: 500; */
 }
 
 .kakao-login {
   background: #fee500;
   color: #191600;
-  /* font-family: 'Noto Sans', sans-serif;
-  font-weight: 700; */
 }
 
 .naver-login {
   background: #03c75a;
   color: #fff;
-  /* font-family: 'Noto Sans', sans-serif;
-  font-weight: 700; */
 }
 
 /* 호버 효과 */
@@ -149,8 +139,3 @@
 .naver-login:hover {
   filter: brightness(0.93);
 }
-
-/* ul.list-unstyled li span:first-child {
-  font-weight: 600;
-  margin-right: 0;
-} */

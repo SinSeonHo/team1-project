@@ -68,6 +68,7 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 User 정보 입니다."));
 
         return UserProfileDTO.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .nickname(user.getNickname())
@@ -82,7 +83,7 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 User 정보 입니다."));
 
         user.setNickname(userProfileDTO.getNickname());
-        user.setGenres(userProfileDTO.getGenres());
+        // user.setGenres(userProfileDTO.getGenres());
         userRepository.save(user);
     }
 
