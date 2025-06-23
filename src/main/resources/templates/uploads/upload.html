@@ -1,24 +1,29 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<!-- 나중에 이페이지는 user중 관리자 권한이 있는 user에게만 보이게 설정 -->
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>업로드 페이지</title>
+    <title>이미지 업로드</title>
 </head>
 
 <body>
-    <h1>파일 업로드</h1>
+    <h2>이미지 업로드</h2>
 
-    <!-- 메시지 출력 -->
-    <div th:if="${message}">
-        <p th:text="${message}" style="color: green;"></p>
-    </div>
-
-    <form method="post" action="/images/upload" enctype="multipart/form-data">
-        <input type="file" name="file" required>
+    <form th:action="@{/images/image}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
         <button type="submit">업로드</button>
     </form>
+
+    <hr>
+
+    <div th:if="${image != null}">
+        <h3>업로드된 이미지</h3>
+        <p>파일명: <span th:text="${image.imgName}"></span></p>
+        <img th:src="@{/images/view/{filename}(filename=${image.path})}" style="max-width: 400px;">
+    </div>
+
+    <div th:if="${error != null}" style="color:red;">
+        <p th:text="${error}"></p>
+    </div>
 </body>
 
 </html>
