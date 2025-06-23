@@ -45,25 +45,35 @@ public class MovieService {
     @Scheduled(cron = "00 01 10 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
-        log.info("자동 영화 줄거리 반영");
-        runPythonCrawler();
+        log.info("자동 영화 줄거리 및 포스터 반영");
+        runPythonMovieCrawler();
     }
 
-    public void runPythonCrawler() {
+    public void runPythonMovieCrawler() {
         try {
             System.out.println("Python 크롤러 실행 시작");
 
-            // 여기에 환경 변수 설정 추가
-            ProcessBuilder pb = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/movieCrwal.py");
+            // 첫 번째 파이썬 스크립트 실행 (줄거리 크롤러)
+            ProcessBuilder pbSynopsis = new ProcessBuilder("python",
+                    "C:/SOURCE/ott/python/movieSynopsisCrwal.py");
+            Map<String, String> env = pbSynopsis.environment();
+            env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+            Process processSynopsis = pbSynopsis.start();
+            int exitCodeSynopsis = processSynopsis.waitFor();
+            System.out.println("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
-            Map<String, String> env = pb.environment();
-            env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8"); // Oracle 날짜 메시지 문제 해결
-
-            Process process = pb.start();
-
-            int exitCode = process.waitFor();
-            System.out.println("크롤러 종료. Exit code: " + exitCode);
+            if (exitCodeSynopsis == 0) {
+                // 두 번째 파이썬 스크립트 실행 (이미지 크롤러)
+                ProcessBuilder pbImage = new ProcessBuilder("python",
+                        "C:/SOURCE/ott/python/movieImageCrwal.py");
+                Map<String, String> envImage = pbImage.environment();
+                envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+                Process processImage = pbImage.start();
+                int exitCodeImage = processImage.waitFor();
+                System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+            } else {
+                System.err.println("줄거리 크롤러가 실패하여 이미지 크롤러를 실행하지 않습니다.");
+            }
 
         } catch (Exception e) {
             System.err.println("파이썬 실행 실패: " + e.getMessage());

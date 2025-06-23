@@ -87,4 +87,8 @@ public class Movie extends BaseEntity {
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
     }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
 }

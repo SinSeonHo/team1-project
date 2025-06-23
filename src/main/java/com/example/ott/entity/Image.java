@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString(exclude = { "movie", "game", "webtoon" })
+@ToString(exclude = { "movie", "game" })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,18 +30,13 @@ public class Image {
     private String uuid; // 이미지 고유번호
     private String imgName; // 이미지이름
     private String path; // 경로
-    private int ord; // 이미지순서
 
-    @ManyToOne
-    @JoinColumn(name = "콘텐츠코드") // 상품번호를 참조
-    private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "mid")
     private Movie movie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "gid")
     private Game game;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private WebToon webToon;
 }
