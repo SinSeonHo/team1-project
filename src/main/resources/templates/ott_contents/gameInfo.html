@@ -11,6 +11,19 @@
     display: inline !important;
     color: inherit !important;
   }
+
+  .synopsis {
+        display: block; /* span은 인라인 요소이므로 block으로 전환 */
+        white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
+        word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
+        line-height: 1.5;
+        color: #ffffff !important; /* 글자색 흰색 */
+        font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
+  }
+
+  .synopsis_t {
+        font-weight: 600;
+  }
 </style>
   </head>
   <body>
@@ -44,6 +57,8 @@
                   <div class="anime__details__text">
                     <div class="anime__details__title">
                       <h3 th:text="${gameInfo.title}"></h3>
+                      <!-- <h4 th:text="시놉시스" class="synopsis_t"></h4>
+                      <span th:text="${gameInfo.synopsis}" class="synopsis"></span> -->
                       <!-- <span th:text="'감독 : ' + ${movieInfo.director}"></span>
                       <span th:text="'배우 : ' + ${movieInfo.actors}"></span> -->
                     </div>
@@ -77,9 +92,9 @@
                                 <span
                                   style="color: gray; text-decoration: line-through; margin-right: 8px"
                                   th:if="${gameInfo.discountRate != 0}"
-                                  th:text="|₩${gameInfo.originalPrice}|"
+                                  th:text="|$${gameInfo.originalPrice}|"
                                 ></span>
-                                <span style="font-weight: bold" th:text="|₩${gameInfo.price}|"></span>
+                                <span style="font-weight: bold" th:text="|$${gameInfo.price}|"></span>
                               </span>
                             </li>
                             <li><span>좋아요 수</span><span th:text="${gameInfo.positive} + '개'"></span></li>

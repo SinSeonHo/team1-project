@@ -1,63 +1,61 @@
 import requests
-from bs4 import BeautifulSoup
-import urllib.parse
 import cx_Oracle
 import time
+import re
+from bs4 import BeautifulSoup
+import html
 
-# 오라클 DSN 설정
+# DB 연결 설정
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
 conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
 cursor = conn.cursor()
 
-# synopsis 없는 영화 가져오기 (컬럼명 수정)
+# 앱 ID와 게임 제목 가져오기 (synopsis 비어있는 경우)
 cursor.execute(
-    "SELECT mid, title, open_Date FROM movie WHERE synopsis IS NULL OR synopsis = ''"
+    "SELECT gid, appid, title FROM game WHERE synopsis IS NULL OR synopsis = ''"
 )
-movies = cursor.fetchall()
+games = cursor.fetchall()
 
 
-# 날짜 형식 변환 (openDate는 문자열 "yyyy-MM-dd" 예상)
-def format_date(open_date_str):
-    if not open_date_str:
-        return None
-    return open_date_str.replace("-", "")  # 2025-06-20 -> 20250620
+# HTML 및 특수문자 정리 함수
+def clean_text(text):
+    text = BeautifulSoup(text, "html.parser").get_text(separator="\n")  # HTML 태그 제거
+    text = html.unescape(text)  # HTML 엔티티 제거
+    text = re.sub(r"[ \u200b\xa0\t\r\f\v]+", " ", text)  # 특수공백 제거
+    text = re.sub(r"\s{2,}", " ", text)  # 여러 공백 하나로
+    return text.strip()
 
 
-# 줄거리 크롤링
-def get_synopsis(title):
+# Steam API에서 시놉시스 요청
+def get_synopsis_from_steam(appid):
     try:
-        query = urllib.parse.quote(title + " 정보")  # '정보' 추가로 상세페이지 유도
-        search_url = f"https://search.naver.com/search.naver?query={query}"
-        res = requests.get(search_url, headers={"User-Agent": "Mozilla/5.0"})
-        soup = BeautifulSoup(res.text, "html.parser")
+        url = f"https://store.steampowered.com/api/appdetails?appids={appid}&l=koreana"
+        res = requests.get(url)
+        data = res.json()
 
-        # 줄거리가 있는 태그 선택
-        story_tag = soup.select_one("p.text._content_text")
-        if story_tag:
-            return story_tag.get_text(strip=True)
-        else:
-            print(f"줄거리 태그 없음: {title}")
-            return None
-
+        if str(appid) in data and data[str(appid)]["success"]:
+            desc_html = data[str(appid)]["data"].get("detailed_description", "")
+            if desc_html:
+                return clean_text(desc_html)
+        return None
     except Exception as e:
-        print(f"에러 - {title}: {e}")
+        print(f"에러 (appid={appid}): {e}")
         return None
 
 
-# 영화 줄거리 업데이트
-for mid, title, open_date in movies:
-    openDt_str = format_date(open_date)
-    print(f"[{mid}] {title} ({openDt_str}) 줄거리 수집 중...")
+# DB 저장 루프
+for gid, appid, title in games:
+    print(f"[{gid}] {title} (appid: {appid}) 시놉시스 요청 중...")
 
-    synopsis = get_synopsis(title)
+    synopsis = get_synopsis_from_steam(appid)
     if synopsis:
-        cursor.execute("UPDATE movie SET synopsis = :1 WHERE mid = :2", (synopsis, mid))
+        cursor.execute("UPDATE game SET synopsis = :1 WHERE gid = :2", (synopsis, gid))
         conn.commit()
         print(f"저장 완료: {title}")
     else:
-        print(f"줄거리 없음 또는 불일치: {title}")
+        print(f"시놉시스 없음 또는 불일치: {title}")
     time.sleep(1)
 
 cursor.close()
 conn.close()
-print("모든 줄거리 크롤링 완료")
+print("모든 게임 시놉시스 저장 완료")
