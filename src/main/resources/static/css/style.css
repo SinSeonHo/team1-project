@@ -674,6 +674,9 @@ ol {
   height: 325px;
   position: relative;
   border-radius: 5px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .product__item__pic .ep {
@@ -729,12 +732,14 @@ ol {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50px;
   display: inline-block;
+  margin-left: 15%;
 }
 
 .product__item__text h5 a {
   color: #ffffff;
   font-weight: 700;
   line-height: 26px;
+  margin-left: 15%;
 }
 
 .product__sidebar .section-title h5 {
