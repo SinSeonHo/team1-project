@@ -12,19 +12,16 @@
   
   <!-- Links -->
   <ul class="links d-flex w-100 list-unstyled my-4" id="links">
-    <li class="link me-3" th:classappend="${securityUserDTO.name != null} ? '' : 'active'" id="loginTab">
+    <li class="link mr-3" th:classappend="${securityUserDTO.name != null} ? '' : 'active'" id="loginTab">
       <span id="signin">로그인</span>
     </li>
     <li class="link " th:classappend="${securityUserDTO.name == null} ? '' : 'active'" id="registerTab">
       <span id="signup" >회원가입</span>
     </li>
-    <li class="link ms-auto">
-      <span id="reset">초기화</span>
-    </li>
   </ul>
 
   <!-- 로그인 폼 -->
-  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name != null} ? ' d-none' : ''" id="loginForm">
+  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name != null} ? 'really-none' : ''" id="loginForm">
        <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="username" name="username"/>
        <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" id="password" name="password"/>
        
@@ -34,7 +31,7 @@
     </button>
   </form >
   <!-- 회원가입 폼 -->
-  <form  th:action="@{/user/register}" th:object="${securityUserDTO}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name == null} ? ' d-none' : ''" id="registerForm">
+  <form  th:action="@{/user/register}" th:object="${securityUserDTO}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name == null} ? 'really-none' : ''" id="registerForm">
        <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
        <input type="text" placeholder="이름 입력" class="form-control-lg mb-3" name="name" th:field="*{name}"/>
        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
