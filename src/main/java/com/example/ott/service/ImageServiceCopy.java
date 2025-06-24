@@ -20,7 +20,8 @@ import net.coobird.thumbnailator.Thumbnails;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class ImageService {
+// 현재는 작동 불가 이미지 파일 이름에 ../ 같은 경로 탈출이 포함되지 않도록 검증 로직넣어둔 실험파일
+public class ImageServiceCopy {
 
     private final ImageRepository imageRepository;
 
@@ -28,7 +29,7 @@ public class ImageService {
     private String baseDir;
 
     private final String thumbnailDirName = "thumbnails";
-    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 🔺 30MB 제한
+    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
 
     public Image findById(Long inum) {
         return imageRepository.findById(inum).orElse(null);
@@ -145,6 +146,15 @@ public class ImageService {
     private void validateFileName(String filename) {
         if (filename == null || filename.isBlank()) {
             throw new IllegalArgumentException("파일 이름이 유효하지 않습니다.");
+        }
+
+        if (filename.contains("..") || filename.contains("/") || filename.contains("\\")) {
+            throw new IllegalArgumentException("파일 이름에 잘못된 경로 문자가 포함되어 있습니다.");
+        }
+
+        Path path = Paths.get(filename).normalize();
+        if (path.startsWith("..") || path.isAbsolute()) {
+            throw new IllegalArgumentException("파일 경로가 유효하지 않습니다.");
         }
     }
 

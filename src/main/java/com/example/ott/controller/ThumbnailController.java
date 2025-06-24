@@ -22,10 +22,12 @@ public class ThumbnailController {
 
     private final ImageService imageService;
 
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
     /** 1. 썸네일 생성 폼 */
     @GetMapping("/image")
     public String showThumbnailForm() {
-        return "uploads/thumbnail"; // templates/uploads/thumbnail.html
+        return "uploads/thumbnail";
     }
 
     /** 2. 기존 원본 이미지 번호(inum)로 썸네일 생성 요청 처리 */
@@ -52,10 +54,15 @@ public class ThumbnailController {
     public String uploadThumbnailFile(@RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) {
         try {
+            if (file.getSize() > MAX_FILE_SIZE) {
+                redirectAttributes.addFlashAttribute("error", "파일 크기는 10MB를 초과할 수 없습니다.");
+                return "redirect:/thumbnail/image";
+            }
+
             Image savedThumbnail = imageService.uploadThumbnailImage(file);
             redirectAttributes.addFlashAttribute("message", "썸네일 업로드 및 생성 완료");
-            // savedThumbnail.getThumbnailPath()는 파일 경로를 포함하므로 뷰에서 파일명만 추출해서 사용
             redirectAttributes.addFlashAttribute("uploadedFilename", savedThumbnail.getThumbnailPath());
+
         } catch (Exception e) {
             log.error("썸네일 업로드 실패", e);
             redirectAttributes.addFlashAttribute("error", "썸네일 업로드 실패: " + e.getMessage());
