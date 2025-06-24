@@ -54,10 +54,15 @@ public class MovieController {
 
     // movie 전체 리스트
     @GetMapping("/list")
-    public String getMovieList(Model model, PageRequestDTO pageRequestDTO) {
-        log.info("movieList 요청 {}", pageRequestDTO);
-        List<Movie> list = movieService.getMovieAll();
-        model.addAttribute("movies", list);
+    // public String getMovieList(Model model, PageRequestDTO pageRequestDTO) {
+    // log.info("movieList 요청 {}", pageRequestDTO);
+    // List<Movie> list = movieService.getMovieAll();
+    // model.addAttribute("movies", list);
+    // return "ott_contents/movieList";
+    // }
+    public String list(PageRequestDTO pageRequestDTO, Model model) {
+        PageResultDTO<MovieDTO> result = movieService.getList(pageRequestDTO);
+        model.addAttribute("result", result);
         return "ott_contents/movieList";
     }
 

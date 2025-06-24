@@ -3,7 +3,7 @@
   <main layout:fragment="content">
     <section class="hero">
       <div class="container">
-        <div class="hero__slider owl-carousel owl-loaded">
+        <!-- <div class="hero__slider owl-carousel owl-loaded">
           <div class="hero__items set-bg" data-setbg="img/sample.png">
             <div class="row">
               <div class="col-lg-6">
@@ -16,8 +16,19 @@
               </div>
             </div>
           </div>
+        </div> -->
+      <div class="row">
+        <div class="col-lg-4 col-md-6" th:each="title : ${movies}">
+            <div class="product__item">
+              <div
+                class="product__item__pic set-bg"
+                th:if="${title.image}"
+                th:style="|background-image: url('/images/movieimages/신명.jpg')|"
+                loading="lazy"
+              >
+            </div>
+          </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -64,8 +75,8 @@
                   <div class="product__item">
                     <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
                       <div class="ep" th:text="${movie.rank}+위" ></div>
-                      <div class="comment"><i class="fa fa-comments"></i> 11개</div>
-                      <div class="view"th:text="${movie.showTm}+분"><i class="fa fa-eye"></i> 상영시간</div>
+                      <div class="comment" th:text="'댓글 '+${movie.replies.size}"><i class="fa fa-comments"></i> 11개</div>
+                      <div class="view" th:text="${movie.showTm}+분"><i class="fa fa-eye"></i> 상영시간</div>
                     </div>
                     <div class="product__item__text">
                       <ul>
@@ -99,8 +110,8 @@
                   <div class="product__item">
                     <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
                       <div class="ep" th:text="${game.rank}+위" ></div>
-                      <div class="comment"><i class="fa fa-comments"></i> 11개</div>
-                      <div class="view"><i class="fa fa-eye"></i> 9141</div>
+                      <div class="comment" th:text="'댓글 '+${game.replies.size}"><i class="fa fa-comments"></i> 11개</div>
+                      <div class="view" th:text="${game.platform}"><i class="fa fa-eye"></i> 9141</div>
                     </div>
                     <div class="product__item__text">
                       <ul>

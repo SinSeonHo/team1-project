@@ -9,7 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.MovieRepository;
@@ -34,6 +42,7 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
+    private final ModelMapper modelMapper;
 
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
     @Transactional
@@ -257,6 +266,22 @@ public class MovieService {
         result.put("replies", replyDTOList);
 
         return result;
+    }
+
+    // public void getSearch(MovieSearchImpl movieSearchImpl){
+    // }
+    public PageResultDTO<MovieDTO> getList(PageRequestDTO requestDTO) {
+        Page<Movie> result = movieRepository.search(requestDTO);
+
+        List<MovieDTO> dtoList = result.stream()
+                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .collect(Collectors.toList());
+
+        return PageResultDTO.<MovieDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(requestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
     }
 
     // 전체 영화 목록 조회
