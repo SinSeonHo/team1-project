@@ -103,15 +103,20 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         // 1. 현재 로그인된 유저 체크
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            // User currentUser = ((CustomUserDetails) auth.getPrincipal()).getUsername();
             String currentUserId = ((CustomUserDetails) auth.getPrincipal()).getUsername();
             User currentUser = userRepository.findById(currentUserId).get();
             if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
-                // 이메일 없는 기존 회원 → 소셜 이메일 추가
-                currentUser.setEmail(email);
-                currentUser.setSocials(socials);
-                userRepository.save(currentUser);
-                return currentUser;
+
+                if (userRepository.existsByEmail(email)) {
+                    throw new RuntimeException("이미 등록된 이메일입니다.");
+                } else {
+
+                    // 이메일 없는 기존 회원 → 소셜 이메일 추가
+                    currentUser.setEmail(email);
+                    currentUser.setSocials(socials);
+                    userRepository.save(currentUser);
+                    return currentUser;
+                }
             }
         }
 
@@ -123,7 +128,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                     .id(email)
                     .email(email)
                     .name(name)
-                    .nickname(name) // TODO : nickname unique
+                    .nickname(makeUniqueNickname(userRepository))
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)
@@ -131,7 +136,17 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
             userRepository.save(saveUser);
             return userRepository.findByEmail(email);
         }
+        // throw new RuntimeException("이미 가입된 이메일입니다.");
         return user;
+    }
+
+    // 임시 닉네임 생성
+    public String makeUniqueNickname(UserRepository userRepository) {
+        String candidate;
+        do {
+            candidate = "user" + (int) (Math.random() * 100000);
+        } while (userRepository.existsByNickname(candidate));
+        return candidate;
     }
 
 }

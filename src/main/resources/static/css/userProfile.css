@@ -53,7 +53,7 @@ body {
   transition: color 0.18s, font-weight 0.18s;
 }
 .user-info-value:focus {
-  color: #ff4a4a;
+  color: black;
   font-weight: 700;
   outline: none;
 }
@@ -87,6 +87,7 @@ body {
   box-shadow: 0 1.5px 5px 0 #0001;
   transition: background 0.18s, color 0.18s;
 }
+
 .profile-btn-secondary {
   background: #277aff;
   color: #fff;
@@ -141,4 +142,9 @@ body {
 .gallery-title {
   font-weight: 700;
   letter-spacing: 1px;
+}
+
+a {
+  text-decoration: none; /* 밑줄 제거 */
+  color: inherit; /* 부모 텍스트 색상 따라가기 (원한다면) */
 }

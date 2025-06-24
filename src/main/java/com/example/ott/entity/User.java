@@ -1,6 +1,7 @@
 package com.example.ott.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -63,11 +64,6 @@ public class User {
     @Setter
     private Long mileage = 0L;
 
-    @Setter
-    private String Genres;
-
-    
-
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate;
@@ -83,6 +79,9 @@ public class User {
     @Setter
     @OneToOne
     private Image profileImageUrl;
+
+    // @OneToOne(mappedBy = "user")
+    // private Favorites favorites;
 
     public void changeAccountInfo(String id, String password) {
         this.id = id;

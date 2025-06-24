@@ -7,4 +7,3 @@ document.querySelectorAll(".user-info-value").forEach(function (input) {
     this.closest(".user-info-item").classList.remove("focused");
   });
 });
-

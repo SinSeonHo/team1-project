@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
@@ -12,6 +13,7 @@ import com.example.ott.service.UserService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,22 +45,31 @@ public class UserController {
     // @ResponseBody
     @PostMapping("/register")
     public String postRegister(
-            @ModelAttribute SecurityUserDTO securityUserDTO,
-            HttpServletRequest request) {
-        userService.registerAndLogin(securityUserDTO, request);
-        try {
-            request.login(securityUserDTO.getId(), securityUserDTO.getPassword());
-        } catch (ServletException e) {
-            log.info("로그인 실패");
-            e.printStackTrace();
+            @ModelAttribute @Valid SecurityUserDTO securityUserDTO,
+            BindingResult bindingResult,
+            HttpServletRequest request,
+            RedirectAttributes rttr) {
+        if (bindingResult.hasErrors()) {
+            return "/user/login";
+        } else {
+
+            String id = userService.registerAndLogin(securityUserDTO, request);
+            try {
+                request.login(securityUserDTO.getId(), securityUserDTO.getPassword());
+            } catch (ServletException e) {
+                log.info("로그인 실패");
+                e.printStackTrace();
+            }
+
+            rttr.addAttribute("id", id);
         }
-        return "redirect:/";
+        return "redirect:/user/modifyUserProfile";
     }
 
     // 프로필 조회
     @GetMapping("/userProfile")
     public String getUserProfile(String id, Model model) {
-        
+
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
         log.info("user Profile 조회 : {}", userProfileDTO);
         model.addAttribute("userProfileDTO", userProfileDTO);
@@ -67,7 +78,7 @@ public class UserController {
 
     @GetMapping("/modifyUserProfile")
     public String getModifyUserProfile(String id, Model model) {
-        
+
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
         log.info("user Profile 조회 : {}", userProfileDTO);
         model.addAttribute("userProfileDTO", userProfileDTO);
@@ -76,17 +87,34 @@ public class UserController {
 
     // 프로필 수정
     @PostMapping("/modifyUserProfile")
-    public String postUserProfile(UserProfileDTO userProfileDTO, RedirectAttributes rttr) {
-        userService.updateUserProfile(userProfileDTO);
+    public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
+            RedirectAttributes rttr) {
 
-        log.info("변경된 userProfile 정보 {}", userProfileDTO);
-        rttr.addAttribute("id", userProfileDTO.getId());
+        if (bindingResult.hasErrors()) {
+            return "/user/modifyUserProfile";
+        } else {
+            userService.updateUserProfile(userProfileDTO);
 
-        return "redirect:/user/userProfile";
+            log.info("변경된 userProfile 정보 {}", userProfileDTO);
+            rttr.addAttribute("id", userProfileDTO.getId());
+
+            return "redirect:/user/userProfile";
+        }
+    }
+
+    @GetMapping("delete")
+    public String getDelete(String id) {
+        userService.deleteUser(id);
+
+        return "redirect:/logout";
     }
 
     @GetMapping("/login")
-    public void getLogin() {
+    public String getLogin(Model model) {
+        if (!model.containsAttribute("securityUserDTO")) {
+            model.addAttribute("securityUserDTO", new SecurityUserDTO());
+        }
+        return "/user/login";
     }
 
 }

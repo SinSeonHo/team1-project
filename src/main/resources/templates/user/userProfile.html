@@ -5,7 +5,7 @@
   </th:block>
 
   <main layout:fragment="content">
-    <div class="container py-5" style="max-width: 780px">
+    <div class="container py-5" style="max-width: 800px">
       <div class="row justify-content-center align-items-stretch">
         <h2 class="mb-5 text-center fw-bold" style="color: #fff; letter-spacing: 2px">프로필 정보</h2>
         <div class="row justify-content-center">
@@ -18,14 +18,16 @@
 
             <!-- 프로필 관련 버튼 -->
             <div class="d-flex flex-column w-100 px-4" style="gap: 8px">
-              <button type="button" class="profile-btn profile-btn-secondary">사진 변경</button>
+              
               <button type="button"
                 class="profile-btn profile-btn-lightgray"
                  th:onclick="|location.href='@{/user/modifyUserProfile(id=${userProfileDTO.id})}'|">
                 수정
               </button>
 
-            <button type="button" class="profile-btn profile-btn-danger">회원탈퇴</button>
+            <button type="button" class="profile-btn profile-btn-danger">
+              <a th:href="@{/user/delete(id=${userProfileDTO.id})}">회원탈퇴</a>
+            </button>
             </div>
           </div>
           <!-- 정보 표시 블록 (readonly input) -->

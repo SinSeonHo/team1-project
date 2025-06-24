@@ -13,13 +13,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.ott.handler.CustomOAuthSuccessHandler;
+import com.example.ott.handler.CustomRegisterSuccessHandler;
 import com.example.ott.security.CustomOAuth2DetailsService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true) // debug 확인용, 배포시 삭제해야함
+@EnableWebSecurity(debug = false) // debug 확인용, 배포시 삭제해야함
 @Configuration
 public class SecurityConfig {
 
@@ -42,13 +42,19 @@ public class SecurityConfig {
                                 .formLogin(login -> login
                                                 .loginPage("/user/login")
                                                 .defaultSuccessUrl("/")
+                                                .failureUrl("/user/login?error=true")
                                                 .permitAll())
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
-                                                .successHandler(new CustomOAuthSuccessHandler())
+                                                .successHandler(new CustomRegisterSuccessHandler())
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));
+
+                http
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/"));
 
                 return http.build();
         }

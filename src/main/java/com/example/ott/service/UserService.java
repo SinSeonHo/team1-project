@@ -31,15 +31,16 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     // 계정 생성 + 자동 로그인
-    public void registerAndLogin(SecurityUserDTO securityUserDTO, HttpServletRequest request) {
+    public String registerAndLogin(SecurityUserDTO securityUserDTO, HttpServletRequest request) {
         User user = User.builder()
                 .name(securityUserDTO.getName())
                 .id(securityUserDTO.getId())
+                .nickname(makeUniqueNickname(userRepository))
                 .password(passwordEncoder.encode(securityUserDTO.getPassword()))
                 .userRole(UserRole.GUEST)
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user).getId();
 
         // 자동 로그인 (반드시 평문 비밀번호 사용!)
         // UsernamePasswordAuthenticationToken authToken = new
@@ -87,6 +88,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void deleteUser(String id) {
+        userRepository.deleteById(id);
+    }
+
     // 아이디, 비밀번호 변경 (예시)
     public String changeAccountInfo(SecurityUserDTO securityUserDTO) {
         // 암호화된 비밀번호로 체크하려면 matches 사용!
@@ -106,12 +111,23 @@ public class UserService {
     }
 
     // test용 DB상 User 조회
-    public void getUser(String id) {
+    public User getUser(String id) {
+        User user = null;
         try {
-            User user = userRepository.findById(id).get();
+            user = userRepository.findById(id).get();
             log.info("검색한 user 내용 : {}", user);
         } catch (NoSuchElementException e) {
             log.info("user 정보를 찾을 수 없음");
         }
+        return user;
+    }
+
+    // 임시 닉네임 생성
+    public String makeUniqueNickname(UserRepository userRepository) {
+        String candidate;
+        do {
+            candidate = "user" + (int) (Math.random() * 100000);
+        } while (userRepository.existsByNickname(candidate));
+        return candidate;
     }
 }
