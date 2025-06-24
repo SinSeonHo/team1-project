@@ -10,6 +10,10 @@
         .trending__product {
           padding: 0 10%;
         }
+        img {
+          height: 500px;
+          width: 250px;
+        }
       </style>
     </th:block>
     <th:block layout:fragment="title">
@@ -34,11 +38,14 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
             <div class="product__item">
-              <div
-                class="product__item__pic set-bg"
-                th:style="|background-image: url('/images/movieimages/${movie.image.imgName}')|"
-                loading="lazy"
-              ></div>
+              <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                <img
+                  th:src="@{'/images/movieimages/' + ${movie.image.imgName}}"
+                  onerror="this.onerror=null; this.src='/images/sample.png';"
+                  alt="영화 이미지"
+                  loading="lazy"
+                  class="product__item__pic"
+              /></a>
               <!-- <div class="ep">18 / 18</div> -->
               <!-- 추후 평점위치 <div class="comment"><i class="fa fa-comments"></i> 11</div> -->
               <!-- 추후 댓글갯수위치 <div class="view"><i class="fa fa-eye"></i> 9141</div> -->

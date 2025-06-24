@@ -24,6 +24,11 @@
   .synopsis_t {
         font-weight: 600;
   }
+
+  /* game 이미지크기조절 */
+  img {
+    height: 270px !important;
+  }
 </style>
   </head>
   <body>
@@ -48,10 +53,16 @@
             <div class="anime__details__content">
               <div class="row">
                 <div class="col-lg-3">
-                  <div class="anime__details__pic set-bg" style="background-image: url('/img/sample.png')">
+                  <img
+                    th:src="@{'/images/gameimages/' + ${gameInfo.image.imgName}}"
+                    onerror="this.onerror=null; this.src='/images/sample.png';"
+                    alt="게임 이미지"
+                    loading="lazy"
+                    class="anime__details__pic"
+                  />
                     <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
                     <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
-                  </div>
+                  
                 </div>
                 <div class="col-lg-9">
                   <div class="anime__details__text">
@@ -233,6 +244,7 @@
             <form id="replyForm" method="post">
               <input type="hidden" name="gid" th:value="${gameInfo.gid}" />
               <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+              <input type="hidden" name="rno" />
               <input type="hidden" name="replyer" th:value="user1" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />

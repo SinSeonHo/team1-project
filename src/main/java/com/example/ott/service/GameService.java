@@ -42,6 +42,32 @@ public class GameService {
         importGames(); // 기존 메서드 호출
     }
 
+    @Scheduled(cron = "00 12 18 * * *") // 매일 오전10:01에 실행
+    @Transactional
+    public void scheduledGameImageImport() {
+        log.info("자동 게임 포스터 반영");
+        runPythonGameCrawler();
+    }
+
+    public void runPythonGameCrawler() {
+        try {
+            System.out.println("Python 크롤러 실행 시작");
+
+            // 파이썬 스크립트 실행 (게임 이미지 크롤러)
+            ProcessBuilder pbImage = new ProcessBuilder("python",
+                    "C:/SOURCE/ott/python/gameImageCrwal.py");
+            Map<String, String> envImage = pbImage.environment();
+            envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+            Process processImage = pbImage.start();
+            int exitCodeImage = processImage.waitFor();
+            System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+
+        } catch (Exception e) {
+            System.err.println("파이썬 실행 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // 게임 등록
     public String insertGame(GameDTO dto) {
         log.info("db에 게임 저장");

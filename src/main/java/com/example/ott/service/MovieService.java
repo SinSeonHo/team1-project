@@ -52,7 +52,7 @@ public class MovieService {
         try {
             System.out.println("Python 크롤러 실행 시작");
 
-            // 첫 번째 파이썬 스크립트 실행 (줄거리 크롤러)
+            // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
                     "C:/SOURCE/ott/python/movieSynopsisCrwal.py");
             Map<String, String> env = pbSynopsis.environment();
@@ -62,7 +62,7 @@ public class MovieService {
             System.out.println("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
-                // 두 번째 파이썬 스크립트 실행 (이미지 크롤러)
+                // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
                 ProcessBuilder pbImage = new ProcessBuilder("python",
                         "C:/SOURCE/ott/python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();

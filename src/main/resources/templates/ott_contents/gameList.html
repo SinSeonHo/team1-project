@@ -13,7 +13,7 @@
         .discount-badge {
           position: absolute;
           top: 10px;
-          right: 10px;
+          right: 5%;
           background-color: #e63946; /* 붉은색 */
           color: white;
           padding: 4px 8px;
@@ -49,7 +49,16 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-6" th:each="game : ${games}">
             <div class="product__item">
-              <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
+              <!-- <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')"> -->
+              <div>
+                <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
+                  <img
+                    th:src="@{'/images/gameimages/' + ${game.image.imgName}}"
+                    onerror="this.onerror=null; this.src='/images/sample.png';"
+                    alt="게임 이미지"
+                    loading="lazy"
+                    class="product__item__pic"
+                /></a>
                 <!-- 할인율이 0이 아니면 '할인중' 표시 -->
                 <div class="discount-badge" th:if="${game.discountRate != 0}">SALE !!!</div>
                 <!-- <div class="ep">18 / 18</div> -->

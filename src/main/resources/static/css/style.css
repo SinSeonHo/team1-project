@@ -732,14 +732,14 @@ ol {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50px;
   display: inline-block;
-  margin-left: 15%;
+  /* margin-left: 15%; */
 }
 
 .product__item__text h5 a {
   color: #ffffff;
   font-weight: 700;
   line-height: 26px;
-  margin-left: 15%;
+  /* margin-left: 15%; */
 }
 
 .product__sidebar .section-title h5 {
@@ -1007,7 +1007,7 @@ ol {
 }
 
 .anime__details__pic {
-  height: 440px;
+  height: 370px;
   border-radius: 5px;
   position: relative;
 }
