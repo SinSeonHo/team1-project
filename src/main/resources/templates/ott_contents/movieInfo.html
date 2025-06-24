@@ -46,7 +46,7 @@
 
       
     </style>
-<link rel="stylesheet" th:href="@{/css/abc.css}">
+<!-- <link rel="stylesheet" th:href="@{/css/abc.css}"> -->
     </th:block>
   
   <body>
@@ -133,10 +133,13 @@
                         </div> -->
                       </div>
                     </div>
-                    <!-- <div class="anime__details__btn">
-                      <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
-                      <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-                    </div> -->
+                    <div class="anime__details__btn">
+                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
+                        로그인한 상태에서만 보여짐 -->
+                      <button class="follow-btn follow"> Follow</button>
+
+                      <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
+                    </div>
                   </div>
                 </div>
               </div>
@@ -277,6 +280,7 @@
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script th:src="@{/js/reply.js}"></script>
+      <script th:src="@{/js/followbtn.js}"></script>
     </div>
     <!-- layout:fragment="content" 닫기 -->
   </body>

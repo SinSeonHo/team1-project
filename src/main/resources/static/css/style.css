@@ -1116,6 +1116,18 @@ ol {
   border-radius: 4px;
   margin-right: 11px;
 }
+.anime__details__btn .followed-btn {
+  font-size: 13px;
+  color: #ffffff;
+  background: #3639e5 !important;
+  display: inline-block;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  border-radius: 4px;
+  margin-right: 11px;
+}
 
 .anime__details__btn .watch-btn span {
   font-size: 13px;
@@ -2332,6 +2344,11 @@ ol {
     margin-right: 10px;
   }
   .anime__details__btn .follow-btn {
+    padding: 14px 26px;
+    margin-right: 11px;
+    margin-bottom: 25px;
+  }
+  .anime__details__btn .followed-btn {
     padding: 14px 26px;
     margin-right: 11px;
     margin-bottom: 25px;
