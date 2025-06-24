@@ -18,6 +18,7 @@ import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
+import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -153,7 +154,9 @@ public class GameService {
                     if (dataNode != null && dataNode.has("genres")) {
                         List<String> genreList = new ArrayList<>();
                         for (JsonNode genreNode : dataNode.get("genres")) {
-                            genreList.add(genreNode.get("description").asText());
+                            String engGenre = genreNode.get("description").asText();
+                            String korGenre = GenreEnum.toKorean(engGenre); // 여기서 한글 변환
+                            genreList.add(korGenre);
                         }
                         genres = String.join(", ", genreList);
                     }
