@@ -12,6 +12,7 @@ public enum GenreEnum {
     CASUAL("Casual", "캐주얼"),
     MMO("Massively Multiplayer", "MMO"),
     FREE_TO_PLAY("Free to Play", "무료 플레이"),
+    EARLY_ACCESS("Early Access", "얼리액세스"),
     // 필요에 따라 더 추가
     UNKNOWN("Unknown", "장르정보없음");
 
