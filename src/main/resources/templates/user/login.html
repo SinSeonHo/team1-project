@@ -4,11 +4,11 @@
     
     <link rel="stylesheet" th:href="@{/css/login.css}">
   </th:block>
-  <main layout:fragment="content">
+  <main layout:fragment="content" th:object="${securityUserDTO}">
     
 <div class="login-block container d-block">
   <!-- Heading -->
-  <h1 class="title text-center fw-bold mt-3" id="title">로그인</h1>
+  <h1 class="title text-center fw-bold mt-3" id="title" th:text="${#fields.hasErrors()} ? '회원가입' : '로그인'"></h1>
   
   <!-- Links -->
   <ul class="links d-flex w-100 list-unstyled my-4" id="links">
@@ -75,3 +75,5 @@
     </th:block>
   </main>
 </html>
+
+

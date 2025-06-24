@@ -48,6 +48,9 @@ public class SecurityConfig {
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
                                                 .successHandler(new CustomRegisterSuccessHandler())
+                                                .failureHandler((request, response, exception )-> {
+                                                        response.sendRedirect("/error/emailAlreadyExists");
+                                                })
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));
 
