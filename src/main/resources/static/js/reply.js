@@ -21,6 +21,7 @@ replyForm.addEventListener("submit", (e) => {
   //   mention: formData.get("mention"),
   // };
   const data = e.target;
+  console.log(data);
   // undefined 처리
   if (data.ref.value === "undefined" || data.ref.value === "") {
     data.ref.value = null;

@@ -240,7 +240,7 @@
                 th:data-mention="${reply.mention}"
                 th:data-ref="${reply.ref}"
               >
-                <span class="replyer text-light" th:text="${reply.replyer}"></span>
+                <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
                 <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
                 <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
                 <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">x</button>
@@ -266,7 +266,7 @@
               <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
               <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
               <input type="hidden" name="rno" />
-              <input type="hidden" name="replyer" th:value="user1" />
+              <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
               <textarea name="text" placeholder="Your Comment"></textarea>
