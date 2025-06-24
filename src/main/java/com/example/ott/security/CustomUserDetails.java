@@ -20,14 +20,13 @@ import lombok.RequiredArgsConstructor;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
 
-
     // User Entity 정보
     private SecurityUserDTO securityUserDTO;
 
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
-    
+
     // 소셜 로그인시 해당 소셜에서 제공해주는 모든 정보
     private Map<String, Object> attributes;
 
@@ -37,44 +36,43 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         this.updatedDate = user.getUpdatedDate();
 
         this.securityUserDTO = SecurityUserDTO.builder()
-        .id(user.getId())
-        .email(user.getEmail())
-        .name(user.getName())
-        .socials(user.getSocials())
-        .userRole(user.getUserRole())
-        .build();
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .password(user.getPassword())
+                .socials(user.getSocials())
+                .userRole(user.getUserRole())
+                .build();
 
-        
     }
-
 
     // 소셜 로그인 유저 생성자
     public CustomUserDetails(User user, Map<String, Object> attributes) {
         System.out.println("Social user 정보 " + user);
         this.securityUserDTO = SecurityUserDTO.builder()
-        .id(user.getId())
-        .email(user.getEmail())
-        .name(user.getName())
-        .createdDate(user.getCreatedDate())
-        .updatedDate(user.getUpdatedDate())
-        .socials(user.getSocials())
-        .userRole(user.getUserRole())
-        .build();
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .createdDate(user.getCreatedDate())
+                .updatedDate(user.getUpdatedDate())
+                .socials(user.getSocials())
+                .userRole(user.getUserRole())
+                .build();
 
         this.attributes = attributes;
         this.createdDate = user.getCreatedDate();
         this.updatedDate = user.getUpdatedDate();
-    }   
+    }
 
     @Override
     public String getPassword() {
         return securityUserDTO.getPassword();
-   }
+    }
 
     @Override
     public String getUsername() {
         return securityUserDTO.getId();
-    } 
+    }
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -94,6 +92,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
         return authorities;
     }
+
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
