@@ -9,15 +9,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = { "movie", "game", "user" }) // 순환참조 방지
+@ToString(exclude = { "movie", "game", "user" })
 public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inum; // 이미지 번호
+
     private String uuid; // 이미지 고유번호
     private String imgName; // 이미지 이름
     private String path; // 경로
+
+    private String thumbnailPath; // 썸네일 경로 추가
 
     @OneToOne(mappedBy = "image")
     private Movie movie;
@@ -27,5 +30,4 @@ public class Image {
 
     @OneToOne(mappedBy = "image")
     private User user;
-
 }

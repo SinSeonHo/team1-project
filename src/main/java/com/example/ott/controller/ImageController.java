@@ -2,10 +2,8 @@ package com.example.ott.controller;
 
 import com.example.ott.entity.Image;
 import com.example.ott.service.ImageService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -25,26 +23,27 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    /** 1. 업로드 폼 보여주기 + 업로드 결과 표시 */
+    /** 1. 원본 이미지 업로드 폼 */
     @GetMapping("/image")
     public String showUploadForm(Model model) {
-        // image, error 는 FlashAttribute로 전달됨
         return "uploads/upload"; // templates/uploads/upload.html
     }
 
-    /** 2. 업로드 처리 (PRG 패턴 적용) */
+    /** 2. 원본 이미지 업로드 처리 (썸네일 생성 없음) */
     @PostMapping("/image")
-    public String handleImageUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    public String handleImageUpload(@RequestParam("file") MultipartFile file,
+            RedirectAttributes redirectAttributes) {
         try {
-            Image savedImage = imageService.uploadImages(file);
+            Image savedImage = imageService.uploadOriginalImage(file); // 원본 이미지 저장
             redirectAttributes.addFlashAttribute("image", savedImage);
         } catch (Exception e) {
+            log.error("이미지 업로드 실패", e);
             redirectAttributes.addFlashAttribute("error", "이미지 업로드 실패: " + e.getMessage());
         }
-        return "redirect:/images/image"; // 새로고침 시 POST 재요청 방지
+        return "redirect:/images/image";
     }
 
-    /** 3. 이미지 반환 (파일 경로 기반) */
+    /** 3. 원본 이미지 파일 반환 */
     @GetMapping("/view/{filename:.+}")
     public ResponseEntity<Resource> serveImage(@PathVariable String filename) {
         try {
@@ -59,7 +58,7 @@ public class ImageController {
                     .body(resource);
 
         } catch (IOException e) {
-            log.error("이미지 파일 제공 중 오류 발생", e);
+            log.error("이미지 파일 제공 중 오류", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
