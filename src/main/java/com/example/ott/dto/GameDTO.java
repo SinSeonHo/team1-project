@@ -40,6 +40,8 @@ public class GameDTO {
     private int negative; // 싫어요 수
     private String synopsis; // 줄거리
 
+    private String imgUrl;
+
     // @Builder.Default
     // private List<Image> gameImages = new ArrayList<>();
 
