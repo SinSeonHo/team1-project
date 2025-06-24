@@ -50,7 +50,7 @@ public class Movie extends BaseEntity {
     private int showTm; // 상영시간
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
-    @Column(length = 3000)
+    @Column(length = 10000)
     private String synopsis; // 줄거리
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
@@ -86,5 +86,9 @@ public class Movie extends BaseEntity {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

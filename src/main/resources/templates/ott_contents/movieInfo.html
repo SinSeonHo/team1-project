@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MovieInfo</title>
+  
+<th:block layout:fragment="css">
+
     <style>
       /* 강제 덮어쓰기 */
       .anime__details__widget ul li span {
@@ -44,8 +43,12 @@
       .synopsis_t {
         font-weight: 600;
       }
+
+      
     </style>
-  </head>
+<!-- <link rel="stylesheet" th:href="@{/css/abc.css}"> -->
+    </th:block>
+  
   <body>
     <div layout:fragment="content">
       <div class="gradient-bg">
@@ -68,10 +71,16 @@
             <div class="anime__details__content">
               <div class="row">
                 <div class="col-lg-3">
-                  <div class="anime__details__pic set-bg" style="background-image: url('/img/sample.png')">
+                  <img
+                    th:src="@{'/images/movieimages/' + ${movieInfo.image.imgName}}"
+                    onerror="this.onerror=null; this.src='/images/sample.png';"
+                    alt="영화 이미지"
+                    loading="lazy"
+                    class="anime__details__pic"
+                  />
                     <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
                     <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
-                  </div>
+          
                 </div>
                 <div class="col-lg-9">
                   <div class="anime__details__text">
@@ -124,10 +133,13 @@
                         </div> -->
                       </div>
                     </div>
-                    <!-- <div class="anime__details__btn">
-                      <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
-                      <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-                    </div> -->
+                    <div class="anime__details__btn">
+                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
+                        로그인한 상태에서만 보여짐 -->
+                      <button class="follow-btn follow" th:data-mid="${movieInfo.mid}">Follow</button>
+
+                      <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
+                    </div>
                   </div>
                 </div>
               </div>
@@ -208,56 +220,67 @@
           </div>
         </section>
 
-        <!-- Anime Section End -->
-        <!-- 댓글 영역 -->
-
-        <div class="col-lg-6 mx-auto">
-          <div class="anime__details__review">
-            <div class="section-title">
-              <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
-            </div>
-            <div class="p-4"></div>
-            <!-- 댓글 시작 -->
-            <div th:each="reply : ${replies}" class="anime__review__item">
-              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
-                <img src="img/anime/review-1.jpg" alt="" />
-              </div>
-              <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
-                <a class="replyer text-light" th:text="${reply.replyer}"></a>
-                <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-                <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
-                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
-                <p th:text="${reply.text}">댓글 텍스트</p>
-              </div>
-            </div>
-
-            <!-- 댓글 리스트 끝-->
+      <div class="col-lg-6 mx-auto">
+        <div class="anime__details__review">
+          <div class="section-title">
+            <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
           </div>
-
-          <!-- 댓글 작성 폼 -->
-          <div class="anime__details__form">
-            <div class="section-title">
-              <h5>댓글 작성</h5>
+          <div class="p-4"></div>
+          <!-- 댓글 시작 -->
+          <div th:each="reply : ${replies}" class="anime__review__item">
+            <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
+              <img src="img/anime/review-1.jpg" alt="" />
             </div>
-            <a class="mention text-light"></a>
-            <form id="replyForm" method="post">
-              <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
-              <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
-              <input type="hidden" name="replyer" th:value="user1" />
-              <input type="hidden" name="mention" />
-              <input type="hidden" name="ref" />
-              <textarea name="text" placeholder="Your Comment"></textarea>
-              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
-            </form>
+            <div
+              class="anime__review__item__text reply"
+              th:data-rno="${reply.rno}"
+              th:data-replyer="${reply.replyer}"
+              th:data-text="${reply.text}"
+              th:data-id="${reply.mid}"
+              th:data-mention="${reply.mention}"
+              th:data-ref="${reply.ref}"
+            >
+              <span class="replyer text-light" th:text="${reply.replyer}"></span>
+              <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
+              <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+              <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">x</button>
+              <button type="button" class="update-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">수정</button>
+              <button type="button" class="mention-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">
+                대댓글 달기
+              </button>
+              <p th:text="${reply.text}">댓글 텍스트</p>
+            </div>
           </div>
-          <!-- 댓글 작성 폼 끝 -->
+          <!-- 댓글 리스트 끝-->
         </div>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="anime__details__form">
+          <div class="section-title">
+            <h5>댓글 작성</h5>
+          </div>
+          <span class="mention text-light"></span>
+          <form id="replyForm" method="post">
+            <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
+            <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+            <input type="hidden" name="rno" />
+            <input type="hidden" name="replyer" th:value="user1" />
+            <input type="hidden" name="mention" />
+            <input type="hidden" name="ref" />
+            <textarea name="text" placeholder="Your Comment"></textarea>
+            <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+            <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+          </form>
+        </div>
+        <!-- 댓글 작성 폼 끝 -->
       </div>
+
       <script>
         const mid = "[[${movieInfo.mid}]]";
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script th:src="@{/js/reply.js}"></script>
+      <script th:src="@{/js/followbtn.js}"></script>
     </div>
     <!-- layout:fragment="content" 닫기 -->
   </body>

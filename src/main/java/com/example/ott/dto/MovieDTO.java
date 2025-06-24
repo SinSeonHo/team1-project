@@ -33,6 +33,8 @@ public class MovieDTO {
     private String gradeNm; // 이용등급
     private String synopsis; // 줄거리
 
+    private String imgUrl;
+
     // @Builder.Default
     // private List<Image> movieImages = new ArrayList<>();
 

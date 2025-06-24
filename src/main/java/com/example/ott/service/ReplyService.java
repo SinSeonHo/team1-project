@@ -60,12 +60,11 @@ public class ReplyService {
         return result;
     }
 
-    // 게임의 댓글들 가져오기 0619 신선호 임의로 추가해봄 추후 수정필요
-    public List<ReplyDTO> gameReplies(String gid) {
-        Game game = gameRepository.findById(gid).get();
+    // 게임의 댓글들 가져오기
+    public List<ReplyDTO> gameReplies(String id) {
+        Game game = gameRepository.findById(id).get();
         List<Reply> list = replyRepository.findByGame(game);
-        List<Reply> sortedReplies = sortRepliesWithChildren(list);
-        List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
+        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
         return result;
     }
@@ -88,6 +87,7 @@ public class ReplyService {
     private ReplyDTO entityToDto(Reply reply) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
+        String formattedUpDate = reply.getUpdatedDate().format(formatter);
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
@@ -96,7 +96,7 @@ public class ReplyService {
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
-                .updatedDate(reply.getUpdatedDate())
+                .updatedDate(formattedUpDate)
                 .build();
         if (reply.getMovie() != null) {
             dto.setMid(reply.getMovie().getMid());

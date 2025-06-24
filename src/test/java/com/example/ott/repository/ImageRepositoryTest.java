@@ -33,7 +33,6 @@ public class ImageRepositoryTest {
                 .uuid(uuid)
                 .imgName(originalFileName)
                 .path(relativePath)
-                .ord(0)
                 .build();
 
         imageRepository.save(image);

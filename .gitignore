@@ -42,3 +42,7 @@ build/
 
 ### application properties 민감정보 ###
 application-oauth.properties
+
+### img 파일 무시 ###
+*.png
+*.jpg

@@ -38,7 +38,9 @@ public class GameDTO {
 
     private int positive; // 좋아요 수
     private int negative; // 싫어요 수
-    private String reviewSummary; // 평론요약 (ex: very positive, mixed 등)
+    private String synopsis; // 줄거리
+
+    private String imgUrl;
 
     // @Builder.Default
     // private List<Image> gameImages = new ArrayList<>();

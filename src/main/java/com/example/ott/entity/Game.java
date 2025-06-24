@@ -10,7 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,16 +53,16 @@ public class Game extends BaseEntity {
 
     private int positive; // 좋아요 수
     private int negative; // 싫어요 수
-    private String reviewSummary; // 평론요약 (ex: very positive, mixed 등)
+    @Column(length = 10000)
+    private String synopsis; // 줄거리
 
     // @Builder.Default
     @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    // @Builder.Default
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
-    // 연동예정
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
+    private Image image;
 
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
@@ -94,8 +96,8 @@ public class Game extends BaseEntity {
         this.negative = negative;
     }
 
-    public void setReviewSummary(String reviewSummary) {
-        this.reviewSummary = reviewSummary;
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
     }
 
     public void setRank(int rank) {
@@ -112,5 +114,9 @@ public class Game extends BaseEntity {
 
     public void setGenres(String genres) {
         this.genres = genres;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

@@ -18,6 +18,7 @@ import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
+import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,11 +36,37 @@ public class GameService {
     private final GameRepository gameRepository;
     private final ReplyService replyService;
 
-    @Scheduled(cron = "0 01 10 * * *") // 매일 오전10시에 실행
+    @Scheduled(cron = "0 02 10 * * *") // 매일 오전10시에 실행
     @Transactional
     public void scheduledGameImport() {
         log.info("자동 게임 데이터 수집 시작");
         importGames(); // 기존 메서드 호출
+    }
+
+    @Scheduled(cron = "00 12 18 * * *") // 매일 오전10:01에 실행
+    @Transactional
+    public void scheduledGameImageImport() {
+        log.info("자동 게임 포스터 반영");
+        runPythonGameCrawler();
+    }
+
+    public void runPythonGameCrawler() {
+        try {
+            System.out.println("Python 크롤러 실행 시작");
+
+            // 파이썬 스크립트 실행 (게임 이미지 크롤러)
+            ProcessBuilder pbImage = new ProcessBuilder("python",
+                    "C:/SOURCE/ott/python/gameImageCrwal.py");
+            Map<String, String> envImage = pbImage.environment();
+            envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+            Process processImage = pbImage.start();
+            int exitCodeImage = processImage.waitFor();
+            System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+
+        } catch (Exception e) {
+            System.err.println("파이썬 실행 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // 게임 등록
@@ -71,7 +98,7 @@ public class GameService {
                 .ageRating(dto.getAgeRating())
                 .positive(dto.getPositive())
                 .negative(dto.getNegative())
-                .reviewSummary(dto.getReviewSummary())
+                .synopsis(dto.getSynopsis())
                 .build();
 
         gameRepository.save(game);
@@ -84,13 +111,25 @@ public class GameService {
     public void importGames() {
         String apiUrl1 = "https://steamspy.com/api.php?request=top100owned";
 
+        double krwToUsdRate = 1300.0; // 초기값 (예비용)
+
         try {
             RestTemplate restTemplate = new RestTemplate();
+
+            // 1. 환율 API 호출 (KRW -> USD)
+            String rateApiUrl = "https://api.exchangerate.host/latest?base=KRW&symbols=USD";
+            ResponseEntity<String> rateResponse = restTemplate.getForEntity(rateApiUrl, String.class);
+            if (rateResponse.getStatusCode().is2xxSuccessful()) {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode rateRoot = mapper.readTree(rateResponse.getBody());
+                krwToUsdRate = rateRoot.path("rates").path("USD").asDouble(krwToUsdRate);
+            }
+
+            // 2. SteamSpy API 호출
             ResponseEntity<String> response = restTemplate.getForEntity(apiUrl1, String.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 String json = response.getBody();
-
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode root = objectMapper.readTree(json);
 
@@ -107,19 +146,22 @@ public class GameService {
 
                     String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid;
                     ResponseEntity<String> detailResponse = restTemplate.getForEntity(apiUrl2, String.class);
-
                     JsonNode detailRoot = objectMapper.readTree(detailResponse.getBody());
                     JsonNode dataNode = detailRoot.path(appid).path("data");
 
+                    // 장르 처리
                     String genres = "[장르정보없음]";
                     if (dataNode != null && dataNode.has("genres")) {
                         List<String> genreList = new ArrayList<>();
                         for (JsonNode genreNode : dataNode.get("genres")) {
-                            genreList.add(genreNode.get("description").asText());
+                            String engGenre = genreNode.get("description").asText();
+                            String korGenre = GenreEnum.toKorean(engGenre); // 여기서 한글 변환
+                            genreList.add(korGenre);
                         }
                         genres = String.join(", ", genreList);
                     }
 
+                    // 가격 처리
                     int originalPrice = 0;
                     int discountRate = 0;
                     int discountPrice = 0;
@@ -127,12 +169,22 @@ public class GameService {
                     if (dataNode != null) {
                         JsonNode priceOverview = dataNode.path("price_overview");
                         if (!priceOverview.isMissingNode()) {
-                            originalPrice = priceOverview.path("initial").asInt(0);
-                            discountPrice = priceOverview.path("final").asInt(0);
+                            String currency = priceOverview.path("currency").asText("USD");
+                            int initial = priceOverview.path("initial").asInt(0);
+                            int finalPrice = priceOverview.path("final").asInt(0);
                             discountRate = priceOverview.path("discount_percent").asInt(0);
+
+                            if ("KRW".equalsIgnoreCase(currency)) {
+                                originalPrice = (int) Math.round(initial / krwToUsdRate);
+                                discountPrice = (int) Math.round(finalPrice / krwToUsdRate);
+                            } else {
+                                originalPrice = initial / 100;
+                                discountPrice = finalPrice / 100;
+                            }
                         }
                     }
 
+                    // 배급사
                     String publisher = "[배급사정보없음]";
                     if (dataNode != null) {
                         JsonNode publishersNode = dataNode.path("publishers");
@@ -141,6 +193,7 @@ public class GameService {
                         }
                     }
 
+                    // 이용연령
                     String ageRating = "[이용연령정보없음]";
                     if (dataNode != null) {
                         int requiredAge = dataNode.path("required_age").asInt(0);
@@ -154,42 +207,37 @@ public class GameService {
                         }
                     }
 
-                    // 새로 추가한 리뷰 관련 필드 초기화
-                    int positive = 0;
-                    int negative = 0;
-                    String reviewSummary = "[평론정보없음]";
+                    // 긍정/부정 평가
+                    int positive = gameNode.path("positive").asInt(0);
+                    int negative = gameNode.path("negative").asInt(0);
 
-                    // SteamSpy API에 긍정/부정 평가 정보 있음
-                    positive = gameNode.path("positive").asInt(0);
-                    negative = gameNode.path("negative").asInt(0);
+                    // 플랫폼 정보
+                    JsonNode platformsNode = dataNode.path("platforms");
+                    List<String> platformList = new ArrayList<>();
+                    if (platformsNode.path("windows").asBoolean(false))
+                        platformList.add("Windows");
+                    if (platformsNode.path("mac").asBoolean(false))
+                        platformList.add("Mac");
+                    if (platformsNode.path("linux").asBoolean(false))
+                        platformList.add("Linux");
+                    String platform = String.join(", ", platformList);
 
-                    // Steam Storefront API의 review_summary 정보도 받아오기
-                    if (dataNode != null) {
-                        JsonNode reviewNode = dataNode.path("reviews");
-                        if (!reviewNode.isMissingNode()) {
-                            reviewSummary = reviewNode.path("review_score_desc").asText("[평론정보없음]");
-                        }
-                    }
-
+                    // DB 저장 또는 업데이트
                     Optional<Game> optionalGame = gameRepository.findByAppid(appid);
 
                     if (optionalGame.isPresent()) {
                         Game existing = optionalGame.get();
 
                         existing.setRank(rank);
-                        existing.setOriginalPrice(originalPrice / 100);
-                        existing.setPrice(discountPrice / 100);
+                        existing.setOriginalPrice(originalPrice);
+                        existing.setPrice(discountPrice);
                         existing.setDiscountRate(discountRate);
                         existing.setPublisher(publisher);
                         existing.setAgeRating(ageRating);
-
-                        // 새 필드 업데이트
                         existing.setPositive(positive);
                         existing.setNegative(negative);
-                        existing.setReviewSummary(reviewSummary);
 
                         gameRepository.save(existing);
-
                     } else {
                         String lastId = gameRepository.findLastGameId();
                         int nextIdNum = 1;
@@ -198,16 +246,6 @@ public class GameService {
                         }
                         String gid = "g_" + nextIdNum;
 
-                        JsonNode platformsNode = dataNode.path("platforms");
-                        List<String> platformList = new ArrayList<>();
-                        if (platformsNode.path("windows").asBoolean(false))
-                            platformList.add("Windows");
-                        if (platformsNode.path("mac").asBoolean(false))
-                            platformList.add("Mac");
-                        if (platformsNode.path("linux").asBoolean(false))
-                            platformList.add("Linux");
-                        String platform = String.join(", ", platformList);
-
                         Game game = Game.builder()
                                 .gid(gid)
                                 .appid(appid)
@@ -215,17 +253,15 @@ public class GameService {
                                 .developer(developer)
                                 .rank(rank)
                                 .ccu(ccu)
-                                .originalPrice(originalPrice / 100)
-                                .price(discountPrice / 100)
+                                .originalPrice(originalPrice)
+                                .price(discountPrice)
                                 .discountRate(discountRate)
                                 .platform(platform)
                                 .genres(genres)
                                 .publisher(publisher)
                                 .ageRating(ageRating)
-                                // 새 필드 포함
                                 .positive(positive)
                                 .negative(negative)
-                                .reviewSummary(reviewSummary)
                                 .build();
 
                         gameRepository.save(game);
@@ -238,7 +274,6 @@ public class GameService {
             e.printStackTrace();
         }
     }
-
     // 게임단건 상세정보 + 해당 게임 댓글리스트 조회
     // 게임 + 댓글 DTO 리스트 함께 반환
 
