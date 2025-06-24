@@ -13,9 +13,17 @@ import java.nio.file.*;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-// 썸네일과 이미지서비스를 분리시켜둔 코드 아직 완성되지 않았습니다.
+
+// 썸네일과 이미지서비스를 분리 시켜둔 코드 아직 완성되지 않았습니다.
 // 추후에 썸네일 생성 로직을 별도의 서비스로 분리할 예정입니다.
 // 현재는 ImageService에서 썸네일 생성 로직을 포함하고 있습니다.
+// public class ThumbnailService {
+
+/**
+ * 이미지 서비스에서 썸네일 생성 로직을 분리하여
+ * ImageServiceCopy로 구현하였습니다.
+ * 추후에 ThumbnailService로 분리할 예정입니다.
+ */
 
 public class ImageServiceCopy {
 
