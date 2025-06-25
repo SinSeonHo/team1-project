@@ -21,20 +21,24 @@ import java.nio.file.Files;
 public class ThumbnailController {
 
     private final ImageService imageService;
-
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    /** 1. 썸네일 생성 폼 */
+    // 썸네일 생성 폼
     @GetMapping("/image")
     public String showThumbnailForm() {
         return "uploads/thumbnail";
     }
 
-    /** 3. 썸네일 이미지 파일 직접 업로드 처리 (썸네일 전용 업로드) */
+    // 썸네일 전용 업로드 처리
     @PostMapping("/upload")
     public String uploadThumbnailFile(@RequestParam("file") MultipartFile file,
             RedirectAttributes redirectAttributes) {
         try {
+            if (file.isEmpty() || file.getOriginalFilename() == null) {
+                redirectAttributes.addFlashAttribute("error", "유효한 파일을 선택해 주세요.");
+                return "redirect:/thumbnail/image";
+            }
+
             if (file.getSize() > MAX_FILE_SIZE) {
                 redirectAttributes.addFlashAttribute("error", "파일 크기는 10MB를 초과할 수 없습니다.");
                 return "redirect:/thumbnail/image";
@@ -51,13 +55,13 @@ public class ThumbnailController {
         return "redirect:/thumbnail/image";
     }
 
-    /** 4. 썸네일 이미지 파일 제공 (뷰에서 보여주기용) */
+    // 썸네일 이미지 뷰 제공
     @GetMapping("/view/{filename:.+}")
     public ResponseEntity<Resource> serveThumbnail(@PathVariable String filename) {
         try {
             Resource resource = imageService.getThumbnailFile(filename);
             if (!resource.exists() || !resource.isReadable()) {
-                log.warn("썸네일 파일을 찾을 수 없거나 읽을 수 없습니다: " + filename);
+                log.warn("썸네일 파일을 찾을 수 없거나 읽을 수 없습니다: {}", filename);
                 return ResponseEntity.notFound().build();
             }
             String contentType = Files.probeContentType(resource.getFile().toPath());

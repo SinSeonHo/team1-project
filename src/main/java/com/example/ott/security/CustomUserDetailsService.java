@@ -14,18 +14,18 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-        private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-        @Override
-        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                User user = userRepository.findById(username).get();
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findById(username).get();
 
-                if (user == null) {
-                        throw new UsernameNotFoundException("User not found : " + username);
-                }
-                CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-                return customUserDetails;
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found : " + username);
         }
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+        return customUserDetails;
+    }
 
 }
