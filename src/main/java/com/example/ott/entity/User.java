@@ -13,6 +13,9 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+
+import jakarta.persistence.JoinColumn;
+
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -45,6 +48,12 @@ public class User {
 
     @Setter
     @Column(unique = true)
+
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)

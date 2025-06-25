@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -117,4 +118,8 @@ public class UserController {
         return "/user/login";
     }
 
+    @GetMapping("/myprofile")
+    public String myPage() {
+        return "myprofile"; // templates/mypage.html
+    }
 }
