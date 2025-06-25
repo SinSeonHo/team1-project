@@ -1,5 +1,6 @@
 package com.example.ott.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,11 @@ import org.springframework.util.MultiValueMap;
 
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Favorite;
+import com.example.ott.entity.Game;
+import com.example.ott.entity.Movie;
 import com.example.ott.entity.User;
 import com.example.ott.repository.FavoriteRepository;
+import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
+    private final MovieRepository movieRepository;
+    private final GameRepository gameRepository;
 
     // 찜하기(토글방식)
     public void toggleFavorite(User user, String contentsId) {
@@ -59,22 +65,42 @@ public class FavoriteService {
         }
     }
 
-    // favorite 전부를 리스트로 반환 하는데!
-    // 영화냐 게임이냐에 따라 Map에 담는걸 분류해야함
-    public MultiValueMap<String, Object> favoriteList(User user) {
-        MultiValueMap<String, Object> favoriteList = new LinkedMultiValueMap<>();
+    // 입력한 콘텐츠 타입의 값에 따라 List<Movie or Game> 을 반환
+    public List<Object> getFavoriteContentsList(User user, ContentsType contentsType) {
+        List<Object> contentsList = new ArrayList<>();
+        switch (contentsType) {
+            case MOVIE:
+                List<Favorite> favoriteMovieList = favoriteRepository.findByContentsType(ContentsType.MOVIE);
 
-        List<Favorite> favoriteMovieList = favoriteRepository.findByContentsType(ContentsType.MOVIE);
-        List<Favorite> favoriteGameList = favoriteRepository.findByContentsType(ContentsType.GAME);
+                // favorite contents가 존재하지 않을 경우 널 반환
+                if (favoriteMovieList.isEmpty()) {
+                    return null;
+                } else {
+                    favoriteMovieList.forEach(favorite -> {
+                        Movie movie = movieRepository.findById(favorite.getContentsId()).get();
+                        contentsList.add(movie);
+                    });
 
-        favoriteMovieList.stream().forEach(movie -> {
-            favoriteList.add("movies", movie);
-        });
+                }
+                break;
+            case GAME:
+                List<Favorite> favoriteGameList = favoriteRepository.findByContentsType(ContentsType.GAME);
 
-        favoriteGameList.stream().forEach(game -> {
-            favoriteList.add("games", game);
-        });
+                if (favoriteGameList.isEmpty()) {
+                    return null; //
+                } else {
+                    favoriteGameList.forEach(favorite -> {
+                        Game game = gameRepository.findById(favorite.getContentsId()).get();
+                        contentsList.add(game);
+                    });
 
-        return favoriteList;
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return contentsList;
     }
 }
