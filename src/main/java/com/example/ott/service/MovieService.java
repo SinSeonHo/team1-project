@@ -298,8 +298,8 @@ public class MovieService {
         // }).collect(Collectors.toList());
 
         // movieDTO.setMovieImages(mImageDTOs);
-        movieDTO.setAvg(avg != null ? avg : 0.0);
-        movieDTO.setReviewCnt(count);
+        // movieDTO.setAvg(avg != null ? avg : 0.0);
+        // movieDTO.setReviewCnt(count);
 
         return movieDTO;
     }

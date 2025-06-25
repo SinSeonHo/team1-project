@@ -9,11 +9,8 @@ import jakarta.persistence.Entity;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-<<<<<<< HEAD
 import jakarta.persistence.OneToMany;
 
-=======
->>>>>>> f0afdc700d8bcc460534f8fa0feb509bbdd38769
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
