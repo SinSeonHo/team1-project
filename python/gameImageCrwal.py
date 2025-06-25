@@ -2,7 +2,6 @@ import os
 import requests
 from urllib.request import urlretrieve
 import cx_Oracle
-import time
 import uuid
 import re
 
@@ -10,19 +9,18 @@ import re
 BASE_PATH = os.path.abspath("./src/main/resources/static/images/gameimages")
 os.makedirs(BASE_PATH, exist_ok=True)
 
-# 오라클 DB 연결
+# Oracle DB 연결
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
 conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
 cursor = conn.cursor()
 
-# 이미지 없는 게임 조회
+# 이미지 없는 게임 가져오기
 cursor.execute("SELECT gid, title, appid FROM game WHERE image_id IS NULL")
 games = cursor.fetchall()
 
 for gid, title, appid in games:
-    print(f"[{title}] 이미지 처리 시작...")
+    print(f"[{title}] 이미지 수집 시작...")
 
-    # 이미지 저장 준비
     unique_id = str(uuid.uuid4())
     safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip())
     safe_title = safe_title.strip("_- ")
@@ -32,17 +30,15 @@ for gid, title, appid in games:
     )
     full_path = os.path.join(BASE_PATH, file_name)
 
-    # 1순위: capsule_616x353.jpg 다운로드 시도
+    # 1순위: Steam capsule 이미지
     capsule_url = (
         f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
     )
-    image_url = capsule_url
 
     def download_image(url):
         try:
-            # 먼저 HEAD 요청으로 이미지 존재 확인
-            response = requests.head(url)
-            if response.status_code == 200:
+            head = requests.head(url, timeout=5)
+            if head.status_code == 200:
                 urlretrieve(url, full_path)
                 print(f"[{title}] 이미지 저장 완료: {file_name}")
                 return True
@@ -51,28 +47,24 @@ for gid, title, appid in games:
             print(f"[{title}] 이미지 다운로드 실패: {e}")
             return False
 
-    # 시도 1: capsule 이미지
-    success = download_image(image_url)
+    success = download_image(capsule_url)
 
-    # 시도 2: Steam Storefront API (header_image)
+    # 실패 시: Steam Storefront API header_image 사용
     if not success:
-        print(f"[{title}] capsule 이미지 실패, header_image로 대체 시도")
+        print(f"[{title}] capsule 실패 → header_image 시도")
         try:
             res = requests.get(
-                f"https://store.steampowered.com/api/appdetails?appids={appid}"
+                f"https://store.steampowered.com/api/appdetails?appids={appid}",
+                timeout=5,
             )
             data = res.json()
-            header_img = (
-                data.get(str(appid), {}).get("data", {}).get("header_image", None)
-            )
-
+            header_img = data.get(str(appid), {}).get("data", {}).get("header_image")
             if header_img:
                 success = download_image(header_img)
             else:
-                print(f"[{title}] header_image 정보 없음")
-
+                print(f"[{title}] header_image 없음")
         except Exception as e:
-            print(f"[{title}] Storefront API 호출 실패: {e}")
+            print(f"[{title}] Storefront API 호출 오류: {e}")
             success = False
 
     if not success:
@@ -81,19 +73,24 @@ for gid, title, appid in games:
 
     # DB 저장
     try:
+        output_inum = cursor.var(cx_Oracle.NUMBER)
         cursor.execute(
-            "INSERT INTO image (img_name, path, gid, uuid) VALUES (:img_name, :path, :gid, :uuid)",
+            """
+            INSERT INTO image (uuid, img_name, path) 
+            VALUES (:uuid, :img_name, :path)
+            RETURNING inum INTO :output_inum
+            """,
             {
-                "img_name": file_name,
-                "path": full_path,
-                "gid": gid,
                 "uuid": unique_id,
+                "img_name": file_name,
+                "path": file_name,
+                "output_inum": output_inum,
             },
         )
 
-        cursor.execute("SELECT MAX(inum) FROM image")
-        image_id = cursor.fetchone()[0]
+        image_id = int(output_inum.getvalue()[0])
 
+        # game 테이블 업데이트
         cursor.execute(
             "UPDATE game SET image_id = :imgid WHERE gid = :gid",
             {"imgid": image_id, "gid": gid},
@@ -108,4 +105,4 @@ for gid, title, appid in games:
 # 마무리
 cursor.close()
 conn.close()
-print("모든 작업 완료")
+print("✅ 모든 게임 이미지 처리 완료")

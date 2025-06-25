@@ -32,12 +32,44 @@ import net.coobird.thumbnailator.Thumbnails;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+    private final MovieRepository movieRepository;
+
+    @Transactional
+    public ImageDTO saveImageForMovie(String mid, String uuid, String imgName, String path) {
+        // 1. 영화 엔티티 조회 (movieId는 Long 또는 String 타입 mid에 맞게 조정)
+        Movie movie = movieRepository.findById(mid)
+                .orElseThrow(() -> new IllegalArgumentException("영화를 찾을 수 없습니다. id=" + mid));
+
+        // 2. Image 엔티티 생성 및 저장
+        Image image = Image.builder()
+                .uuid(uuid)
+                .imgName(imgName)
+                .path(path)
+                .movie(movie) // 연관관계 설정
+                .build();
+
+        Image savedImage = imageRepository.save(image);
+
+        // 3. 영화 엔티티에 이미지 설정 후 저장 (양방향 연관관계 시 필요)
+        movie.setImage(savedImage);
+        movieRepository.save(movie);
+
+        // 4. DTO 변환 및 반환
+        ImageDTO dto = ImageDTO.builder()
+                .inum(savedImage.getInum())
+                .uuid(savedImage.getUuid())
+                .imgName(savedImage.getImgName())
+                .path(savedImage.getPath())
+                .build();
+
+        return dto;
+    }
 
     @Value("${upload.base-dir}")
     private String baseDir;
 
     private final String thumbnailDirName = "thumbnails";
-    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 🔺 30MB 제한
+    private static final long MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB 제한
 
     public Image findById(Long inum) {
         return imageRepository.findById(inum).orElse(null);

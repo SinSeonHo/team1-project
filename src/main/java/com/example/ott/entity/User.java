@@ -48,12 +48,6 @@ public class User {
 
     @Setter
     @Column(unique = true)
-
-    @OneToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
-
-    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -87,7 +81,7 @@ public class User {
 
     @Setter
     @OneToOne
-    private Image profileImageUrl;
+    private Image image;
 
     // @OneToOne(mappedBy = "user")
     // private Favorites favorites;
@@ -96,4 +90,5 @@ public class User {
         this.id = id;
         this.password = password;
     }
+
 }
