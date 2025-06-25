@@ -2,16 +2,15 @@ package com.example.ott.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,6 +54,10 @@ public class Game extends BaseEntity {
     private int negative; // 싫어요 수
     @Column(length = 10000)
     private String synopsis; // 줄거리
+
+    // @Builder.Default
+    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    // private List<Reply> replies = new ArrayList<>(); // 댓글
 
     // @Builder.Default
     @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
@@ -119,4 +122,5 @@ public class Game extends BaseEntity {
     public void setImage(Image image) {
         this.image = image;
     }
+
 }

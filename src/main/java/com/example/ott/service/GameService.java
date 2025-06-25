@@ -1,7 +1,5 @@
 package com.example.ott.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,11 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.GameDTO;
+
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
+
+import com.example.ott.entity.Game;
+
 import com.example.ott.repository.GameRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

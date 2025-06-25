@@ -1,42 +1,35 @@
 package com.example.ott.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
-@ToString(exclude = { "movie", "game" })
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+
 @Getter
 @Setter
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = { "movie", "game", "user" })
 public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inum; // 이미지 번호
+
     private String uuid; // 이미지 고유번호
-    private String imgName; // 이미지이름
+    private String imgName; // 이미지 이름
     private String path; // 경로
 
-    @OneToOne
-    @JoinColumn(name = "mid")
+    private String thumbnailPath; // 썸네일 경로 추가
+
+    @OneToOne(mappedBy = "image")
     private Movie movie;
 
-    @OneToOne
-    @JoinColumn(name = "gid")
+    @OneToOne(mappedBy = "image")
     private Game game;
+
+    @OneToOne(mappedBy = "image")
+    private User user;
 
 }
