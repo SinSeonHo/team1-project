@@ -1,29 +1,36 @@
-// package com.example.ott.entity;
+package com.example.ott.entity;
 
-// @Entity
-// @Table(name = "product")
-// public class Product {
+import jakarta.persistence.*;
 
-// @Id
-// @GeneratedValue(strategy = GenerationType.IDENTITY)
-// @Column(name = "product-num")
-// private Long id;
+@Entity
+@Table(name = "product")
+public class Product {
 
-// @Column(name = "badge-name")
-// private String badgeName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product-num")
+    private Long id;
 
-// @Column(name = "type") // 🔹 타입 컬럼 추가
-// private String type;
+    @Column(name = "badge-name")
+    private String badgeName;
 
-// public void setId(Long id) {
-// this.id = id;
-// }
+    @Column(name = "type") // 🔹 타입 컬럼 추가
+    private String type;
 
-// public String getBadgeName() {
-// return badgeName;
-// }
+    // Getter & Setter
+    public Long getId() {
+        return id;
+    }
 
-// public void setBadgeName(String badgeName) {
-// this.badgeName = badgeName;
-// }
-// }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getBadgeName() {
+        return badgeName;
+    }
+
+    public void setBadgeName(String badgeName) {
+        this.badgeName = badgeName;
+    }
+}

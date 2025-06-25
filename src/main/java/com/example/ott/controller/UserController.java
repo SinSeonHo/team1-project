@@ -17,7 +17,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,10 +71,7 @@ public class UserController {
     public String getUserProfile(String id, Model model) {
 
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        
-        // user favorite movie 찾기
-
-
+        log.info("user Profile 조회 : {}", userProfileDTO);
         model.addAttribute("userProfileDTO", userProfileDTO);
         return "/user/userProfile";
     }
@@ -121,8 +117,4 @@ public class UserController {
         return "/user/login";
     }
 
-    @GetMapping("/myprofile")
-    public String myPage() {
-        return "myprofile"; // templates/mypage.html
-    }
 }
