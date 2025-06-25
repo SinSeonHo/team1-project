@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -80,7 +82,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
                 break;
 
             default:
-                log.info("일치하는 소셜이 없어요");
+                socials = Socials.NONE;
                 break;
         }
 
@@ -88,7 +90,6 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         Map<String, Object> customAttributes = new HashMap<String, Object>();
         customAttributes.put("name", name);
         customAttributes.put("email", email);
-
 
         User user = saveSocialUser(email, name, socials);
 
@@ -99,25 +100,53 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
 
     // 이메일이 DB에 존재할 경우 반환, 존재하지 않을 경우 DB에 추가
     private User saveSocialUser(String email, String name, Socials socials) {
-        User user = userRepository.findByEmail(email);
+        // 1. 현재 로그인된 유저 체크
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+            String currentUserId = ((CustomUserDetails) auth.getPrincipal()).getUsername();
+            User currentUser = userRepository.findById(currentUserId).get();
+            if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
 
+                if (userRepository.existsByEmail(email)) {
+                    throw new RuntimeException("이미 등록된 이메일입니다.");
+                } else {
+
+                    // 이메일 없는 기존 회원 → 소셜 이메일 추가
+                    currentUser.setEmail(email);
+                    currentUser.setSocials(socials);
+                    userRepository.save(currentUser);
+                    return currentUser;
+                }
+            }
+        }
+
+        // 2. 기존 방식
+        User user = userRepository.findByEmail(email);
         if (user == null) {
+            // 신규 회원
             User saveUser = User.builder()
                     .id(email)
                     .email(email)
                     .name(name)
-                    .nickname(name)
+                    .nickname(makeUniqueNickname(userRepository))
                     .password(passwordEncoder.encode("1111"))
                     .userRole(UserRole.USER)
                     .socials(socials)
                     .build();
             userRepository.save(saveUser);
-            System.out.println("saveUser 정보" + userRepository.findById(email));
-
             return userRepository.findByEmail(email);
         }
-
+        // throw new RuntimeException("이미 가입된 이메일입니다.");
         return user;
+    }
+
+    // 임시 닉네임 생성
+    public String makeUniqueNickname(UserRepository userRepository) {
+        String candidate;
+        do {
+            candidate = "user" + (int) (Math.random() * 100000);
+        } while (userRepository.existsByNickname(candidate));
+        return candidate;
     }
 
 }

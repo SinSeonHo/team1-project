@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,19 +13,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.ott.handler.CustomOAuthSuccessHandler;
+import com.example.ott.handler.CustomRegisterSuccessHandler;
 import com.example.ott.security.CustomOAuth2DetailsService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true) // debug 확인용, 배포시 삭제해야함
+@EnableWebSecurity(debug = false) // debug 확인용, 배포시 삭제해야함
 @Configuration
 public class SecurityConfig {
 
-
         private final CustomOAuth2DetailsService customOAuth2DetailsService;
-
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,18 +42,22 @@ public class SecurityConfig {
                                 .formLogin(login -> login
                                                 .loginPage("/user/login")
                                                 .defaultSuccessUrl("/")
+                                                .failureUrl("/user/login?error=true")
                                                 .permitAll())
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
-                                                .successHandler(new CustomOAuthSuccessHandler())
+                                                .successHandler(new CustomRegisterSuccessHandler())
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));
 
+                http
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/"));
+
                 return http.build();
         }
-
-        
 
         // CORS 에러
         @Bean
@@ -67,5 +71,11 @@ public class SecurityConfig {
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;
+        }
+
+        // 회원가입 시 자동 로그인을 위한 빈 등록
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+                return configuration.getAuthenticationManager();
         }
 }
