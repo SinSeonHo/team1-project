@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,9 +30,12 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 
+@EntityListeners(value = AuditingEntityListener.class)
 @Table(name = "user_table")
+@Entity
 public class User {
 
     @Id
