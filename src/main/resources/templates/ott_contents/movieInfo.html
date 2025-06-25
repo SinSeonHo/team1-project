@@ -133,7 +133,7 @@
                         </div> -->
                       </div>
                     </div>
-                    <div class="anime__details__btn">
+                    <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
                       <button class="follow-btn follow" th:data-mid="${movieInfo.mid}">Follow</button>
@@ -235,6 +235,7 @@
                 class="anime__review__item__text reply"
                 th:data-rno="${reply.rno}"
                 th:data-replyer="${reply.replyer}"
+                th:data-replyerNickname="${reply.replyerNickname}"
                 th:data-text="${reply.text}"
                 th:data-id="${reply.mid}"
                 th:data-mention="${reply.mention}"
@@ -243,12 +244,12 @@
                 <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
                 <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
                 <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">x</button>
-                <button type="button" class="update-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">
+                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:if="${#authentication.name == reply.replyer}" th:data-rno="${reply.rno}">x</button>
+                <button type="button" class="update-btn btn btn-secondary btn-sm" th:if="${#authentication.name == reply.replyer}" th:data-rno="${reply.rno}">
                   수정
                 </button>
-                <button type="button" class="mention-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}">
-                  대댓글 달기
+                <button type="button" class="mention-btn btn btn-secondary btn-sm" th:if="${#authentication.name != 'anonymousUser'}" th:data-rno="${reply.rno}">
+                  대댓글
                 </button>
                 <p th:text="${reply.text}">댓글 텍스트</p>
               </div>

@@ -17,37 +17,20 @@
             </div>
           </div>
         </div> -->
-      <div class="row">
-        <div class="col-lg-4 col-md-6" th:each="title : ${movies}">
-            <div class="product__item">
-              <div
-                class="product__item__pic set-bg"
-                th:if="${title.image}"
-                th:style="|background-image: url('/images/movieimages/신명.jpg')|"
-                loading="lazy"
-              >
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  </section>
-  <!-- Hero Section End -->
+    </section>
+    <!-- Hero Section End -->
 
-<!-- Head -->
+    <!-- Head -->
     <!-- Product Section Begin -->
     <section class="product spad">
       <div class="container">
         <div class="row">
-          <div class="col-lg-8">
             <div class="trending__product">
               <div class="row">
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <div class="section-title">
-                    <h4>
-                      Trending Now <img src="" alt="" srcset="" /> sample 확인하러
-                      가기
-                    </h4>
+                    <h4>Trending Now <img src="" alt="" srcset="" /> sample 확인하러 가기</h4>
                   </div>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4">
@@ -56,7 +39,6 @@
                   </div>
                 </div>
               </div>
-            </div>
             <div class="popular__product">
               <div class="row">
                 <div class="col-lg-8 col-md-8 col-sm-8">
@@ -66,24 +48,31 @@
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4">
                   <div class="btn__all">
-                    <a th:href="@{/api/movies/list}" class="primary-btn">View All <span class="arrow_right"></span></a>
+                    <a th:href="@{/api/movies/list}" class="primary-btn">View All</a>
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
                   <div class="product__item">
-                    <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
-                      <div class="ep" th:text="${movie.rank}+위" ></div>
-                      <div class="comment" th:text="'댓글 '+${movie.replies.size}"><i class="fa fa-comments"></i> 11개</div>
-                      <div class="view" th:text="${movie.showTm}+분"><i class="fa fa-eye"></i> 상영시간</div>
-                    </div>
+                    <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                      <img
+                        th:src="@{'/images/movieimages/' + ${movie.image.imgName}}"
+                        onerror="this.onerror=null; this.src='/images/sample.png';"
+                        alt="영화 이미지"
+                        loading="lazy"
+                        class="anime__details__pic"
+                      />
+                    </a>
+                    <div class="rank" th:text="${movie.rank}+위"></div>
                     <div class="product__item__text">
                       <ul>
                         <li th:text="${movie.nationNm}">Movie</li>
                         <li th:text="${movie.genres}">장르</li>
                       </ul>
-                      <h5><a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}">제목</a></h5>
+                      <h5>
+                        <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}">제목</a>
+                      </h5>
                     </div>
                   </div>
                 </div>
@@ -96,40 +85,51 @@
                 <div class="section-title">
                   <h4>게임 인기순위</h4>
                 </div>
-
-                <ul class="filter__controls">
-                  <li class="active" data-filter="*">Day</li>
-                  <li data-filter=".week">Week</li>
-                  <li data-filter=".month">Month</li>
-                  <li data-filter=".years">Years</li>
-                </ul>
-                <div class="filter__gallery">
-                  <div class="popular__product">
+              </div>
+              <div class="col-lg-4 col-md-4 col-sm-4">
+                <div class="btn__all">
+                  <a th:href="@{/api/games/list}" class="primary-btn">View All</a>
+                </div>
+              </div>
+              <ul class="filter__controls">
+                <li class="active" data-filter="*">Day</li>
+                <li data-filter=".week">Week</li>
+                <li data-filter=".month">Month</li>
+                <li data-filter=".years">Years</li>
+              </ul>
+              <div class="filter__gallery">
+                <div class="popular__product"></div>
+              </div>
               <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-6" th:each="game : ${games}">
                   <div class="product__item">
-                    <div class="product__item__pic set-bg" style="background-image: url('/img/sample.png')">
-                      <div class="ep" th:text="${game.rank}+위" ></div>
-                      <div class="comment" th:text="'댓글 '+${game.replies.size}"><i class="fa fa-comments"></i> 11개</div>
-                      <div class="view" th:text="${game.platform}"><i class="fa fa-eye"></i> 9141</div>
-                    </div>
+                    <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
+                      <img
+                        th:src="@{'/images/gameimages/' + ${game.image.imgName}}"
+                        onerror="this.onerror=null; this.src='/images/sample.png';"
+                        alt="게임 이미지"
+                        loading="lazy"
+                        class="anime__details__pic"
+                      />
+                    </a>
+                    <div class="rank" th:text="${game.rank}+위"></div>
                     <div class="product__item__text">
                       <ul>
                         <li th:text="${game.developer}">Game</li>
                         <li th:text="${game.genres}">Movie</li>
                       </ul>
-                      <h5><a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}">Sen to Chihiro no Kamikakushi</a></h5>
+                      <h5>
+                        <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}"
+                          >Sen to Chihiro no Kamikakushi</a
+                        >
+                      </h5>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-                  
-              </div>
-
-        </div>
+          </div>
       </div>
-  </section>
-</main>
-
+    </section>
+  </main>
 </html>
