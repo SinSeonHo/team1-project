@@ -1,18 +1,11 @@
 package com.example.ott.entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,30 +14,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@ToString
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@Builder
 
-@EntityListeners(value = AuditingEntityListener.class)
 @Entity
 @Table(name = "user_table")
 public class User {
 
+    // TODO : UserCode 생성 기능 추가 필요
     @Id
     private String id;
 
-    private String name; // 실명
+    private String name;
 
-    @Setter
-    @Column(unique = true)
-    private String nickname; // 별명
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
-    @Setter
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -53,38 +44,10 @@ public class User {
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.GUEST;
-
-    @Setter
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private Socials socials = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
+    private UserRole userRole = UserRole.USER;
 
     @Builder.Default
-    @Setter
     private Long mileage = 0L;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdDate;
-
-    @LastModifiedDate
-    private LocalDateTime updatedDate;
-
-    @Setter
-    private String grade;
-
-    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
-
-    @Setter
-    @OneToOne
-    private Image profileImageUrl;
-
-    // @OneToOne(mappedBy = "user")
-    // private Favorites favorites;
-
-    public void changeAccountInfo(String id, String password) {
-        this.id = id;
-        this.password = password;
-    }
+    // private Struct struct;
 }
