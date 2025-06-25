@@ -2,21 +2,17 @@ package com.example.ott.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Game;
-import com.example.ott.entity.Movie;
 import com.example.ott.service.GameService;
-import com.example.ott.service.MovieService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -49,8 +45,9 @@ public class GameController {
     @GetMapping("/list")
     public String getGameList(Model model, PageRequestDTO pageRequestDTO) {
         log.info("gameList 요청 {}", pageRequestDTO);
-        List<Game> list = gameService.getGameAll();
-        model.addAttribute("games", list);
+        // List<Game> list = gameService.getGameAll();
+        PageResultDTO<GameDTO> result = gameService.getGameRequest(pageRequestDTO);
+        model.addAttribute("games", result.getDtoList());
         return "ott_contents/gameList";
     }
 

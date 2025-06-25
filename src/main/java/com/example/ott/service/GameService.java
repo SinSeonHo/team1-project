@@ -8,7 +8,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.GenreEnum;
@@ -36,6 +41,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final ReplyService replyService;
+    private final ModelMapper modelMapper;
 
     @Scheduled(cron = "0 02 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -314,6 +320,20 @@ public class GameService {
         return result;
     }
 
+    public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
+        Page<Game> result = gameRepository.search(requestDTO);
+
+        List<GameDTO> dtoList = result.stream()
+                .map(game -> entityToDto(game))
+                .collect(Collectors.toList());
+
+        return PageResultDTO.<GameDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(requestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
     // 게임 삭제
     public void deleteGame(String gid) {
         gameRepository.deleteById(gid);
@@ -322,5 +342,29 @@ public class GameService {
     // 게임 수정 MANAGER, ADMIN만 수정 가능하도록 할 예정
     public Game updateGame(Game game) {
         return gameRepository.save(game); // ID가 있으면 update
+    }
+
+    public GameDTO entityToDto(Game game) {
+        GameDTO dto = GameDTO.builder()
+                .ageRating(game.getAgeRating())
+                .appid(game.getAppid())
+                .ccu(game.getCcu())
+                .developer(game.getDeveloper())
+                .discountRate(game.getDiscountRate())
+                .genres(game.getGenres())
+                .gid(game.getGid())
+                .imgUrl(game.getImage().getImgName())
+                .negative(game.getNegative())
+                .originalPrice(game.getOriginalPrice())
+                .platform(game.getPlatform())
+                .positive(game.getPositive())
+                .price(game.getPrice())
+                .publisher(game.getPublisher())
+                .rank(game.getRank())
+                .replies(game.getReplies().size())
+                .synopsis(game.getSynopsis())
+                .title(game.getTitle())
+                .build();
+        return dto;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.ott.repository;
+package com.example.ott.repository.search;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class MovieSearchImpl implements MovieSearch {
             builder.and(searchBuilder);
         }
 
-        Pageable pageable = requestDTO.getPageable(Sort.by("id").descending());
+        Pageable pageable = requestDTO.getPageable(Sort.by("rank").descending());
 
         JPAQuery<Movie> query = queryFactory
                 .selectFrom(movie)

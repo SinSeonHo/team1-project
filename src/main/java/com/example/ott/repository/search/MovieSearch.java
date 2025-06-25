@@ -1,4 +1,4 @@
-package com.example.ott.repository;
+package com.example.ott.repository.search;
 
 import org.springframework.data.domain.Page;
 
