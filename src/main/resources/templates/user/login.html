@@ -1,106 +1,80 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="css">
+    
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+  </th:block>
   <main layout:fragment="content">
-    <div class="container text-center mt-3" style="max-width: 340px; background: #dbe2ef;">
-      <div class="row justify-content-center mt-5 pt-2">
-        <h2 class="row mb-3 text-light justify-content-center w-100">로그인</h2>
-        <div class="col-12">
-          <form action="#">
-            <input
-              type="text"
-              class="form-control mb-3 w-100"
-              placeholder="아이디 입력"
+    
+<div class="login-block container d-block">
+  <!-- Heading -->
+  <h1 class="title text-center fw-bold mt-3" id="title">로그인</h1>
+  
+  <!-- Links -->
+  <ul class="links d-flex w-100 list-unstyled my-4" id="links">
+    <li class="link me-3" th:classappend="${securityUserDTO.name != null} ? '' : 'active'" id="loginTab">
+      <span id="signin">로그인</span>
+    </li>
+    <li class="link " th:classappend="${securityUserDTO.name == null} ? '' : 'active'" id="registerTab">
+      <span id="signup" >회원가입</span>
+    </li>
+    <li class="link ms-auto">
+      <span id="reset">초기화</span>
+    </li>
+  </ul>
 
-            />
-
-            <input
-              type="text"
-              class="form-control mb-3 w-100"
-              placeholder="비밀번호 입력"
-            />
-
-            <button type="submit" class="site-btn">로그인</button>
-          </form>
-          <a href="#" class="forget_pass">Forgot Your Password?</a>
-        </div>
-      </div>
-
-      <div
-        class="d-flex flex-column gap-2 row"
-        style="margin: 0 auto"
-      >
+  <!-- 로그인 폼 -->
+  <form  th:action="@{/user/login}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name != null} ? ' d-none' : ''" id="loginForm">
+       <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="username" name="username"/>
+       <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" id="password" name="password"/>
+       
+    <!-- sign in button -->
+    <button class="site-btn w-100 mt-1">
+      로그인
+    </button>
+  </form >
+  <!-- 회원가입 폼 -->
+  <form  th:action="@{/user/register}" th:object="${securityUserDTO}" method="post" class="w-100 mx-auto d-flex flex-column" th:classappend="${securityUserDTO.name == null} ? ' d-none' : ''" id="registerForm">
+       <!-- <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" /> -->
+       <input type="text" placeholder="이름 입력" class="form-control-lg mb-3" name="name" th:field="*{name}"/>
+       <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+       <input type="text" placeholder="아이디 입력" class="form-control-lg mb-3" id="id" name="id" th:field="*{id}"/>
+       <div th:if="${#fields.hasErrors('id')}" th:errors="*{id}" class="text-danger"></div>
+       <input type="password" placeholder="비밀번호 입력" class="form-control-lg mb-3" name="password" th:field="*{password}"/>
+       <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+    <!-- sign in button -->
+    <button class="site-btn w-100 mt-1">
+      회원가입
+    </button>
+  </form >
+  <!-- separator -->
+  <div class="separator w-100">
+    <p class="w-100" style="color: white;">OR</p>
+  </div>
         <!-- Google -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #fff;
-            color: #444;
-            border: 1px solid #ddd;
-            font-weight: 600;
-            border-radius: 6px;
-          "
-        >
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="구글로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>Google로 로그인</span>
+        <button id="google-login" class="social-login-btn google-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/googleSquare.png}" alt="구글로고" class="social-login-img"/>
+          <span class="social-login-text">구글로 로그인</span>
         </button>
-
         <!-- Kakao -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #fee500;
-            color: #3c1e1e;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-          "
-        >
-          <img
-            src="https://cdn.jsdelivr.net/gh/basskung/kakaologin/assets/kakao_icon.png"
-            alt="카카오로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>카카오로 로그인</span>
+        <button id="kakao-login" class="social-login-btn kakao-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/kakaoSquareReal.png}" alt="카카오로고" class="social-login-img"/>
+          <span class="social-login-text">카카오로 로그인</span>
         </button>
-
         <!-- Naver -->
-        <button
-          class="btn d-flex align-items-center px-4 py-2 w-100"
-          style="
-            background-color: #03c75a;
-            color: white;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-          "
-        >
-          <img
-            th:src="@{/social/naverSquare.png}"
-            alt="네이버로고"
-            style="
-              width: 22px;
-              height: 22px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
-          <span>네이버로 로그인</span>
+        <button id="naver-login" class="social-login-btn naver-login d-flex align-items-center justify-content-center w-100 mb-3">
+          <img th:src="@{/social/naverSquare.png}" alt="네이버로고" class="social-login-img"/>
+          <span class="social-login-text">네이버로 로그인</span>
         </button>
-      </div>
-    </div>
+      
+</div>
+
+    
+    <th:block layout:fragment="script">
+      <script th:src="@{/js/login.js}"></script>
+      <script th:if="${param.error}">
+    alert('아이디 또는 비밀번호가 잘못되었습니다.');
+  </script>
+    </th:block>
   </main>
 </html>
