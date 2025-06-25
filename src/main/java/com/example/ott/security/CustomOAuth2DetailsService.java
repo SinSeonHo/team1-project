@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
+
 import com.example.ott.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -108,7 +109,7 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
             if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
 
                 if (userRepository.existsByEmail(email)) {
-                    throw new RuntimeException("이미 등록된 이메일입니다.");
+                    throw new OAuth2AuthenticationException("이미 등록된 이메일입니다."); // 기존 로그인 상황에서 존재하는 소셜 계정으로 인증을 시도 할 경우
                 } else {
 
                     // 이메일 없는 기존 회원 → 소셜 이메일 추가

@@ -42,25 +42,6 @@ public class UserService {
 
         return userRepository.save(user).getId();
 
-        // 자동 로그인 (반드시 평문 비밀번호 사용!)
-        // UsernamePasswordAuthenticationToken authToken = new
-        // UsernamePasswordAuthenticationToken(
-        // user.getId(),
-        // securityUserDTO.getPassword());
-
-        // // 1) 인증 시도
-        // Authentication authentication =
-        // authenticationManager.authenticate(authToken);
-
-        // // 2) 현재 스레드 컨텍스트에 인증 정보 등록
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // // 3) 세션에 인증 정보 저장 (다음 요청에도 유지)
-        // HttpSession session = request.getSession(true);
-        // session.setAttribute(
-        // HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-        // SecurityContextHolder.getContext());
-
     }
 
     // 프로필 조회

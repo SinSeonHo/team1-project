@@ -10,8 +10,8 @@
           loginTab.addEventListener("click", function () {
             loginTab.classList.add("active");
             registerTab.classList.remove("active");
-            loginForm.classList.remove("d-none");
-            registerForm.classList.add("d-none");
+            loginForm.classList.remove("really-none");
+            registerForm.classList.add("really-none");
             // title.innerText("로그인")
             title.textContent = "로그인"
           });
@@ -19,8 +19,8 @@
           registerTab.addEventListener("click", function () {
             registerTab.classList.add("active");
             loginTab.classList.remove("active");
-            registerForm.classList.remove("d-none");
-            loginForm.classList.add("d-none");
+            registerForm.classList.remove("really-none");
+            loginForm.classList.add("really-none");
             title.textContent = "회원가입"
           });
 
