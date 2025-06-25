@@ -30,25 +30,6 @@ public class ThumbnailController {
         return "uploads/thumbnail";
     }
 
-    /** 2. 기존 원본 이미지 번호(inum)로 썸네일 생성 요청 처리 */
-    @PostMapping("/image")
-    public String createThumbnail(@RequestParam("inum") Long inum,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Image image = imageService.findById(inum);
-            if (image == null) {
-                redirectAttributes.addFlashAttribute("error", "이미지를 찾을 수 없습니다.");
-                return "redirect:/thumbnail/image";
-            }
-            imageService.createThumbnail(image);
-            redirectAttributes.addFlashAttribute("message", "썸네일 생성 완료");
-        } catch (Exception e) {
-            log.error("썸네일 생성 실패", e);
-            redirectAttributes.addFlashAttribute("error", "썸네일 생성 실패: " + e.getMessage());
-        }
-        return "redirect:/thumbnail/image";
-    }
-
     /** 3. 썸네일 이미지 파일 직접 업로드 처리 (썸네일 전용 업로드) */
     @PostMapping("/upload")
     public String uploadThumbnailFile(@RequestParam("file") MultipartFile file,
