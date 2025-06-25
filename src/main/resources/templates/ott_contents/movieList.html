@@ -38,17 +38,22 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
             <div class="product__item">
-              <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
-                <img
-                  th:src="@{'/images/movieimages/' + ${movie.image.imgName}}"
-                  onerror="this.onerror=null; this.src='/images/sample.png';"
-                  alt="영화 이미지"
-                  loading="lazy"
-                  class="product__item__pic"
-              /></a>
-              <!-- <div class="ep">18 / 18</div> -->
-              <!-- 추후 평점위치 <div class="comment"><i class="fa fa-comments"></i> 11</div> -->
-              <!-- 추후 댓글갯수위치 <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
+              <div class="product__item__pic">
+                <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                  <img
+                    th:src="@{'/images/movieimages/' + ${movie.image.imgName}}"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="영화 이미지"
+                    loading="lazy"
+                    class="product__item__pic"
+                  />
+                  <!-- 팔로우수  -->
+                  <div class="comment_movie">11</div>
+                  <!-- 댓글갯수  -->
+                  <div class="view_movie" th:text="'Re: '+${movie.replies.size} + 개"></div>
+                </a>
+                <!-- <div class="ep">18 / 18</div> -->
+              </div>
 
               <div class="product__item__text">
                 <ul class="genre">

@@ -12,22 +12,22 @@ from selenium.webdriver.common.by import By
 BASE_PATH = os.path.abspath("./src/main/resources/static/images/movieimages")
 os.makedirs(BASE_PATH, exist_ok=True)
 
-# 오라클 DB 연결
+# Oracle DB 연결
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
 conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
 cursor = conn.cursor()
 
-# TMDb API 정보
+# TMDb API 설정
 API_KEY = "cfa721d14c0aa4e4b28b3f26e81369f9"
 BASE_API_URL = "https://api.themoviedb.org/3/search/movie"
 IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
-# Selenium 설정
+# Selenium (크롬 헤드리스 설정)
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
 driver = webdriver.Chrome(options=options)
 
-# 이미지 없는 영화 조회
+# 이미지가 없는 영화 조회
 cursor.execute("SELECT mid, title FROM movie WHERE image_id IS NULL")
 movies = cursor.fetchall()
 
@@ -36,11 +36,11 @@ for mid, title in movies:
 
     poster_url = None
 
-    # 1) Selenium 네이버 이미지 검색 시도
+    # 1) 네이버 이미지 검색 시도
     try:
-        search_url = f"https://search.naver.com/search.naver?query={title}+포토"
+        search_url = f"https://search.naver.com/search.naver?query={title}+포스터"
         driver.get(search_url)
-        time.sleep(2)  # 페이지 로딩 대기
+        time.sleep(2)
 
         imgs = driver.find_elements(
             By.CSS_SELECTOR, ".area_card._image_base_poster ul li a img"
@@ -50,15 +50,13 @@ for mid, title in movies:
             if poster_url and poster_url.strip():
                 break
 
-        if not poster_url or poster_url.strip() == "":
-            poster_url = None
-            print(f"[{title}] 네이버에서 유효한 이미지 없음, TMDb에서 검색 시도")
+        if not poster_url:
+            print(f"[{title}] 네이버에서 유효한 이미지 없음 → TMDb로 전환")
 
     except Exception as e:
-        print(f"[{title}] 네이버 이미지 검색 중 오류 발생: {e}")
-        poster_url = None
+        print(f"[{title}] 네이버 이미지 검색 오류: {e}")
 
-    # 2) Selenium으로 못 찾으면 TMDb API로 이미지 검색 시도
+    # 2) TMDb 검색
     if not poster_url:
         try:
             params = {
@@ -75,47 +73,52 @@ for mid, title in movies:
                     poster_url = IMAGE_BASE_URL + poster_path
                     print(f"[{title}] TMDb에서 포스터 찾음")
                 else:
-                    print(f"[{title}] TMDb에서 포스터 없음")
+                    print(f"[{title}] TMDb에 포스터 없음")
             else:
                 print(f"[{title}] TMDb 검색 결과 없음")
 
         except Exception as e:
-            print(f"[{title}] TMDb 이미지 검색 중 오류 발생: {e}")
+            print(f"[{title}] TMDb 오류: {e}")
             poster_url = None
 
+    # 포스터 URL 없으면 패스
     if not poster_url:
-        print(f"[{title}] 이미지 검색 실패 - 건너뜀")
+        print(f"[{title}] 포스터 없음 → 건너뜀")
         continue
 
     try:
-        # UUID 및 안전한 파일명 생성
+        # 안전한 파일명 생성 (한글 제거)
         unique_id = str(uuid.uuid4())
         safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip())
-        safe_title = safe_title.strip("_- ")
         ext = poster_url.split(".")[-1].split("?")[0]
         file_name = (
             f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
         )
         full_path = os.path.join(BASE_PATH, file_name)
 
-        # 이미지 다운로드
+        # 이미지 저장
         urlretrieve(poster_url, full_path)
         print(f"[{title}] 이미지 저장 완료: {file_name}")
 
-        # DB 저장
+        # DB 저장 (RETURNING inum INTO 사용)
+        output_inum = cursor.var(cx_Oracle.NUMBER)
         cursor.execute(
-            "INSERT INTO image (img_name, path, mid, uuid) VALUES (:img_name, :path, :mid, :uuid)",
+            """
+            INSERT INTO image (uuid, img_name, path) 
+            VALUES (:uuid, :img_name, :path)
+            RETURNING inum INTO :output_inum
+            """,
             {
-                "img_name": file_name,
-                "path": full_path,
-                "mid": mid,
                 "uuid": unique_id,
+                "img_name": file_name,
+                "path": file_name,
+                "output_inum": output_inum,
             },
         )
 
-        cursor.execute("SELECT MAX(inum) FROM image")
-        image_id = cursor.fetchone()[0]
+        image_id = int(output_inum.getvalue()[0])
 
+        # movie 테이블과 연결
         cursor.execute(
             "UPDATE movie SET image_id = :imgid WHERE mid = :mid",
             {"imgid": image_id, "mid": mid},
@@ -125,10 +128,10 @@ for mid, title in movies:
         print(f"[{title}] DB 저장 및 연결 완료")
 
     except Exception as e:
-        print(f"[ERROR] {title} 처리 실패: {e}")
+        print(f"[ERROR] {title} 처리 중 오류 발생: {e}")
 
 # 마무리
 driver.quit()
 cursor.close()
 conn.close()
-print("모든 작업 완료")
+print("✅ 모든 작업 완료")
