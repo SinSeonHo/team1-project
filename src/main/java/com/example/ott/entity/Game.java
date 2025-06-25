@@ -9,8 +9,11 @@ import jakarta.persistence.Entity;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+<<<<<<< HEAD
 import jakarta.persistence.OneToMany;
 
+=======
+>>>>>>> f0afdc700d8bcc460534f8fa0feb509bbdd38769
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,32 +43,22 @@ public class Game extends BaseEntity {
 
     private String platform; // 플랫폼
 
+    private int price; // 가격
     private int rank; // 순위
 
     private String genres; // 장르
 
-    private int originalPrice; // 할인 전 가격
-    private int price; // 할인 적용된 현재 가격
-    private int discountRate; // 할인율 (예: 20 -> 20%)
-    private String publisher; // 배급사
-    private String ageRating; // 이용연령등급
-
-    private int positive; // 좋아요 수
-    private int negative; // 싫어요 수
-    @Column(length = 10000)
-    private String synopsis; // 줄거리
-
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Reply> replies = new ArrayList<>(); // 댓글
 
     // @Builder.Default
-    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    private List<Reply> replies = new ArrayList<>(); // 댓글
-
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
-    private Image image;
+    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
+    // 연동예정
 
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
@@ -73,34 +66,6 @@ public class Game extends BaseEntity {
 
     public void setPrice(int price) {
         this.price = price;
-    }
-
-    public void setOriginalPrice(int originalPrice) {
-        this.originalPrice = originalPrice;
-    }
-
-    public void setDiscountRate(int discountRate) {
-        this.discountRate = discountRate;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setAgeRating(String ageRating) {
-        this.ageRating = ageRating;
-    }
-
-    public void setPositive(int positive) {
-        this.positive = positive;
-    }
-
-    public void setNegative(int negative) {
-        this.negative = negative;
-    }
-
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
     }
 
     public void setRank(int rank) {
@@ -117,10 +82,6 @@ public class Game extends BaseEntity {
 
     public void setGenres(String genres) {
         this.genres = genres;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
     }
 
 }

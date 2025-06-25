@@ -21,7 +21,7 @@ public class Image {
     private String path; // 원본 이미지 저장 경로
     private String thumbnailPath; // 썸네일 이미지 저장 경로
 
-    @OneToOne(mappedBy = "image", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "image")
     private Movie movie;
 
     @OneToOne(mappedBy = "image", fetch = FetchType.LAZY)

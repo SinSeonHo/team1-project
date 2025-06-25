@@ -8,8 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -35,7 +33,7 @@ public class Movie extends BaseEntity {
     private String openDate; // 개봉일
 
     @Column(nullable = false)
-    private int rank; // 순위
+    private int rank;
 
     @Column(unique = true)
     private String movieCd; // KOBIS 고유 코드
@@ -45,18 +43,17 @@ public class Movie extends BaseEntity {
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
     private String genres; // 장르
-    private int showTm; // 상영시간
-    private String nationNm; // 제작국가
-    private String gradeNm; // 이용등급
-    @Column(length = 10000)
-    private String synopsis; // 줄거리
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
-    private Image image;
+    // @Builder.Default
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
+    // 연동예정
+
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
+    // private List<Genre> genres = new ArrayList<>();
 
     public void setTitle(String title) {
         this.title = title;
@@ -82,12 +79,8 @@ public class Movie extends BaseEntity {
         this.genres = genres;
     }
 
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image image;
 
 }
