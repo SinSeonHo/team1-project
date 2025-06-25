@@ -54,12 +54,12 @@
                   <input type="text" class="form-control user-info-value"
                          id="userid" name="id" th:value="*{id}" readonly />
                 </div>
-                <div class="user-info-item" th:if="!*{email} == null and *{nickname} != null">
+                <div class="user-info-item" th:if="*{email} != null">
                   <label for="email" class="user-info-label">이메일</label>
                   <span id="email" name="email" class="form-control user-info-value">[[*{email} ?: '인증 필요']]</span>
                 </div>
                 <!-- 소셜 인증 버튼(이메일 없을 때만) -->
-                <div class="user-info-item" th:unless="!*{email} == null and *{nickname} != null">
+                <div class="user-info-item" th:if="*{email} == null">
                   <div class="mb-2" style="font-weight: 500; color: #fff;">이메일 인증</div>
                   <div class="d-flex flex-row gap-3 mb-2 justify-content-start">
                     <a href="/oauth2/authorization/google"

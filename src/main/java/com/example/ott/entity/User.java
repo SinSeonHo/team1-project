@@ -46,15 +46,12 @@ public class User {
     @Column(unique = true)
     private String nickname; // 별명
 
-    @Setter
-    @Column(unique = true)
-
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
 
     @Setter
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -85,10 +82,6 @@ public class User {
     private String grade;
 
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
-
-    @Setter
-    @OneToOne
-    private Image profileImageUrl;
 
     // @OneToOne(mappedBy = "user")
     // private Favorites favorites;
