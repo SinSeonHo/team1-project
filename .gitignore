@@ -44,5 +44,5 @@ build/
 application-oauth.properties
 
 ### img 파일 무시 ###
-*.png
-*.jpg
+images/*.png
+images/*.jpg
