@@ -53,6 +53,7 @@ public class User {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @Setter
     @Column(nullable = false, unique = true)
     private String email;
 
