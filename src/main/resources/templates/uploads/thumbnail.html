@@ -7,7 +7,7 @@
 
 <body>
     <h1>프로필 업로드</h1>
-    <form method="post" th:action="@{/thumbnail/upload}" enctype="multipart/form-data">
+    <form method="post" th:action="@{/thumbnail/image}" enctype="multipart/form-data">
         <label for="file">프로필 이미지 파일 업로드:</label>
         <input type="file" name="file" id="file" accept="image/*" required />
         <button type="submit">프로필 업로드</button>

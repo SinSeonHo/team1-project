@@ -8,3 +8,9 @@ document.querySelectorAll(".user-info-value").forEach(function (input) {
   });
 });
 
+// 이미지가 변경된 경우에만 새로고침
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get("img") === "updated" && !window.location.hash.includes("#reloaded")) {
+  window.location.hash = "#reloaded";
+  window.location.reload();
+}
