@@ -1,16 +1,27 @@
 package com.example.ott.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.GameDTO;
+import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.repository.GameRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,6 +37,8 @@ import lombok.extern.log4j.Log4j2;
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final ReplyService replyService;
+    private final ModelMapper modelMapper;
 
     @Scheduled(cron = "0 01 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -188,9 +201,44 @@ public class GameService {
         return gameRepository.findById(gid);
     }
 
+    // 인기 게임 목록 조회
+    public List<Game> getGameRank(int num) {
+        List<Game> list = gameRepository.findAll(Sort.by("rank"));
+        List<Game> result;
+        // originalList에 10개 이상 있으면 0~9까지 자르고, 아니면 전부 복사
+        if (list.size() > num) {
+            result = new ArrayList<>(list.subList(0, num));
+        } else {
+            result = new ArrayList<>(list);
+        }
+        return result;
+    }
+
     // 전체 게임 목록 조회
     public List<Game> getGameAll() {
         return gameRepository.findAll();
+    }
+
+    public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
+        Page<Game> result = gameRepository.search(requestDTO);
+
+        List<GameDTO> dtoList = result.stream()
+                .map(game -> entityToDto(game))
+                .collect(Collectors.toList());
+
+        return PageResultDTO.<GameDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(requestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
+    public List<GameDTO> getRandom(int num) {
+        List<GameDTO> result;
+        List<Game> list = gameRepository.findAll();
+        result = list.stream().map(game -> entityToDto(game)).collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(result);
+        return result.subList(0, Math.min(num, result.size()));
     }
 
     // 게임 삭제
@@ -201,5 +249,29 @@ public class GameService {
     // 게임 수정 MANAGER, ADMIN만 수정 가능하도록 할 예정
     public Game updateGame(Game game) {
         return gameRepository.save(game); // ID가 있으면 update
+    }
+
+    public GameDTO entityToDto(Game game) {
+        GameDTO dto = GameDTO.builder()
+                .ageRating(game.getAgeRating())
+                .appid(game.getAppid())
+                .ccu(game.getCcu())
+                .developer(game.getDeveloper())
+                .discountRate(game.getDiscountRate())
+                .genres(game.getGenres())
+                .gid(game.getGid())
+                .imgUrl(game.getImage().getImgName())
+                .negative(game.getNegative())
+                .originalPrice(game.getOriginalPrice())
+                .platform(game.getPlatform())
+                .positive(game.getPositive())
+                .price(game.getPrice())
+                .publisher(game.getPublisher())
+                .rank(game.getRank())
+                .replies(game.getReplies().size())
+                .synopsis(game.getSynopsis())
+                .title(game.getTitle())
+                .build();
+        return dto;
     }
 }

@@ -19,6 +19,7 @@ public class ReplyDTO {
     private int recommend;
     // 댓글단 유저 아이디
     private String replyer;
+    private String replyerNickname;
     // 영화 아이디
     private String mid;
     // 게임 아이디

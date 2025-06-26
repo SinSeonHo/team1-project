@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Movie;
 import com.example.ott.service.MovieService;
 // import com.example.ott.service.ReplyService;
@@ -44,10 +46,15 @@ public class MovieController {
 
     // movie 전체 리스트
     @GetMapping("/list")
-    public String getMovieList(Model model, PageRequestDTO pageRequestDTO) {
-        log.info("movieList 요청 {}", pageRequestDTO);
-        List<Movie> list = movieService.getMovieAll();
-        model.addAttribute("movies", list);
+    // public String getMovieList(Model model, PageRequestDTO pageRequestDTO) {
+    // log.info("movieList 요청 {}", pageRequestDTO);
+    // List<Movie> list = movieService.getMovieAll();
+    // model.addAttribute("movies", list);
+    // return "ott_contents/movieList";
+    // }
+    public String list(PageRequestDTO pageRequestDTO, Model model) {
+        PageResultDTO<MovieDTO> result = movieService.getSearch(pageRequestDTO);
+        model.addAttribute("movies", result.getDtoList());
         return "ott_contents/movieList";
     }
 

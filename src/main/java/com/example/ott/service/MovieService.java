@@ -3,17 +3,24 @@ package com.example.ott.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.MovieDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 
 import com.example.ott.entity.Movie;
@@ -35,6 +42,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     // private final ReplyRepository replyRepository;
     private final ReplyService replyService;
+    private final ModelMapper modelMapper;
 
     @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -227,10 +235,47 @@ public class MovieService {
         return result;
     }
 
+    public PageResultDTO<MovieDTO> getSearch(PageRequestDTO requestDTO) {
+        Page<Movie> result = movieRepository.search(requestDTO);
+
+        List<MovieDTO> dtoList = result.stream()
+                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .collect(Collectors.toList());
+
+        return PageResultDTO.<MovieDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(requestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
     // 전체 영화 목록 조회
     public List<Movie> getMovieAll() {
         log.info("영화 전체목록 조회");
         return movieRepository.findAll();
+    }
+
+    // 영화 목록 조회
+    public List<Movie> getMovieRank(int num) {
+        List<Movie> result;
+        List<Movie> list = movieRepository.findAll(Sort.by("rank"));
+        if (list.size() > num) {
+            result = new ArrayList<>(list.subList(0, num));
+        } else {
+            result = new ArrayList<>(list);
+        }
+        return result;
+    }
+
+    public List<MovieDTO> getRandom(int num) {
+        List<MovieDTO> result;
+        List<Movie> list = movieRepository.findAll();
+        result = list.stream()
+                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        Collections.shuffle(result);
+        return result.subList(0, Math.min(num, result.size()));
     }
 
     // 영화 삭제
@@ -303,4 +348,15 @@ public class MovieService {
 
         return movieDTO;
     }
+
+    // public MovieDTO entityToDto(Movie movie) {
+    // MovieDTO dto = MovieDTO.builder()
+    // .actors(movie.getActors())
+    // .title(movie.getTitle())
+    // .mid(movie.getMid())
+    // .director(movie.getDirector())
+    // .
+    // .build();
+    // return dto;
+    // }
 }

@@ -26,7 +26,7 @@
   }
 
   /* game 이미지크기조절 */
-  img {
+  .img {
     height: 270px !important;
   }
 </style>
@@ -125,7 +125,7 @@
                         </div>
                       </div>
                     <!-- </div> -->
-                    <div class="anime__details__btn">
+                    <div class="anime__details__btn" th:if="${#authentication.name}" >
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
                       <button class="follow-btn follow" th:data-mid="${gameInfo.gid}">Follow</button>
@@ -226,13 +226,26 @@
               <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
                 <img src="img/anime/review-1.jpg" alt="" />
               </div>
-              <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
-                <a class="replyer text-light" th:text="${reply.replyer}"></a>
-                <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-                <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
-                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
-                <p th:text="${reply.text}">댓글 텍스트</p>
-              </div>
+              <div
+              class="anime__review__item__text reply"
+              th:data-rno="${reply.rno}"
+              th:data-replyer="${reply.replyer}"
+              th:data-replyerNickname="${reply.replyerNickname}"
+              th:data-text="${reply.text}"
+              th:data-id="${reply.gid}"
+              th:data-mention="${reply.mention}"
+              th:data-ref="${reply.ref}"
+            >
+              <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
+              <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
+              <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+              <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}">x</button>
+              <button type="button" class="update-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}" >수정</button>
+              <button type="button" class="mention-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name != 'anonymousUser'}">
+                대댓글
+              </button>
+              <p th:text="${reply.text}">댓글 텍스트</p>
+            </div>
             </div>
 
             <!-- 댓글 리스트 끝-->
@@ -246,20 +259,20 @@
             <a class="mention text-light"></a>
             <form id="replyForm" method="post">
               <input type="hidden" name="gid" th:value="${gameInfo.gid}" />
-              <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
               <input type="hidden" name="rno" />
-              <input type="hidden" name="replyer" th:value="user1" />
+              <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
               <textarea name="text" placeholder="Your Comment"></textarea>
               <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
             </form>
           </div>
           <!-- 댓글 작성 폼 끝 -->
         </div>
       </div>
       <script>
-        const mid = "[[${gameInfo.gid}]]";
+        const gid = "[[${gameInfo.gid}]]";
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script th:src="@{/js/reply.js}"></script>
