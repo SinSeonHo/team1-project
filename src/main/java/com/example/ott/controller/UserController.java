@@ -80,7 +80,7 @@ public class UserController {
     public String getUserProfile(String id, Model model) {
 
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        log.info("user Profile 조회 : {}", userProfileDTO);
+        // log.info("이거 와 안되나 : {}", userProfileDTO.getProfileImageUrl());
         model.addAttribute("userProfileDTO", userProfileDTO);
 
         // 유저가 팔로우 한 콘텐츠들 사진 정보
@@ -129,6 +129,23 @@ public class UserController {
             model.addAttribute("securityUserDTO", new SecurityUserDTO());
         }
         return "/user/login";
+    }
+
+    @PostMapping("/uploadProfile")
+    public String postUploadProfile(@RequestParam("file") MultipartFile file, String id, RedirectAttributes rttr) {
+        try {
+            log.info("image upload 시도");
+            Image savedThumbnail = imageService.uploadThumbnailImage(file);
+            log.info("user에 이미지 정보 주입 시도 {}, userId: {}", savedThumbnail, id);
+            userService.saveUserProfile(savedThumbnail, id);
+
+        } catch (IOException e) {
+
+            System.out.println("일단 에러났어요.");
+        }
+
+        rttr.addAttribute("id", id);
+        return "redirect:/user/userProfile?img=updated";
     }
 
 }

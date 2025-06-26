@@ -58,6 +58,13 @@ public class Movie extends BaseEntity {
     @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
     private Image image;
 
+    @Builder.Default
+    private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
+
+    public void setFollowcnt(int followcnt) {
+        this.followcnt = followcnt;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

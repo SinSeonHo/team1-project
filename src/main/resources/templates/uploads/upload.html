@@ -7,18 +7,26 @@
   <body>
     <h2>이미지 업로드</h2>
 
+    <!-- ✅ 업로드 폼 -->
     <form method="post" enctype="multipart/form-data" th:action="@{/images/image}">
       <input type="file" name="file" required />
-      <button type="submit">이미지 업로드</button>
+      <button type="submit">업로드</button>
     </form>
 
-    <div th:if="${image != null}">
-      <h3>업로드된 이미지:</h3>
-      <img th:src="@{/images/view/{file}(file=${image.path})}" alt="업로드된 이미지" style="max-width: 400px" />
-      <p>파일명: <span th:text="${image.imgName}"></span></p>
+    <!-- ✅ 성공 메시지 -->
+    <div th:if="${message}">
+      <p style="color: green" th:text="${message}"></p>
     </div>
 
-    <div th:if="${error != null}">
+    <!-- ✅ 업로드된 이미지 표시 -->
+    <div th:if="${savedFilename}">
+      <h3>업로드된 이미지</h3>
+      <img th:src="@{/images/view/{file}(file=${savedFilename})}" alt="업로드된 이미지" style="max-width: 500px" />
+      <p><strong>파일명:</strong> <span th:text="${originalFilename}"></span></p>
+    </div>
+
+    <!-- ❌ 실패 시 에러 메시지 -->
+    <div th:if="${error}">
       <p style="color: red" th:text="${error}"></p>
     </div>
   </body>

@@ -82,7 +82,7 @@ public class User {
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 
     @Setter
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Image image;
 
     // @OneToOne(mappedBy = "user")

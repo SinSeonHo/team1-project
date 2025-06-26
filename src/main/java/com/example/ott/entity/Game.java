@@ -64,9 +64,16 @@ public class Game extends BaseEntity {
     @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
     private Image image;
 
+    @Builder.Default
+    private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
+
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
+
+    public void setFollowcnt(int followcnt) {
+        this.followcnt = followcnt;
+    }
 
     public void setPrice(int price) {
         this.price = price;
@@ -118,5 +125,6 @@ public class Game extends BaseEntity {
 
     public void setImage(Image image) {
         this.image = image;
+
     }
 }

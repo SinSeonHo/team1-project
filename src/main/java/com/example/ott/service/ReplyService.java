@@ -97,7 +97,7 @@ public class ReplyService {
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
-                .replyer(reply.getReplyer().getName())
+                .replyer(reply.getReplyer().getId())
                 .replyerNickname(user.getNickname())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())

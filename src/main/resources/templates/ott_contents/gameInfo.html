@@ -54,7 +54,7 @@
               <div class="row">
                 <div class="col-lg-3">
                   <img
-                    th:src="@{'/images/gameimages/' + ${gameInfo.image.imgName}}"
+                    th:src="@{${gameInfo.image != null} ? '/images/gameimages/' + ${gameInfo.image.imgName} : '/images/sample.png'}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="게임 이미지"
                     loading="lazy"
@@ -125,10 +125,10 @@
                         </div>
                       </div>
                     <!-- </div> -->
-                    <div class="anime__details__btn" th:if="${#authentication.name}" >
+                    <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
-                      <button class="follow-btn follow" th:data-mid="${gameInfo.gid}">Follow</button>
+                      <button class="follow-btn follow" th:data-mid="${gameInfo.gid}" onclick="toggleFavorite(this)">Follow</button>
 
                       <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                     </div>
