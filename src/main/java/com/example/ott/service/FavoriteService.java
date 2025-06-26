@@ -43,8 +43,11 @@ public class FavoriteService {
         // favorite이 이미 존재할경우 unFollow
 
         if (favoriteRepository.existsByContentsId(contentsId)) {
-            Favorite targetFavorite = favoriteRepository.findByContentsId(contentsId);
-            favoriteRepository.delete(targetFavorite);
+            Favorite target = favoriteRepository.findByContentsId(contentsId);
+            ContentsType targetContentsType = target.getContentsType();
+            String targetContentsId = target.getContentsId();
+            favoriteRepository.delete(target);
+            setContentsFollowerCnt(targetContentsType, targetContentsId);
             return;
         }
 
@@ -59,9 +62,7 @@ public class FavoriteService {
                         .build();
 
                 favoriteRepository.save(favorite);
-                Movie movie = movieRepository.findById(contentsId).get();
-                movie.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
-                movieRepository.save(movie);
+                setContentsFollowerCnt(favorite.getContentsType(), favorite.getContentsId());
 
                 break;
 
@@ -73,9 +74,7 @@ public class FavoriteService {
                         .build();
 
                 favoriteRepository.save(favorite);
-                Game game = gameRepository.findById(contentsId).get();
-                game.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
-                gameRepository.save(game);
+                setContentsFollowerCnt(favorite.getContentsType(), favorite.getContentsId());
                 break;
 
             default:
@@ -83,6 +82,27 @@ public class FavoriteService {
 
         }
 
+    }
+
+    public void setContentsFollowerCnt(ContentsType contentsType, String contentsId) {
+
+        switch (contentsType) {
+            case MOVIE:
+                Movie movie = movieRepository.findById(contentsId).get();
+                movie.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
+                movieRepository.save(movie);
+                break;
+
+            case GAME:
+                Game game = gameRepository.findById(contentsId).get();
+                game.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
+                gameRepository.save(game);
+                break;
+
+            default:
+                break;
+        }
+        return;
     }
 
     // 특정 유저가 팔로우하여 추가한 favorite Contents들을 리스트로 반환
