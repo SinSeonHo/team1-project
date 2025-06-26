@@ -20,19 +20,20 @@ btn.addEventListener("click", () => {
 
 // 토글버튼 클릭 시 fetch경로 컨트롤러에 컨텐츠id값 넘겨줌
 function toggleFavorite(button) {
-  const contentsId = button.getAttribute("data-mid");
+  const contentsId = button.dataset.mid || button.dataset.gid;
+  const isNowFavorite = button.classList.toggle("follow"); // 상태 반전
 
   fetch(`/favorite/toggle?contentsId=${contentsId}`)
     .then((response) => {
-      if (response.ok) {
-        alert("즐겨찾기 토글 완료!");
-        // 필요시 버튼 스타일 변경 등 추가 처리 가능
-      } else {
-        alert("요청 실패");
-      }
+      if (!response.ok) throw new Error("서버 오류");
+
+      alert(isNowFavorite ? "즐겨찾기 완료!" : "즐겨찾기 해제됨");
     })
-    .catch((error) => {
-      console.error("에러 발생:", error);
+    .catch((err) => {
+      console.error(err);
       alert("에러 발생");
+
+      // 실패 시 클래스 롤백
+      button.classList.toggle("follow");
     });
 }

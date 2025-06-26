@@ -128,7 +128,14 @@
                     <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
-                      <button class="follow-btn follow" th:data-mid="${gameInfo.gid}" onclick="toggleFavorite(this)">Follow</button>
+                      <!-- <button class="follow-btn follow" th:data-mid="${gameInfo.gid}" onclick="toggleFavorite(this)">Follow</button> -->
+                       <button
+                        class="follow-btn"
+                        th:classappend="${isFollowed} ? ' follow' : ''"
+                        th:data-mid="${gameInfo.gid}"
+                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
+                        onclick="toggleFavorite(this)">
+                      </button>
 
                       <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                     </div>

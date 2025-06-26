@@ -34,6 +34,7 @@ public class MovieDTO {
     private String gradeNm; // 이용등급
     private String synopsis; // 줄거리
 
+    private int followcnt;
     private String imgUrl; // 이미지경로
     private int replycnt; // 댓글갯수
 

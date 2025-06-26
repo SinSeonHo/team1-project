@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -29,6 +31,7 @@ import com.example.ott.entity.Game;
 import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
+import com.example.ott.type.GenreType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -159,15 +162,23 @@ public class GameService {
                     JsonNode dataNode = detailRoot.path(appid).path("data");
 
                     // 장르 처리
-                    String genres = "[장르정보없음]";
+                    String genres = "장르정보없음";
                     if (dataNode != null && dataNode.has("genres")) {
-                        List<String> genreList = new ArrayList<>();
+                        Set<String> genreSet = new HashSet<>();
+
                         for (JsonNode genreNode : dataNode.get("genres")) {
                             String engGenre = genreNode.get("description").asText();
-                            String korGenre = GenreEnum.toKorean(engGenre); // 여기서 한글 변환
-                            genreList.add(korGenre);
+                            String korGenre = GenreType.toKorean(engGenre);
+                            genreSet.add(korGenre);
                         }
-                        genres = String.join(", ", genreList);
+
+                        // 장르정보없음이 여러 번 들어가지 않도록
+                        if (genreSet.size() == 1 && genreSet.contains("장르정보없음")) {
+                            genres = "장르정보없음";
+                        } else {
+                            genreSet.remove("장르정보없음"); // 중복 제거
+                            genres = String.join(", ", genreSet);
+                        }
                     }
 
                     // 가격 처리

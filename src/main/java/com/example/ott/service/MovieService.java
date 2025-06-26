@@ -336,6 +336,7 @@ public class MovieService {
                 .synopsis(movie.getSynopsis())
                 .imgUrl(movie.getImage().getImgName())
                 .replycnt(movie.getReplies().size())
+                .followcnt(movie.getFollowcnt())
                 .build();
         return dto;
     }

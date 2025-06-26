@@ -42,11 +42,7 @@ public class HomeController {
         List<GameDTO> gamelist = gameService.getRandom(6);
         model.addAttribute("games", gamelist);
 
-        boolean isAnonymous = userDetails.getAuthorities()
-                .stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ANONYMOUS"));
-
-        if (!isAnonymous) {
+        if (userDetails != null) {
             User user = userService.getUser(userDetails.getUsername());
             String profileImageUrl = user.getImage().getThumbnailPath();
             model.addAttribute("profileImageUrl", profileImageUrl);

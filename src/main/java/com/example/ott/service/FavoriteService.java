@@ -58,10 +58,11 @@ public class FavoriteService {
                         .contentsId(contentsId)
                         .build();
 
-                //
+                favoriteRepository.save(favorite);
                 Movie movie = movieRepository.findById(contentsId).get();
                 movie.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
                 movieRepository.save(movie);
+
                 break;
 
             case "g":
@@ -71,6 +72,7 @@ public class FavoriteService {
                         .contentsId(contentsId)
                         .build();
 
+                favoriteRepository.save(favorite);
                 Game game = gameRepository.findById(contentsId).get();
                 game.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
                 gameRepository.save(game);
@@ -80,7 +82,7 @@ public class FavoriteService {
                 return;
 
         }
-        favoriteRepository.save(favorite);
+
     }
 
     // 특정 유저가 팔로우하여 추가한 favorite Contents들을 리스트로 반환

@@ -49,7 +49,7 @@
                     class="product__item__pic"
                   />
                   <!-- 팔로우수  -->
-                  <div class="comment_movie">11</div>
+                  <div class="comment_movie" th:text="'Follow: ' + ${movie.followcnt} + 명"></div>
                   <!-- 댓글갯수  -->
                   <div class="view_movie" th:text="'Re: ' + ${movie.replycnt} + 개"></div>
                 </a>
