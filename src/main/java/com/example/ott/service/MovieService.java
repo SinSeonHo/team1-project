@@ -268,7 +268,7 @@ public class MovieService {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
-                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .map(movie -> entityToDto(movie))
                 .collect(Collectors.toList());
 
         return PageResultDTO.<MovieDTO>withAll()
@@ -300,7 +300,7 @@ public class MovieService {
         List<MovieDTO> result;
         List<Movie> list = movieRepository.findAll();
         result = list.stream()
-                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .map(movie -> entityToDto(movie))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         Collections.shuffle(result);
@@ -319,14 +319,25 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    // public MovieDTO entityToDto(Movie movie) {
-    // MovieDTO dto = MovieDTO.builder()
-    // .actors(movie.getActors())
-    // .title(movie.getTitle())
-    // .mid(movie.getMid())
-    // .director(movie.getDirector())
-    // .
-    // .build();
-    // return dto;
-    // }
+    public MovieDTO entityToDto(Movie movie) {
+        MovieDTO dto = MovieDTO.builder()
+                .actors(movie.getActors())
+                .title(movie.getTitle())
+                .mid(movie.getMid())
+                .director(movie.getDirector())
+                .genres(movie.getGenres())
+                .gradeNm(movie.getGradeNm())
+                .imgUrl(movie.getImage().getImgName())
+                .mid(movie.getMid())
+                .movieCd(movie.getMovieCd())
+                .nationNm(movie.getNationNm())
+                .openDate(movie.getOpenDate())
+                .rank(movie.getRank())
+                .replies(movie.getReplies().size())
+                .showTm(movie.getShowTm())
+                .synopsis(movie.getSynopsis())
+                .title(movie.getTitle())
+                .build();
+        return dto;
+    }
 }
