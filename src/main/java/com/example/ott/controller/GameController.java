@@ -2,15 +2,15 @@ package com.example.ott.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.service.GameService;
 
@@ -45,9 +45,10 @@ public class GameController {
     @GetMapping("/list")
     public String getGameList(Model model, PageRequestDTO pageRequestDTO) {
         log.info("gameList 요청 {}", pageRequestDTO);
-        List<Game> list = gameService.getGameAll();
-        model.addAttribute("games", list);
-        return "ssh_contents/gameList";
+        // List<Game> list = gameService.getGameAll();
+        PageResultDTO<GameDTO> result = gameService.getSearch(pageRequestDTO);
+        model.addAttribute("games", result.getDtoList());
+        return "ott_contents/gameList";
     }
 
     // 하나의 game 상세정보
