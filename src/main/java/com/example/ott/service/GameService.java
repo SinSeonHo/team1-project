@@ -3,6 +3,8 @@ package com.example.ott.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -335,6 +337,28 @@ public class GameService {
     // .build();
     // }
 
+    public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
+        Page<Game> result = gameRepository.search(requestDTO);
+
+        List<GameDTO> dtoList = result.stream()
+                .map(game -> entityToDto(game))
+                .collect(Collectors.toList());
+
+        return PageResultDTO.<GameDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(requestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
+    public List<GameDTO> getRandom(int num) {
+        List<GameDTO> result;
+        List<Game> list = gameRepository.findAll();
+        result = list.stream().map(game -> entityToDto(game)).collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(result);
+        return result.subList(0, Math.min(num, result.size()));
+    }
+
     // 게임 삭제
     public void deleteGame(String gid) {
         gameRepository.deleteById(gid);
@@ -345,27 +369,27 @@ public class GameService {
         return gameRepository.save(game); // ID가 있으면 update
     }
 
-    // public GameDTO entityToDto(Game game) {
-    // GameDTO dto = GameDTO.builder()
-    // .ageRating(game.getAgeRating())
-    // .appid(game.getAppid())
-    // .ccu(game.getCcu())
-    // .developer(game.getDeveloper())
-    // .discountRate(game.getDiscountRate())
-    // .genres(game.getGenres())
-    // .gid(game.getGid())
-    // .imgUrl(game.getImage().getImgName())
-    // .negative(game.getNegative())
-    // .originalPrice(game.getOriginalPrice())
-    // .platform(game.getPlatform())
-    // .positive(game.getPositive())
-    // .price(game.getPrice())
-    // .publisher(game.getPublisher())
-    // .rank(game.getRank())
-    // .replies(game.getReplies().size())
-    // .synopsis(game.getSynopsis())
-    // .title(game.getTitle())
-    // .build();
-    // return dto;
-    // }
+    public GameDTO entityToDto(Game game) {
+        GameDTO dto = GameDTO.builder()
+                .ageRating(game.getAgeRating())
+                .appid(game.getAppid())
+                .ccu(game.getCcu())
+                .developer(game.getDeveloper())
+                .discountRate(game.getDiscountRate())
+                .genres(game.getGenres())
+                .gid(game.getGid())
+                .imgUrl(game.getImage().getImgName())
+                .negative(game.getNegative())
+                .originalPrice(game.getOriginalPrice())
+                .platform(game.getPlatform())
+                .positive(game.getPositive())
+                .price(game.getPrice())
+                .publisher(game.getPublisher())
+                .rank(game.getRank())
+                .replies(game.getReplies().size())
+                .synopsis(game.getSynopsis())
+                .title(game.getTitle())
+                .build();
+        return dto;
+    }
 }

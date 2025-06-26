@@ -21,6 +21,7 @@ replyForm.addEventListener("submit", (e) => {
   //   mention: formData.get("mention"),
   // };
   const data = e.target;
+  console.log(data);
   // undefined 처리
   if (data.ref.value === "undefined" || data.ref.value === "") {
     data.ref.value = null;
@@ -42,21 +43,26 @@ replyForm.addEventListener("submit", (e) => {
         alert("댓글 수정 실패");
       });
   } else {
-    axios
-      .post(`/replies/new`, data, {
-        headers: {
-          "Content-Type": "application/json",
-          // "X-CSRF-TOKEN": csrf,
-        },
-      })
-      .then((res) => {
-        // alert("댓글이 등록되었습니다.");
-        location.reload(); // 또는 동적으로 추가
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("댓글 등록 실패");
-      });
+    if (data.replyer.value === "anonymousUser") {
+      alert("로그인해 주세요");
+      location.href = "/user/login";
+    } else {
+      axios
+        .post(`/replies/new`, data, {
+          headers: {
+            "Content-Type": "application/json",
+            // "X-CSRF-TOKEN": csrf,
+          },
+        })
+        .then((res) => {
+          // alert("댓글이 등록되었습니다.");
+          location.reload(); // 또는 동적으로 추가
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("댓글 등록 실패");
+        });
+    }
   }
 });
 
@@ -146,7 +152,7 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
   re.addEventListener("click", (e) => {
     const id = e.target;
     const rno = id.closest(".anime__review__item__text").dataset.rno;
-    const replyer = id.closest(".anime__review__item__text").dataset.replyer;
+    const replyer = id.closest(".anime__review__item__text").dataset.replyernickname;
 
     replyForm.mention.value = replyer;
     replyForm.ref.value = rno;

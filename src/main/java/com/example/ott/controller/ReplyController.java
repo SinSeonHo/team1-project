@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.User;
 import com.example.ott.service.ReplyService;
+import com.example.ott.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/replies")
 public class ReplyController {
     private final ReplyService replyService;
+    private final UserService userService;
 
     // @GetMapping("/{rno}")
     // public List<ReplyDTO> getReply(@PathVariable Long rno) {
@@ -44,9 +47,14 @@ public class ReplyController {
     }
 
     @PostMapping("/new")
-    public Long postMovie(@RequestBody ReplyDTO dto) {
+    public void postMovie(@RequestBody ReplyDTO dto) {
         log.info("댓글 추가 요청: {}", dto);
-        return replyService.insert(dto).getRno();
+        User user = userService.getUser(dto.getReplyer());
+        dto.setReplyerNickname(user.getNickname()); // nickname 설정
+        // replyService.insert(dto).getRno()
+        replyService.insert(dto);
+
+        return;
     }
 
     // @PostMapping("/movie/newRe")

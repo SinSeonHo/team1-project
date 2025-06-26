@@ -63,7 +63,7 @@
                     <!-- 팔로우수  -->
                     <div class="comment_game">11</div>
                     <!-- 댓글갯수  -->
-                    <div class="view_game" th:text="'Re: '+${game.replies.size} + 개"></div>
+                    <div class="view_game" th:text="'Re: ' + 개"></div>
                   </a>
                   <!-- 할인율이 0이 아니면 '할인중' 표시 -->
                   <div class="discount-badge" th:if="${game.discountRate != 0}">SALE !!!</div>
@@ -75,7 +75,7 @@
 
               <div class="product__item__text">
                 <ul>
-                  <li th:text="${game.genres}"></li>
+                  <li th:text="${game.genres}">genres</li>
                 </ul>
                 <h5>
                   <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}"></a>

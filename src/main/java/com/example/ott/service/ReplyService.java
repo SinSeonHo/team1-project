@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import com.example.ott.entity.Reply;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
+import com.example.ott.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
+    private final UserRepository userRepository;
 
     public Reply insert(ReplyDTO dto) {
         return replyRepository.save(dtoToEntityInsert(dto));
@@ -85,6 +88,9 @@ public class ReplyService {
     }
 
     private ReplyDTO entityToDto(Reply reply) {
+
+        User user = userRepository.findById(reply.getReplyer().getId()).get();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
         String formattedUpDate = reply.getUpdatedDate().format(formatter);
@@ -92,6 +98,7 @@ public class ReplyService {
                 .rno(reply.getRno())
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getName())
+                .replyerNickname(user.getNickname())
                 .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
@@ -163,6 +170,7 @@ public class ReplyService {
         // reply.setRef(dto.getRef());
         // reply.setMention(dto.getMention());
         // }
+        log.info("reply 정보 {}", reply);
         return reply;
     }
 

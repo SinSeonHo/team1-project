@@ -51,14 +51,14 @@
                   <!-- 팔로우수  -->
                   <div class="comment_movie">11</div>
                   <!-- 댓글갯수  -->
-                  <div class="view_movie" th:text="'Re: '+${movie.replies.size} + 개"></div>
+                  <div class="view_movie" th:text="'Re: ' + 개"></div>
                 </a>
                 <!-- <div class="ep">18 / 18</div> -->
               </div>
 
               <div class="product__item__text">
                 <ul class="genre">
-                  <!-- <li th:text="${movie.title}"></li> -->
+                  <li th:text="${movie.nationNm}"></li>
                   <li th:text="${movie.genres}"></li>
                 </ul>
                 <h5>

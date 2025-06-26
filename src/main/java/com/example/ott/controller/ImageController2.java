@@ -11,7 +11,6 @@ import java.util.UUID;
 import com.example.ott.entity.Image;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.MovieRepository;
-// import com.example.ott.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
 
