@@ -141,8 +141,7 @@
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
                         th:data-mid="${movieInfo.mid}"
-                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
-                        onclick="toggleFavorite(this)">
+                        th:text="${isFollowed} ? 'Followed' : 'Follow'">
                       </button>
                       <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                     </div>

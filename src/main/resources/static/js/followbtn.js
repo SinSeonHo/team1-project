@@ -1,39 +1,25 @@
-const btn = document.querySelector(".follow-btn");
-
-btn.addEventListener("click", () => {
-  const isFollow = btn.classList.toggle("follow");
-  btn.textContent = isFollow ? "Follow" : "Followed";
-
-  // mid 또는 gid 추출
-  const mid = btn.dataset.mid;
-  const gid = btn.dataset.gid;
-
-  // 하나만 존재하므로 null 아님
-  const contentId = mid || gid;
-
-  // 여기서 리턴하거나 콘솔 출력
-  console.log("선택된 ID:", contentId);
-
-  // contentId를 다른 함수에 넘겨주거나 반환
-  return contentId;
-});
-
 // 토글버튼 클릭 시 fetch경로 컨트롤러에 컨텐츠id값 넘겨줌
-function toggleFavorite(button) {
-  const contentsId = button.dataset.mid || button.dataset.gid;
-  const isNowFavorite = button.classList.toggle("follow"); // 상태 반전
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".follow-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const mid = button.dataset.mid;
+      const gid = button.dataset.gid;
+      const contentsId = mid ? `${mid}` : `${gid}`;
 
-  fetch(`/favorite/toggle?contentsId=${contentsId}`)
-    .then((response) => {
-      if (!response.ok) throw new Error("서버 오류");
+      try {
+        const res = await fetch(`/favorite/toggle?contentsId=${contentsId}`);
+        if (res.ok) {
+          // 응답은 무시하고, 버튼 상태만 프론트에서 토글
+          button.classList.toggle("follow");
 
-      alert(isNowFavorite ? "즐겨찾기 완료!" : "즐겨찾기 해제됨");
-    })
-    .catch((err) => {
-      console.error(err);
-      alert("에러 발생");
-
-      // 실패 시 클래스 롤백
-      button.classList.toggle("follow");
+          const isNowFollowed = button.classList.contains("follow");
+          button.textContent = isNowFollowed ? "Followed" : "Follow";
+        } else {
+          alert("서버 오류 발생!");
+        }
+      } catch (error) {
+        alert("요청 실패: " + error);
+      }
     });
-}
+  });
+});

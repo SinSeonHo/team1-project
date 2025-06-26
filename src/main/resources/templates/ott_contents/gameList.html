@@ -61,7 +61,7 @@
                       class="product__item__pic"
                     />
                     <!-- 팔로우수  -->
-                    <div class="comment_game">11</div>
+                    <div class="comment_game" th:text="'Follow: ' + ${game.followcnt} + 명"></div>
                     <!-- 댓글갯수  -->
                     <div class="view_game" th:text="'Re: ' + ${game.replycnt} + 개"></div>
                   </a>
