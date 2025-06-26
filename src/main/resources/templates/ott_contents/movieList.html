@@ -42,7 +42,7 @@
               <div class="product__item__pic">
                 <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
                   <img
-                    th:src="@{${movie.image != null} ? '/images/movieimages/' + ${movie.image.imgName} : '/images/sample.png'}"
+                    th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="영화 이미지"
                     loading="lazy"

@@ -54,7 +54,7 @@
                 <div>
                   <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
                     <img
-                      th:src="@{${game.image != null} ? '/images/gameimages/' + ${game.image.imgName} : '/images/sample.png'}"
+                      th:src="@{'/images/gameimages/' + ${game.imgUrl}}"
                       onerror="this.onerror=null; this.src='/images/sample.jpg';"
                       alt="게임 이미지"
                       loading="lazy"

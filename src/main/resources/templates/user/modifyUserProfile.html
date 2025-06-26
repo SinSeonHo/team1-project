@@ -13,7 +13,7 @@
             <!-- 프로필 사진 & 버튼 그룹 -->
             <div class="col-md-4 d-flex flex-column align-items-center mb-4 mb-md-0 gap-2">
               <div class="mb-3 position-relative">
-                <img th:src="@{${userProfileDTO.profileImageUrl} ?: '/images/sample.jpg'}"
+                <img th:src="${userProfileDTO.profileImageUrl == null} ? '/images/sample.jpg' : '/images/view/' + ${userProfileDTO.profileImageUrl}"
                      alt="프로필" class="rounded-circle shadow"
                      style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee" />
               </div>

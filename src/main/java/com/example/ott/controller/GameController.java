@@ -2,6 +2,9 @@ package com.example.ott.controller;
 
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,12 +56,13 @@ public class GameController {
 
     // 하나의 game 상세정보
     @GetMapping("/read/{gid}")
-    public String getGameInfo(@PathVariable String gid, Model model) {
+    public String getGameInfo(@PathVariable String gid, Model model, @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, Object> data = gameService.getGame(gid);
         Game game = (Game) data.get("game");
-
+        boolean isFollowed = false;
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", data.get("replies"));
+        model.addAttribute("isFollowed", isFollowed);
         log.info("로그확인 {}", model);
 
         return "ott_contents/gameInfo";

@@ -694,6 +694,53 @@ ol {
   margin-bottom: 30px;
 }
 
+/* 메인페이지 영화이미지 간격조절 */
+.mainmovie {
+  margin-bottom: 30px;
+  margin-left: 100px;
+}
+
+/* 메인페이지 검색란 디자인 */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #1a2238; /* 진한 남색 배경 */
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(10, 10, 30, 0.6);
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.search-box select,
+.search-box input[type="text"] {
+  background-color: #0f1626; /* 더 어두운 남색 */
+  border: 1px solid #394867;
+  color: #dbeafe; /* 밝은 파랑 글씨 */
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-box input[type="text"]::placeholder {
+  color: #aab4cf;
+}
+
+.search-box input[type="submit"] {
+  background-color: #394867; /* 중간톤 남색 */
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.search-box input[type="submit"]:hover {
+  background-color: #576cbc;
+}
+
 .product__item__pic {
   height: 325px;
   position: relative;
@@ -1075,6 +1122,13 @@ ol {
   height: 370px;
   border-radius: 5px;
   position: relative;
+}
+
+.anime__details__pic .mainmovie {
+  height: 370px;
+  border-radius: 5px;
+  position: relative;
+  margin-left: 100px !important;
 }
 
 .anime__details__pic .comment {
