@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.entity.Image;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
+import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final ImageRepository imageRepository;
 
     // 계정 생성 + 자동 로그인
     public String registerAndLogin(SecurityUserDTO securityUserDTO, HttpServletRequest request) {
@@ -49,12 +52,15 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 User 정보 입니다."));
 
+        String userProfileUrl = (user.getImage() == null ? null : user.getImage().getThumbnailPath());
+
         return UserProfileDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .mileage(user.getMileage())
+                .profileImageUrl(userProfileUrl)
                 .socials(user.getSocials())
                 .build();
     }
@@ -110,5 +116,20 @@ public class UserService {
             candidate = "user" + (int) (Math.random() * 100000);
         } while (userRepository.existsByNickname(candidate));
         return candidate;
+    }
+
+    public void saveUserProfile(Image profileImage, String id) {
+        User user = userRepository.findById(id).get();
+
+        // 기존 이미지가 존재할 시 이미지 삭제
+        if (user.getImage() != null) {
+            Image currentImage = user.getImage();
+            user.setImage(null);
+            userRepository.save(user);
+            imageRepository.delete(currentImage);
+        }
+        user.setImage(profileImage);
+        userRepository.save(user);
+        // 기존 사진 삭제
     }
 }

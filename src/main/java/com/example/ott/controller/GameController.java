@@ -38,7 +38,7 @@ public class GameController {
         // DB에 저장된 전체 게임 목록 조회
         List<Game> gameList = gameService.getGameAll();
         model.addAttribute("games", gameList);
-        return "ott_contents/importGameResult"; // templates/importResult.html 로 포워딩
+        return "ssh_contents/importGameResult"; // templates/importResult.html 로 포워딩
     }
 
     // game 전체 리스트
@@ -53,15 +53,11 @@ public class GameController {
 
     // 하나의 game 상세정보
     @GetMapping("/read/{gid}")
-    public String getGameInfo(@PathVariable String gid, Model model) {
-        Map<String, Object> data = gameService.getGame(gid);
-        Game game = (Game) data.get("game");
-
+    public String getGameInfo(@PathVariable String gid, PageRequestDTO pageRequestDTO, Model model) {
+        log.info("영화 상세정보 요청 {}", gid);
+        Game game = gameService.getGame(gid).orElseThrow(() -> new RuntimeException("게임 정보 없음"));
         model.addAttribute("gameInfo", game);
-        model.addAttribute("replies", data.get("replies"));
-        log.info("로그확인 {}", model);
-
-        return "ott_contents/gameInfo";
+        return "ssh_contents/gameInfo";
     }
 
 }
