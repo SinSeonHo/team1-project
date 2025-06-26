@@ -16,4 +16,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findByUser(User user);
 
     Favorite findByContentsId(String contentsId);
+
+    boolean existsByUserAndContentsId(User user, String contentsId);
+
+    long countByContentsId(String contentsId);
 }

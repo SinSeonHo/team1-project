@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,8 +37,16 @@ public class FavoriteService {
     private final UserRepository userRepository;
 
     // 팔로우(토글방식)
-    public void toggleFavorite(User user, String contentsId) {
+    public void follow(User user, String contentsId) {
         // TODO: Contents의 follow Cnt +-1 하는거 추가해야함
+
+        // favorite이 이미 존재할경우 unFollow
+
+        if (favoriteRepository.existsByContentsId(contentsId)) {
+            Favorite targetFavorite = favoriteRepository.findByContentsId(contentsId);
+            favoriteRepository.delete(targetFavorite);
+            return;
+        }
 
         String contentsType = contentsId.split("_")[0];
         Favorite favorite = null;
@@ -49,6 +58,10 @@ public class FavoriteService {
                         .contentsId(contentsId)
                         .build();
 
+                //
+                Movie movie = movieRepository.findById(contentsId).get();
+                movie.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
+                movieRepository.save(movie);
                 break;
 
             case "g":
@@ -57,21 +70,17 @@ public class FavoriteService {
                         .contentsType(ContentsType.GAME)
                         .contentsId(contentsId)
                         .build();
+
+                Game game = gameRepository.findById(contentsId).get();
+                game.setFollowcnt((int) favoriteRepository.countByContentsId(contentsId));
+                gameRepository.save(game);
                 break;
 
             default:
-                break;
-        }
+                return;
 
-        // favorite이 이미 존재할경우 삭제, 아닐경우 추가
-        System.out.println("이미 존재하는지 확인 : " + favoriteRepository.existsByContentsId(contentsId));
-        if (favoriteRepository.existsByContentsId(contentsId)) {
-            Favorite targetFavorite = favoriteRepository.findByContentsId(contentsId);
-            favoriteRepository.delete(targetFavorite);
-
-        } else {
-            favoriteRepository.save(favorite);
         }
+        favoriteRepository.save(favorite);
     }
 
     // 특정 유저가 팔로우하여 추가한 favorite Contents들을 리스트로 반환
@@ -101,4 +110,14 @@ public class FavoriteService {
         return favoriteContentsImages;
     }
 
+    // 현재 로그인 한 유저가 해당 콘텐츠를 팔로우 했는지 확인
+    public boolean isFollowed(UserDetails userDetails, String contentsId) {
+        try {
+            User user = userRepository.findById(userDetails.getUsername()).get();
+
+            return favoriteRepository.existsByUserAndContentsId(user, contentsId);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

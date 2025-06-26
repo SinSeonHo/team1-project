@@ -3,6 +3,7 @@ package com.example.ott.dto;
 import java.time.LocalDateTime;
 
 import com.example.ott.customValidation.UniqueId;
+import com.example.ott.entity.Image;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.UserRole;
 
@@ -41,6 +42,4 @@ public class SecurityUserDTO {
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
-
-    // private Struct struct;
 }
