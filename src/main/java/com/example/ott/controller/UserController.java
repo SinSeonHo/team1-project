@@ -3,9 +3,12 @@ package com.example.ott.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +22,7 @@ import com.example.ott.service.UserService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -78,13 +83,12 @@ public class UserController {
     // 프로필 조회
     @GetMapping("/userProfile")
     public String getUserProfile(String id, Model model) {
-
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        // log.info("이거 와 안되나 : {}", userProfileDTO.getProfileImageUrl());
-        model.addAttribute("userProfileDTO", userProfileDTO);
 
         // 유저가 팔로우 한 콘텐츠들 사진 정보
         List<Image> images = favoriteService.getFollowedContentsImages(userProfileDTO.getId());
+
+        model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("images", images);
 
         return "/user/userProfile";
@@ -116,11 +120,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("delete")
-    public String getDelete(String id) {
+    @PostMapping("/delete")
+    public String deleteUser(String id, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         userService.deleteUser(id);
 
-        return "redirect:/logout";
+        // 세션 만료 (Spring Security 로그아웃과 동일하게)
+        request.logout(); // 자바 EE 표준 로그아웃 (Spring Security가 hook함)
+        return "redirect:/";
     }
 
     @GetMapping("/login")
@@ -146,6 +153,18 @@ public class UserController {
 
         rttr.addAttribute("id", id);
         return "redirect:/user/userProfile?img=updated";
+    }
+
+    @GetMapping("/upgrade")
+    public String upgradeToAdmin(@AuthenticationPrincipal UserDetails userDetails, RedirectAttributes rttr) {
+        if (userDetails == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인이 필요합니다.");
+        }
+
+        userService.upgradeToAdmin(userDetails.getUsername());
+        rttr.addFlashAttribute("msg", "관리자 권한이 부여되었습니다!");
+
+        return "redirect:/user/userProfile?id=" + userDetails.getUsername();
     }
 
 }

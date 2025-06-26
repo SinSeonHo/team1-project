@@ -132,4 +132,11 @@ public class UserService {
         userRepository.save(user);
         // 기존 사진 삭제
     }
+
+    public void upgradeToAdmin(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
+        user.setUserRole(UserRole.ADMIN);
+        userRepository.save(user);
+    }
 }

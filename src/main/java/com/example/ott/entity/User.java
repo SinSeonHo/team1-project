@@ -18,6 +18,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -84,6 +85,9 @@ public class User {
     @Setter
     @OneToOne(cascade = CascadeType.REMOVE)
     private Image image;
+
+    @OneToMany(mappedBy = "replyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Reply> replies;
 
     // @OneToOne(mappedBy = "user")
     // private Favorites favorites;

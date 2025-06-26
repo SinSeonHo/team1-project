@@ -36,14 +36,21 @@
         </div>
         <div class="col-lg-2">
           <div class="header__right d-flex align-items-center gap-3">
-            <a href="#" class="search-switch me-2">
-              <span class="icon_search"></span>
-            </a>
+            <!-- 로그아웃 버튼 (로그인 상태에서만 보임) -->
+            <form
+              th:if="${#authorization.expr('isAuthenticated()')}"
+              th:action="@{/logout}"
+              method="post"
+              class="m-0 p-0"
+              style="display: inline"
+            >
+              <button type="submit" class="btn btn-outline-primary btn-sm ms-1 mr-2">로그아웃</button>
+            </form>
 
             <!-- 로그인: 프로필 이미지 -->
             <a
-              th:if="${profileImageUrl != null}"
-              th:href="@{/user/userProfile}"
+              th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl != null}"
+              th:href="@{/user/userProfile(id=${userId})}"
               class="d-flex align-items-center text-decoration-none"
             >
               <img
@@ -53,13 +60,33 @@
                 style="width: 40px; height: 40px; object-fit: cover; background: #eee"
               />
             </a>
-            <!-- 비로그인: 기본 아이콘 -->
+
+            <!-- 로그인: 프로필 이미지가 없을 경우, 기본 이미지로 이동 -->
             <a
-              th:if="${profileImageUrl == null}"
+              th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl == null}"
+              th:href="@{/user/userProfile(id=${userId})}"
+              class="d-flex align-items-center text-decoration-none"
+            >
+              <img
+                src="/images/sample.jpg"
+                alt="기본 프로필"
+                class="rounded-circle border border-primary shadow-sm"
+                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+              />
+            </a>
+
+            <!-- 비로그인: 기본 이미지만 보임 (클릭하면 로그인 페이지로) -->
+            <a
+              th:if="${#authorization.expr('isAnonymous()')}"
               th:href="@{/user/login}"
               class="d-flex align-items-center text-decoration-none"
             >
-              <span class="icon_profile fs-3"></span>
+              <img
+                src="/images/sample.jpg"
+                alt="기본 프로필"
+                class="rounded-circle border border-primary shadow-sm"
+                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+              />
             </a>
           </div>
         </div>
