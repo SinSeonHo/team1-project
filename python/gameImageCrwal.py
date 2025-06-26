@@ -7,6 +7,7 @@ import re
 
 # 이미지 저장 경로
 BASE_PATH = os.path.abspath("./src/main/resources/static/images/gameimages")
+STATIC_PATH = os.path.abspath("./src/main/resources/static")  # static 기준 경로
 os.makedirs(BASE_PATH, exist_ok=True)
 
 # Oracle DB 연결
@@ -73,6 +74,9 @@ for gid, title, appid in games:
 
     # DB 저장
     try:
+        # static 경로 기준 상대경로 구하기
+        relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
+
         output_inum = cursor.var(cx_Oracle.NUMBER)
         cursor.execute(
             """
@@ -83,7 +87,7 @@ for gid, title, appid in games:
             {
                 "uuid": unique_id,
                 "img_name": file_name,
-                "path": file_name,
+                "path": relative_path,  # static부터 시작하는 상대경로 저장
                 "output_inum": output_inum,
             },
         )

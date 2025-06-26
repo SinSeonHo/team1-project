@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 
 # 이미지 저장 경로
 BASE_PATH = os.path.abspath("./src/main/resources/static/images/movieimages")
+STATIC_PATH = os.path.abspath("./src/main/resources/static")  # static 기준 경로
 os.makedirs(BASE_PATH, exist_ok=True)
 
 # Oracle DB 연결
@@ -68,10 +69,20 @@ for mid, title in movies:
             data = response.json()
 
             if data["results"]:
-                poster_path = data["results"][0].get("poster_path")
+                matched = None
+                for result in data["results"]:
+                    if result.get("title", "").strip().lower() == title.strip().lower():
+                        matched = result
+                        break
+                if not matched:
+                    matched = data["results"][0]
+
+                poster_path = matched.get("poster_path")
                 if poster_path:
                     poster_url = IMAGE_BASE_URL + poster_path
-                    print(f"[{title}] TMDb에서 포스터 찾음")
+                    print(
+                        f"[{title}] TMDb에서 포스터 찾음 (매칭된 제목: {matched.get('title')})"
+                    )
                 else:
                     print(f"[{title}] TMDb에 포스터 없음")
             else:
@@ -100,6 +111,9 @@ for mid, title in movies:
         urlretrieve(poster_url, full_path)
         print(f"[{title}] 이미지 저장 완료: {file_name}")
 
+        # static부터 시작하는 상대경로 구하기
+        relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
+
         # DB 저장 (RETURNING inum INTO 사용)
         output_inum = cursor.var(cx_Oracle.NUMBER)
         cursor.execute(
@@ -111,7 +125,7 @@ for mid, title in movies:
             {
                 "uuid": unique_id,
                 "img_name": file_name,
-                "path": file_name,
+                "path": relative_path,
                 "output_inum": output_inum,
             },
         )
