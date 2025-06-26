@@ -47,7 +47,7 @@ public class UserProfileDTO {
 
     private String grade;
 
-    private Image profileImageUrl;
+    private String profileImageUrl;
 
     // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
 }

@@ -13,23 +13,13 @@
             <!-- 프로필 사진 & 버튼 그룹 -->
             <div class="col-md-4 d-flex flex-column align-items-center mb-4 mb-md-0 gap-2">
               <div class="mb-3 position-relative">
-                <img th:src="@{${userProfileDTO.profileImageUrl} ?: '/img/sample.png'}"
+                <img th:src="@{${userProfileDTO.profileImageUrl} ?: '/images/sample.jpg'}"
                      alt="프로필" class="rounded-circle shadow"
                      style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee" />
               </div>
               <!-- 사진 변경 버튼 -->
                <div class="d-flex flex-column w-100 px-4" style="gap: 8px">
-              <button type="button"
-                      class="profile-btn profile-btn-secondary"
-                      
-                      onclick="document.getElementById('profileImage').click();">
-                사진 변경
-                <input type="file"
-                       id="profileImage"
-                       name="profileImage"
-                       accept="image/*"
-                       style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; opacity:0;">
-              </button>
+              
               <button type="button" class="profile-btn profile-btn-danger">
                 <a th:href="@{/user/delete(id=${userProfileDTO.id})}">회원탈퇴</a></button>
               </div>
@@ -96,18 +86,6 @@
           </div>
 
           <!-- 갤러리 (수정 페이지에서도 보여줄 수 있음) -->
-          <section class="user-gallery-section mt-4">
-            <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem;">좋아하는 영화/게임들</h3>
-            <div class="user-gallery-grid">
-              <!-- <th:block th:each="img : ${userProfileDTO.photoUrls}">
-                <img th:src="@{${img}}" alt="gallery-img" class="gallery-img" />
-              </th:block> -->
-              <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-              <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-              <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-              <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-            </div>
-          </section>
         </form>
       </div>
     </div>
