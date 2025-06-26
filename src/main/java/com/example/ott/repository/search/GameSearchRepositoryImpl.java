@@ -42,6 +42,9 @@ public class GameSearchRepositoryImpl implements GameSearchRepository {
                     case "p":
                         searchBuilder.or(game.publisher.containsIgnoreCase(keyword));
                         break;
+                    case "d":
+                        searchBuilder.or(game.developer.containsIgnoreCase(keyword));
+                        break;
                     case "g":
                         searchBuilder.or(game.genres.containsIgnoreCase(keyword));
                         break;

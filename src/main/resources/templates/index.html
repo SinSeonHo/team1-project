@@ -4,11 +4,7 @@
     <section class="hero">
       <div class="container">
       <form action="/api/movies/list" method="get">
-        <select name="id" id="id" >
-          <option value="m">영화</option>
-          <option value="g">게임</option>
-        </select>
-        movie
+          <button value="m">영화</button>
         <select name="type" id="type">
           <option value="t">제목</option>
           <!-- <option value="g">장르</option> -->
@@ -16,12 +12,13 @@
         </select>
         <input type="text" name="keyword" id="search">
       </form>
-      <form action="/api/game/list" method="get">
-        game
+      <form action="/api/games/list" method="get">
+        <button>게임</button>
         <select name="type" id="type">
           <option value="t">제목</option>
           <!-- <option value="g">장르</option> -->
-          <option value="d">감독</option>
+          <option value="d">개발사</option>
+          <option value="p">유통사</option>
         </select>
         <input type="text" name="keyword" id="search">
       </form>

@@ -3,6 +3,8 @@ package com.example.ott.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -332,6 +334,14 @@ public class GameService {
                 .pageRequestDTO(requestDTO)
                 .totalCount(result.getTotalElements())
                 .build();
+    }
+
+    public List<GameDTO> getRandom(int num) {
+        List<GameDTO> result;
+        List<Game> list = gameRepository.findAll();
+        result = list.stream().map(game -> entityToDto(game)).collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(result);
+        return result.subList(0, Math.min(num, result.size()));
     }
 
     // 게임 삭제
