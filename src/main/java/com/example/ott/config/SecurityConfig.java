@@ -88,10 +88,4 @@ public class SecurityConfig {
 
                 return http.build();
         }
-
-        // 회원가입 시 자동 로그인을 위한 빈 등록
-        @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-                return configuration.getAuthenticationManager();
-        }
 }

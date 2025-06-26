@@ -80,7 +80,6 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         return this.attributes;
     }
 
-    // 최초 로그인 판별용
     @Override
     public String getName() {
         return "";

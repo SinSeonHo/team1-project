@@ -69,7 +69,7 @@ public class UserController {
 
             String id = userService.registerAndLogin(securityUserDTO, request);
             try {
-                request.login(securityUserDTO.getId(), securityUserDTO.getPassword());
+                request.login(securityUserDTO.getId(), securityUserDTO.getPassword()); // 로그인 요청
             } catch (ServletException e) {
                 log.info("로그인 실패");
                 e.printStackTrace();
@@ -127,8 +127,8 @@ public class UserController {
             throws ServletException, IOException {
         userService.deleteUser(id);
 
-        // 세션 만료 (Spring Security 로그아웃과 동일하게)
-        request.logout(); // 자바 EE 표준 로그아웃 (Spring Security가 hook함)
+        
+        request.logout(); // 로그아웃 요청
         return "redirect:/";
     }
 

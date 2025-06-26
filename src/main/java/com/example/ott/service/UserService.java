@@ -30,7 +30,6 @@ import lombok.extern.log4j.Log4j2;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final ImageRepository imageRepository;
 
     // 계정 생성 + 자동 로그인
@@ -97,7 +96,6 @@ public class UserService {
         return "변경되었습니다";
     }
 
-    // test용 DB상 User 조회
     public User getUser(String id) {
         User user = null;
         try {

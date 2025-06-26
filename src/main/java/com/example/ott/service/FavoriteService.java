@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,9 +42,9 @@ public class FavoriteService {
         // TODO: Contents의 follow Cnt +-1 하는거 추가해야함
 
         // favorite이 이미 존재할경우 unFollow
-
-        if (favoriteRepository.existsByContentsId(contentsId)) {
-            Favorite target = favoriteRepository.findByContentsId(contentsId);
+        Optional<Favorite> targetOpt = favoriteRepository.findByUserAndContentsId(user, contentsId);
+        if (targetOpt.isPresent()) { // 최초 팔로우일 경우를 대비
+            Favorite target = targetOpt.get();
             ContentsType targetContentsType = target.getContentsType();
             String targetContentsId = target.getContentsId();
             favoriteRepository.delete(target);
