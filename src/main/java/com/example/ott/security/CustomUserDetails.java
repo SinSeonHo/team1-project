@@ -40,6 +40,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
                 .email(user.getEmail())
                 .name(user.getName())
                 .password(user.getPassword())
+                // .image(user.getImage())
                 .socials(user.getSocials())
                 .userRole(user.getUserRole())
                 .build();
