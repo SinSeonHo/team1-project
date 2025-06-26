@@ -109,4 +109,4 @@ for gid, title, appid in games:
 # 마무리
 cursor.close()
 conn.close()
-print("✅ 모든 게임 이미지 처리 완료")
+print("모든 게임 이미지 처리 완료")

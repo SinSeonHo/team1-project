@@ -386,7 +386,7 @@ public class GameService {
                 .price(game.getPrice())
                 .publisher(game.getPublisher())
                 .rank(game.getRank())
-                .replies(game.getReplies().size())
+                .replycnt(game.getReplies().size())
                 .synopsis(game.getSynopsis())
                 .title(game.getTitle())
                 .build();

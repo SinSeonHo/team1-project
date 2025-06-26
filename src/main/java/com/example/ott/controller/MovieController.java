@@ -41,7 +41,7 @@ public class MovieController {
     public String importMovies(Model model) {
         try {
             movieService.importMovies();
-            model.addAttribute("message", "저장 완료!");
+            model.addAttribute("message", "영화 데이터 저장 완료!");
         } catch (Exception e) {
             model.addAttribute("message", "에러 발생: " + e.getMessage());
         }
@@ -54,22 +54,12 @@ public class MovieController {
 
     // movie 전체 리스트
     @GetMapping("/list")
-    // public String getMovieList(Model model, PageRequestDTO pageRequestDTO) {
-    // log.info("movieList 요청 {}", pageRequestDTO);
-    // List<Movie> list = movieService.getMovieAll();
-    // model.addAttribute("movies", list);
-    // return "ott_contents/movieList";
-    // }
-    public String list(PageRequestDTO pageRequestDTO, Model model) {
+    public String getMovieList(PageRequestDTO pageRequestDTO, Model model) {
+        log.info("movieList 요청 {}", pageRequestDTO);
         PageResultDTO<MovieDTO> result = movieService.getSearch(pageRequestDTO);
         model.addAttribute("movies", result.getDtoList());
         return "ott_contents/movieList";
     }
-    // public String list(PageRequestDTO pageRequestDTO, Model model) {
-    // PageResultDTO<MovieDTO> result = movieService.getList(pageRequestDTO);
-    // model.addAttribute("movies", result);
-    // return "ott_contents/movieList";
-    // }
 
     // 하나의 movie 상세정보
     @GetMapping("/read/{mid}")

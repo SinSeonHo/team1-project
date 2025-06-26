@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Reply;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,10 +34,8 @@ public class MovieDTO {
     private String gradeNm; // 이용등급
     private String synopsis; // 줄거리
 
-    private String imgUrl;
-
-    // @Builder.Default
-    // private List<Image> movieImages = new ArrayList<>();
+    private String imgUrl; // 이미지경로
+    private int replycnt; // 댓글갯수
 
     // @Builder.Default
     // private List<Image> movieGenres = new ArrayList<>();
