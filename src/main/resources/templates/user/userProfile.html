@@ -13,7 +13,11 @@
           <div class="col-md-4 d-flex flex-column align-items-center mb-4 mb-md-0">
             <!-- 동그란 프로필 이미지 -->
             <div class="mb-3">
-              <img th:src="@{/img/sample.png}" alt="프로필" class="rounded-circle shadow" style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee" />
+              <img id="profile-img" th:src="@{${userProfileDTO.profileImageUrl}}" alt="프로필" class="rounded-circle shadow" style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee" />
+              <img  />    
+<script>
+  document.getElementById("profile-img").src += "?t=" + Date.now();
+</script>
             </div>
 
             <!-- 프로필 관련 버튼 -->
@@ -57,15 +61,12 @@
             <!-- 필요하다면 하단에 버튼 추가 가능 -->
           </div>
         </div>
-        <section class="user-gallery-section mt-4">
+        <section class="user-gallery-section mt-4" th:unless="${images.size() == 0}">
   <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem;">좋아하는 영화/게임들</h3>
   <div class="user-gallery-grid">
-    <!-- 샘플 사진, 실제로는 반복문 돌리면 됨 -->
-    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-    <img th:src="@{/img/sample.png}" alt="gallery-img" class="gallery-img" />
-    <!-- ... -->
+    <img th:each="image, iterStat : ${images}" th:if="${iterStat.index < 4}" th:src="@{${image.path}}" alt="gallery-img" class="gallery-img" />
+
+    
   </div>
 </section>
 
