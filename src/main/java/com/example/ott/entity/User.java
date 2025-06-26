@@ -30,7 +30,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@ToString
+@ToString(exclude = "replies")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

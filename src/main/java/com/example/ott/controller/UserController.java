@@ -106,9 +106,11 @@ public class UserController {
     // 프로필 수정
     @PostMapping("/modifyUserProfile")
     public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
-            RedirectAttributes rttr) {
+            RedirectAttributes rttr, Model model) {
+                log.info("userProfile 정보 : {}", userProfileDTO);
 
         if (bindingResult.hasErrors()) {
+             model.addAttribute("userProfileDTO", userProfileDTO);
             return "/user/modifyUserProfile";
         } else {
             userService.updateUserProfile(userProfileDTO);
@@ -137,17 +139,18 @@ public class UserController {
         }
         return "/user/login";
     }
-
+    // 프로필 사진 업로드
     @PostMapping("/uploadProfile")
     public String postUploadProfile(@RequestParam("file") MultipartFile file, String id, RedirectAttributes rttr) {
+        System.out.println("찍히나?");
+        log.info("image upload 시도 {}", file);
         try {
-            log.info("image upload 시도");
             Image savedThumbnail = imageService.uploadThumbnailImage(file);
             log.info("user에 이미지 정보 주입 시도 {}, userId: {}", savedThumbnail, id);
             userService.saveUserProfile(savedThumbnail, id);
 
         } catch (IOException e) {
-
+             e.printStackTrace(); // 이걸 추가!
             System.out.println("일단 에러났어요.");
         }
 
@@ -155,6 +158,7 @@ public class UserController {
         return "redirect:/user/userProfile?img=updated";
     }
 
+    // 어드민 권한 주소
     @GetMapping("/upgrade")
     public String upgradeToAdmin(@AuthenticationPrincipal UserDetails userDetails, RedirectAttributes rttr) {
         if (userDetails == null) {

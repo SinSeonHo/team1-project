@@ -68,7 +68,7 @@ public class SecurityConfig {
                                 // 일반 로그인
                                 .formLogin(login -> login
                                                 .loginPage("/user/login")
-                                                .defaultSuccessUrl("/")
+                                                .defaultSuccessUrl("/", true)
                                                 .failureUrl("/user/login?error=true")
                                                 .permitAll())
                                 // 소셜 로그인
