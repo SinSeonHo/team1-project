@@ -58,7 +58,8 @@ public class FavoriteService {
 
         // favorite이 이미 존재할경우 삭제, 아닐경우 추가
         if (favoriteRepository.existsByContentsId(contentsId)) {
-            favoriteRepository.delete(favorite);
+            Favorite deleteFavorite = favoriteRepository.findById(favorite.getId()).get();
+            favoriteRepository.delete(deleteFavorite);
 
         } else {
             favoriteRepository.save(favorite);

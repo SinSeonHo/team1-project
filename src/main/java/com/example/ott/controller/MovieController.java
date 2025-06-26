@@ -2,20 +2,32 @@ package com.example.ott.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
+import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.Favorite;
+import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.entity.Reply;
+import com.example.ott.service.FavoriteService;
 import com.example.ott.service.MovieService;
-// import com.example.ott.service.ReplyService;
+import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
+import org.springframework.web.bind.annotation.RequestParam;
 
 // @RestController
 @Controller
@@ -25,7 +37,8 @@ import lombok.extern.log4j.Log4j2;
 public class MovieController {
 
     private final MovieService movieService;
-    // private final ReplyService replyService;
+    private final ReplyService replyService;
+    private final FavoriteService favoriteService;
 
     @GetMapping("/import")
     public String importMovies(Model model) {
@@ -50,6 +63,11 @@ public class MovieController {
         model.addAttribute("movies", list);
         return "ott_contents/movieList";
     }
+    // public String list(PageRequestDTO pageRequestDTO, Model model) {
+    // PageResultDTO<MovieDTO> result = movieService.getList(pageRequestDTO);
+    // model.addAttribute("movies", result);
+    // return "ott_contents/movieList";
+    // }
 
     // 하나의 movie 상세정보
     @GetMapping("/read/{mid}")

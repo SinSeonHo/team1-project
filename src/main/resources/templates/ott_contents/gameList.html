@@ -2,6 +2,7 @@
 <html lang="en" layout:decorate="~{layouts/layout}">
   <!-- <html> -->
   <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <th:block layout:fragment="css">
@@ -53,7 +54,7 @@
                 <div>
                   <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
                     <img
-                      th:src="@{'/images/gameimages/' + ${game.image.imgName}}"
+                      th:src="@{${game.image != null} ? '/images/gameimages/' + ${game.image.imgName} : '/images/sample.png'}"
                       onerror="this.onerror=null; this.src='/images/sample.jpg';"
                       alt="게임 이미지"
                       loading="lazy"
@@ -83,6 +84,9 @@
             </div>
           </div>
         </div>
+        <div>
+          <button id="scrollToTopBtn" title="맨 위로"><i class="fa fa-arrow-up"></i></button>
+        </div>
       </div>
       <!-- api 응답 값 추출 -->
       <!-- <div th:each="game : ${games}">
@@ -94,6 +98,7 @@
 
     <th:block layout:fragment="script">
       <!-- 개별 페이지 script 작성 -->
+      <script th:src="@{/js/scroll.js}"></script>
     </th:block>
   </body>
 </html>

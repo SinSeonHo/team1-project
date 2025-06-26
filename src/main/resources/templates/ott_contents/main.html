@@ -1,157 +1,124 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-    <main layout:fragment="content">
-<!-- <html> -->
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <th:block layout:fragment="css">
-      <!-- 개별 페이지 css 작성 -->
-      <style>
-        .swiper {
-        width: 100%;
-        max-width: 1000px;
-        height: 400px;
-        margin: auto;
-        border-radius: 20px;
-        overflow: hidden;
-        }
-      </style>
-    </th:block>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <th:block layout:fragment="title">
       <title>MovieList</title>
     </th:block>
-</head>
-<body>
-<!-- Swiper 컨테이너 -->
-<div class="swiper mySwiper">
-  <div class="swiper-wrapper">
-    <div class="swiper-slide" th:each="movie : ${movieList}">
-      <img th:src="@{'/images/movieimages/' + ${movie.image.imgName}}" 
-           th:alt="${movie.title}" style="width: 100%; height: auto;" />
-    </div>
-  </div>
-
-  <!-- 네비게이션 버튼 -->
-  <div class="swiper-button-next"></div>
-  <div class="swiper-button-prev"></div>
-
-  <!-- 페이지 표시 점 -->
-  <div class="swiper-pagination"></div>
-</div>
-    <!-- Head -->
-    <!-- Product Section Begin -->
-    <section class="product spad">
-      <div class="container">
-        <div class="row">
+    <th:block layout:fragment="css">
+      <!-- 개별 페이지 css 작성 -->
+      <style></style>
+    </th:block>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <!-- Product Section Begin -->
+      <section class="product spad">
+        <div class="container">
+          <div class="row">
             <div class="trending__product">
               <div class="row">
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <div class="section-title">
-                    <h4>Trending Now <img src="" alt="" srcset="" /> sample 확인하러 가기</h4>
+                    <h4>Trending Now <img src="" alt="" /> sample 확인하러 가기</h4>
                   </div>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-4">
-                  <!-- <div class="btn__all">
-                    <a th:href="@{/api/movies/list}" class="primary-btn">View All <span class="arrow_right"></span></a>
-                  </div> -->
+                  <!-- View All 버튼 비활성화 상태 -->
                 </div>
               </div>
-            <div class="popular__product">
-              <div class="row">
-                <div class="col-lg-8 col-md-8 col-sm-8">
-                  <div class="section-title">
-                    <h4>영화 인기순위</h4>
+
+              <!-- 영화 인기순위 -->
+              <div class="popular__product">
+                <div class="row">
+                  <div class="col-lg-8 col-md-8 col-sm-8">
+                    <div class="section-title">
+                      <h4>영화 인기순위</h4>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="btn__all">
+                      <a th:href="@{/api/movies/list}" class="primary-btn">View All</a>
+                    </div>
                   </div>
                 </div>
-                <div class="col-lg-4 col-md-4 col-sm-4">
-                  <div class="btn__all">
-                    <a th:href="@{/api/movies/list}" class="primary-btn">View All</a>
+                <div class="row">
+                  <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
+                    <div class="product__item">
+                      <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                        <img
+                          th:src="@{${movie.image != null} ? '/images/movieimages/' + ${movie.image.imgName} : '/images/sample.png'}"
+                          onerror="this.onerror=null; this.src='/images/sample.png';"
+                          alt="영화 이미지"
+                          loading="lazy"
+                          class="anime__details__pic"
+                        />
+                      </a>
+                      <div class="rank" th:text="${movie.rank}+위"></div>
+                      <div class="product__item__text">
+                        <ul>
+                          <li th:text="${movie.nationNm}">Movie</li>
+                          <li th:text="${movie.genres}">장르</li>
+                        </ul>
+                        <h5>
+                          <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}">제목</a>
+                        </h5>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
-                  <div class="product__item">
-                    <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
-                      <img
-                        th:src="@{'/images/movieimages/' + ${movie.image.imgName}}"
-                        onerror="this.onerror=null; this.src='/images/sample.png';"
-                        alt="영화 이미지"
-                        loading="lazy"
-                        class="anime__details__pic"
-                      />
-                    </a>
-                    <div class="rank" th:text="${movie.rank}+위"></div>
-                    <div class="product__item__text">
-                      <ul>
-                        <li th:text="${movie.nationNm}">Movie</li>
-                        <li th:text="${movie.genres}">장르</li>
-                      </ul>
-                      <h5>
-                        <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}">제목</a>
-                      </h5>
+
+              <!-- 게임 인기순위 -->
+              <div class="popular__product">
+                <div class="row">
+                  <div class="col-lg-8 col-md-8 col-sm-8">
+                    <div class="section-title">
+                      <h4>게임 인기순위</h4>
+                    </div>
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="btn__all">
+                      <a th:href="@{/api/games/list}" class="primary-btn">View All</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-4 col-md-6 col-sm-6" th:each="game : ${games}">
+                    <div class="product__item">
+                      <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
+                        <img
+                          th:src="@{${game.image != null} ? '/images/gameimages/' + ${game.image.imgName} : '/images/sample.png'}"
+                          onerror="this.onerror=null; this.src='/images/sample.png';"
+                          alt="게임 이미지"
+                          loading="lazy"
+                          class="anime__details__pic"
+                        />
+                      </a>
+                      <div class="rank" th:text="${game.rank}+위"></div>
+                      <div class="product__item__text">
+                        <ul>
+                          <li th:text="${game.developer}">Game</li>
+                          <li th:text="${game.genres}">장르</li>
+                        </ul>
+                        <h5>
+                          <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}">게임 제목</a>
+                        </h5>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="popular__product">
-            <div class="row">
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <div class="section-title">
-                  <h4>게임 인기순위</h4>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="btn__all">
-                  <a th:href="@{/api/games/list}" class="primary-btn">View All</a>
-                </div>
-              </div>
-              <!-- <ul class="filter__controls">
-                <li class="active" data-filter="*">Day</li>
-                <li data-filter=".week">Week</li>
-                <li data-filter=".month">Month</li>
-                <li data-filter=".years">Years</li>
-              </ul> -->
-              <div class="filter__gallery">
-                <div class="popular__product"></div>
-              </div>
-              <div class="row">
-                <div class="col-lg-4 col-md-6 col-sm-6" th:each="game : ${games}">
-                  <div class="product__item">
-                    <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
-                      <img
-                        th:src="@{'/images/gameimages/' + ${game.image.imgName}}"
-                        onerror="this.onerror=null; this.src='/images/sample.png';"
-                        alt="게임 이미지"
-                        loading="lazy"
-                        class="anime__details__pic"
-                      />
-                    </a>
-                    <div class="rank" th:text="${game.rank}+위"></div>
-                    <div class="product__item__text">
-                      <ul>
-                        <li th:text="${game.developer}">Game</li>
-                        <li th:text="${game.genres}">Movie</li>
-                      </ul>
-                      <h5>
-                        <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}"
-                          >Sen to Chihiro no Kamikakushi</a
-                        >
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-      </div>
-    </section>
-    <th:block layout:fragment="script">
-      <!-- 개별 페이지 script 작성 -->
-    </th:block>
-    </main>
-</body>
+        </div>
+      </section>
+      <!-- Product Section End -->
+
+      <th:block layout:fragment="script">
+        <!-- 개별 페이지 script 작성 -->
+      </th:block>
+    </div>
+  </body>
 </html>
