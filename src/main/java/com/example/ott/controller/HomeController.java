@@ -35,18 +35,13 @@ public class HomeController {
     private final UserService userService;
 
     @GetMapping("/")
-    public String getHome(Model model, PageRequestDTO requestDTO, @AuthenticationPrincipal UserDetails userDetails) {
+    public String getHome(Model model, PageRequestDTO requestDTO) {
         // PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
         List<MovieDTO> movielist = movieService.getRandom(3);
         model.addAttribute("movies", movielist);
         List<GameDTO> gamelist = gameService.getRandom(6);
         model.addAttribute("games", gamelist);
 
-        if (userDetails != null) {
-            User user = userService.getUser(userDetails.getUsername());
-            String profileImageUrl = user.getImage().getThumbnailPath();
-            model.addAttribute("profileImageUrl", profileImageUrl);
-        }
         return "index";
     }
 
