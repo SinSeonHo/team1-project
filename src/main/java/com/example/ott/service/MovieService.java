@@ -268,7 +268,8 @@ public class MovieService {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
-                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                // .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .map(movie -> entityToDto(movie))
                 .collect(Collectors.toList());
 
         return PageResultDTO.<MovieDTO>withAll()
@@ -299,10 +300,10 @@ public class MovieService {
     public List<MovieDTO> getRandom(int num) {
         List<MovieDTO> result;
         List<Movie> list = movieRepository.findAll();
-        result = list.stream()
-                .map(movie -> modelMapper.map(movie, MovieDTO.class))
-                .collect(Collectors.toCollection(ArrayList::new));
-
+        // result = list.stream()
+        // .map(movie -> modelMapper.map(movie, MovieDTO.class))
+        // .collect(Collectors.toCollection(ArrayList::new));
+        result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(result);
         return result.subList(0, Math.min(num, result.size()));
     }
@@ -319,14 +320,23 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
-    // public MovieDTO entityToDto(Movie movie) {
-    // MovieDTO dto = MovieDTO.builder()
-    // .actors(movie.getActors())
-    // .title(movie.getTitle())
-    // .mid(movie.getMid())
-    // .director(movie.getDirector())
-    // .
-    // .build();
-    // return dto;
-    // }
+    public MovieDTO entityToDto(Movie movie) {
+        MovieDTO dto = MovieDTO.builder()
+                .mid(movie.getMid())
+                .movieCd(movie.getMovieCd())
+                .title(movie.getTitle())
+                .actors(movie.getActors())
+                .director(movie.getDirector())
+                .openDate(movie.getOpenDate())
+                .rank(movie.getRank())
+                .genres(movie.getGenres())
+                .showTm(movie.getShowTm())
+                .nationNm(movie.getNationNm())
+                .gradeNm(movie.getGradeNm())
+                .synopsis(movie.getSynopsis())
+                .imgUrl(movie.getImage().getImgName())
+                .replycnt(movie.getReplies().size())
+                .build();
+        return dto;
+    }
 }
