@@ -265,7 +265,6 @@
             <span class="mention text-light"></span>
             <form id="replyForm" method="post">
               <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
-              <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
               <input type="hidden" name="rno" />
               <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />

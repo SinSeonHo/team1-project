@@ -150,9 +150,9 @@ const replyList = () => {
 // 리뷰 멘션 추가
 document.querySelectorAll(".mention-btn").forEach((re) => {
   re.addEventListener("click", (e) => {
-    const id = e.target;
-    const rno = id.closest(".anime__review__item__text").dataset.rno;
-    const replyer = id.closest(".anime__review__item__text").dataset.replyernickname;
+    const data = e.target.closest(".anime__review__item__text").dataset;
+    const rno = data.rno;
+    const replyer = data.replyernickname;
 
     replyForm.mention.value = replyer;
     replyForm.ref.value = rno;
@@ -163,6 +163,7 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
       replyForm.ref.value = null;
       mention.innerHTML = "";
     });
+    console.log(data);
   });
 });
 
