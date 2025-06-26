@@ -38,17 +38,22 @@
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
             <div class="product__item">
-              <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
-                <img
-                  th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
-                  onerror="this.onerror=null; this.src='/images/sample.png';"
-                  alt="영화 이미지"
-                  loading="lazy"
-                  class="product__item__pic"
-              /></a>
-              <div class="ep" th:text="${movie.rank}+위"></div>
-              <div class="comment" th:text="'댓글 '"><i class="fa fa-comments"></i> 11개</div>
-              <div class="view" th:text="${movie.showTm}+분"><i class="fa fa-eye"></i> 상영시간</div>
+              <div class="product__item__pic">
+                <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                  <img
+                    th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="영화 이미지"
+                    loading="lazy"
+                    class="product__item__pic"
+                  />
+                  <!-- 팔로우수  -->
+                  <div class="comment_movie">11</div>
+                  <!-- 댓글갯수  -->
+                  <div class="view_movie" th:text="'Re: ' + 개"></div>
+                </a>
+                <!-- <div class="ep">18 / 18</div> -->
+              </div>
 
               <div class="product__item__text">
                 <ul class="genre">

@@ -1,14 +1,18 @@
 package com.example.ott.entity;
 
 import java.time.LocalDateTime;
+
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
+
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -25,13 +29,13 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @ToString
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 
 @EntityListeners(value = AuditingEntityListener.class)
-@Entity
 @Table(name = "user_table")
+@Entity
 public class User {
 
     @Id
@@ -78,7 +82,7 @@ public class User {
 
     @Setter
     @OneToOne
-    private Image profileImageUrl;
+    private Image image;
 
     // @OneToOne(mappedBy = "user")
     // private Favorites favorites;

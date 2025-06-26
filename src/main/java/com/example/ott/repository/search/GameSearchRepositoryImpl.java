@@ -34,8 +34,6 @@ public class GameSearchRepositoryImpl implements GameSearchRepository {
 
             for (String type : types) {
                 switch (type) {
-                    case "m":
-                        return null;
                     case "t":
                         searchBuilder.or(game.title.containsIgnoreCase(keyword));
                         break;

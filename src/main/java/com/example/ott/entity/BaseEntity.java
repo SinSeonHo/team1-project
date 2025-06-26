@@ -9,17 +9,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@MappedSuperclass // 테이블과 매핑되지 않고 자식 클래스에 엔티티의 매핑 정보 상속
 @EntityListeners(value = AuditingEntityListener.class)
 public abstract class BaseEntity {
 

@@ -44,5 +44,7 @@ build/
 application-oauth.properties
 
 ### img 파일 무시 ###
-*.png
-*.jpg
+images/gameimages/*.png
+images/gameimages/*.jpg
+images/movieimages/*.jpg
+images/movieimages/*.png

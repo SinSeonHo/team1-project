@@ -71,10 +71,7 @@ public class UserController {
     public String getUserProfile(String id, Model model) {
 
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        
-        // user favorite movie 찾기
-
-
+        log.info("user Profile 조회 : {}", userProfileDTO);
         model.addAttribute("userProfileDTO", userProfileDTO);
         return "/user/userProfile";
     }
