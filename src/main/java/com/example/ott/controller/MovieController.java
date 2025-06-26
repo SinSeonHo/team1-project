@@ -61,8 +61,8 @@ public class MovieController {
     // return "ott_contents/movieList";
     // }
     public String list(PageRequestDTO pageRequestDTO, Model model) {
-        PageResultDTO<MovieDTO> result = movieService.getList(pageRequestDTO);
-        model.addAttribute("movies", result);
+        PageResultDTO<MovieDTO> result = movieService.getSearch(pageRequestDTO);
+        model.addAttribute("movies", result.getDtoList());
         return "ott_contents/movieList";
     }
 

@@ -46,7 +46,7 @@ public class GameController {
     public String getGameList(Model model, PageRequestDTO pageRequestDTO) {
         log.info("gameList 요청 {}", pageRequestDTO);
         // List<Game> list = gameService.getGameAll();
-        PageResultDTO<GameDTO> result = gameService.getGameRequest(pageRequestDTO);
+        PageResultDTO<GameDTO> result = gameService.getSearch(pageRequestDTO);
         model.addAttribute("games", result.getDtoList());
         return "ott_contents/gameList";
     }

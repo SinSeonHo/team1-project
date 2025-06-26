@@ -8,12 +8,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
+import com.example.ott.entity.Movie;
 import com.example.ott.service.GameService;
 import com.example.ott.service.MovieService;
 
@@ -26,11 +28,24 @@ public class HomeController {
     private final GameService gameService;
 
     @GetMapping("/")
-    public String getHome(Model model) {
-        PageResultDTO<MovieDTO> list = movieService.getList(PageRequestDTO.builder().size(6).build());
-        PageResultDTO<GameDTO> gamelist = gameService.getGameRequest(PageRequestDTO.builder().size(6).build());
-        model.addAttribute("movies", list.getDtoList());
-        model.addAttribute("games", gamelist.getDtoList());
+    public String getHome(Model model, PageRequestDTO requestDTO) {
+        String id = requestDTO.getId();
+        if (id == null) {
+            // PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
+            List<MovieDTO> movielist = movieService.getRandom(6);
+            model.addAttribute("movies", movielist);
+            // model.addAttribute("games", gamelist.getDtoList());
+        } else {
+            PageResultDTO<MovieDTO> list = movieService.getSearch(requestDTO);
+            model.addAttribute("movies", list.getDtoList());
+            model.addAttribute("id", "m");
+            // } else if (id.equals("g")) {
+            // PageResultDTO<MovieDTO> random = movieService.getSearch();
+            PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
+            // model.addAttribute("id", "g");
+            // model.addAttribute("movies", li.getDtoList());
+            model.addAttribute("games", gamelist.getDtoList());
+        }
         return "index";
     }
 

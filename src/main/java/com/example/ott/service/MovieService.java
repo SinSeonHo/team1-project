@@ -3,6 +3,7 @@ package com.example.ott.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,9 +264,7 @@ public class MovieService {
         return result;
     }
 
-    // public void getSearch(MovieSearchImpl movieSearchImpl){
-    // }
-    public PageResultDTO<MovieDTO> getList(PageRequestDTO requestDTO) {
+    public PageResultDTO<MovieDTO> getSearch(PageRequestDTO requestDTO) {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
@@ -297,6 +296,17 @@ public class MovieService {
         return result;
     }
 
+    public List<MovieDTO> getRandom(int num) {
+        List<MovieDTO> result;
+        List<Movie> list = movieRepository.findAll();
+        result = list.stream()
+                .map(movie -> modelMapper.map(movie, MovieDTO.class))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        Collections.shuffle(result);
+        return result.subList(0, Math.min(num, result.size()));
+    }
+
     // 영화 삭제
     public void deleteMovie(String mid) {
         log.info("영화 삭제");
@@ -308,4 +318,15 @@ public class MovieService {
         log.info("영화정보 수정");
         return movieRepository.save(movie);
     }
+
+    // public MovieDTO entityToDto(Movie movie) {
+    // MovieDTO dto = MovieDTO.builder()
+    // .actors(movie.getActors())
+    // .title(movie.getTitle())
+    // .mid(movie.getMid())
+    // .director(movie.getDirector())
+    // .
+    // .build();
+    // return dto;
+    // }
 }

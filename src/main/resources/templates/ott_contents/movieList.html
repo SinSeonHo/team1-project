@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies.dtoList}">
+          <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
             <div class="product__item">
               <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
                 <img
@@ -46,9 +46,9 @@
                   loading="lazy"
                   class="product__item__pic"
               /></a>
-              <div class="ep" th:text="${movie.rank}">18 / 18</div>
-              <div class="comment"><i class="fa fa-comments"></i> 11</div>
-              <div class="view"><i class="fa fa-eye"></i> 9141</div>
+              <div class="ep" th:text="${movie.rank}+위"></div>
+              <div class="comment" th:text="'댓글 '"><i class="fa fa-comments"></i> 11개</div>
+              <div class="view" th:text="${movie.showTm}+분"><i class="fa fa-eye"></i> 상영시간</div>
 
               <div class="product__item__text">
                 <ul class="genre">

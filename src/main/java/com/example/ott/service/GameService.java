@@ -320,7 +320,7 @@ public class GameService {
         return result;
     }
 
-    public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
+    public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
         Page<Game> result = gameRepository.search(requestDTO);
 
         List<GameDTO> dtoList = result.stream()

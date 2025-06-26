@@ -40,14 +40,10 @@ public class MovieSearchImpl implements MovieSearch {
                     case "d":
                         searchBuilder.or(movie.director.containsIgnoreCase(keyword));
                         break;
-                    case "g":
-                        searchBuilder.or(movie.genres.containsIgnoreCase(keyword));
-                        break;
                 }
             }
             builder.and(searchBuilder);
         }
-
         Pageable pageable = requestDTO.getPageable(Sort.by("rank").descending());
 
         JPAQuery<Movie> query = queryFactory
