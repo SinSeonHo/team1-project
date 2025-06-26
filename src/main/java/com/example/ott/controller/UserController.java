@@ -80,11 +80,7 @@ public class UserController {
     public String getUserProfile(String id, Model model) {
 
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-<<<<<<< HEAD
-        // log.info("이거 와 안되나 : {}", userProfileDTO.getProfileImageUrl());
-=======
         log.info("user Profile 조회 : {}", userProfileDTO);
->>>>>>> fc7a5c9e3959a77ce11eaee09f4bab093cd1df78
         model.addAttribute("userProfileDTO", userProfileDTO);
 
         // 유저가 팔로우 한 콘텐츠들 사진 정보
