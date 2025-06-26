@@ -1,0 +1,151 @@
+body {
+  background: #14153b;
+}
+
+/* ========== 유저 정보 영역 ========== */
+.user-info-list {
+  padding: 32px 0 24px 0;
+  font-size: 1.15rem;
+}
+.user-info-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-left: 20px;
+}
+.user-info-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  width: 4px;
+  background: #e53637;
+  border-radius: 3px;
+  transition: background 0.2s, height 0.2s, box-shadow 0.2s;
+}
+.user-info-item.focused::before {
+  background: #ff4a4a;
+  height: 40px;
+  box-shadow: 0 0 8px #e5363780;
+}
+.user-info-label {
+  min-width: 90px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.08em;
+  margin-bottom: 0;
+  margin-right: 12px;
+  letter-spacing: 0.01em;
+}
+.user-info-value {
+  flex: 1 1 auto;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.08em;
+  padding: 10px 15px;
+  opacity: 1;
+  margin-bottom: 0;
+  box-shadow: none;
+  transition: color 0.18s, font-weight 0.18s;
+}
+.user-info-value:focus {
+  color: black;
+  font-weight: 700;
+  outline: none;
+}
+.user-info-item input[readonly] {
+  background: transparent;
+  color: #fff;
+  opacity: 1;
+  pointer-events: auto;
+}
+.user-info-item .form-check-input[disabled] {
+  background-color: #277aff;
+  border-color: #277aff;
+  opacity: 0.7;
+}
+.user-info-item .form-check-label {
+  margin-right: 12px;
+  color: #444;
+  font-weight: 500;
+}
+
+/* ========== 프로필 버튼 영역 ========== */
+.profile-btn {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.06em;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  box-shadow: 0 1.5px 5px 0 #0001;
+  transition: background 0.18s, color 0.18s;
+}
+
+.profile-btn-secondary {
+  background: #277aff;
+  color: #fff;
+}
+.profile-btn-secondary:hover,
+.profile-btn-secondary:focus {
+  background: #205ecb;
+  color: #fff;
+}
+.profile-btn-lightgray {
+  background: #f2f2f2;
+  color: #222;
+  border: 1px solid #e0e0e0;
+}
+.profile-btn-lightgray:hover,
+.profile-btn-lightgray:focus {
+  background: #e0e0e0;
+  color: #111;
+}
+.profile-btn-danger {
+  background: #9e2325;
+  color: #fff;
+}
+.profile-btn-danger:hover,
+.profile-btn-danger:focus {
+  background: #d22;
+  color: #fff;
+}
+
+/* ========== 갤러리 영역 ========== */
+.user-gallery-section {
+  margin-top: 32px;
+}
+.user-gallery-grid {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.gallery-img {
+  width: 160px;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #232452;
+  box-shadow: 0 2px 10px #0001;
+  transition: transform 0.15s;
+  cursor: pointer;
+}
+.gallery-img:hover {
+  transform: scale(1.04);
+}
+.gallery-title {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+a {
+  text-decoration: none; /* 밑줄 제거 */
+  color: inherit; /* 부모 텍스트 색상 따라가기 (원한다면) */
+}
+

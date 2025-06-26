@@ -7,17 +7,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.MovieDTO;
-import com.example.ott.entity.Image;
-import com.example.ott.entity.Movie;
+import com.example.ott.dto.ReplyDTO;
 
+import com.example.ott.entity.Movie;
 import com.example.ott.repository.MovieRepository;
+import com.example.ott.repository.ReplyRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,15 +29,24 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+
 public class MovieService {
 
     private final MovieRepository movieRepository;
-    // private final ImageRepository imageRepository;
+    // private final ReplyRepository replyRepository;
+    private final ReplyService replyService;
+
+    @Scheduled(cron = "0 0 10 * * *") // 매일 오전10시에 실행
+    @Transactional
+    public void scheduledMovieImport() {
+        log.info("자동 영화 데이터 수집 시작");
+        importMovies(); // 기존 메서드 호출
+    }
 
     // 영화 등록
     @Transactional
     public String insertMovie(MovieDTO dto) {
-        log.info("영화 등록");
+        log.info("db에 영화 저장");
 
         // 현재 가장 마지막 mid 확인
         String lastId = movieRepository.findLastMovieId();
@@ -56,6 +66,7 @@ public class MovieService {
                 .movieCd(dto.getMovieCd())
                 .actors(dto.getActors())
                 .director(dto.getDirector())
+                .genres(dto.getGenres())
                 .build();
 
         movieRepository.save(movie);
@@ -79,7 +90,7 @@ public class MovieService {
 
         String apiUrl1 = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
                 + "?key=4cb94726cef5af841db6efd248a5af76"
-                + "&targetDt=" + "20250606";
+                + "&targetDt=" + formattedDate;
 
         try {
             // RestTemplate 외부 API 요청에 사용됨
@@ -142,6 +153,14 @@ public class MovieService {
                     else
                         actorStr = String.join(", ", actorNames); // "배우1, 배우2, 배우3..."
 
+                    // 장르 정보 추출
+                    JsonNode genres = movieInfo.path("genres");
+                    List<String> genreNames = new ArrayList<>();
+                    for (JsonNode genreNode : genres) {
+                        genreNames.add(genreNode.path("genreNm").asText());
+                    }
+                    String genreStr = genreNames.isEmpty() ? "[장르정보없음]" : String.join(", ", genreNames);
+
                     Optional<Movie> optionalMovie = movieRepository.findByMovieCd(movieCd);
 
                     if (optionalMovie.isPresent()) {
@@ -150,6 +169,7 @@ public class MovieService {
                         existing.setRank(rank);
                         existing.setDirector(directorName);
                         existing.setActors(actorStr);
+                        existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
 
@@ -169,6 +189,7 @@ public class MovieService {
                                 .movieCd(movieCd)
                                 .director(directorName)
                                 .actors(actorStr)
+                                .genres(genreStr)
                                 .build();
 
                         insertMovie(dto);
@@ -186,10 +207,24 @@ public class MovieService {
         }
     }
 
-    // 영화 단건 조회
-    public Optional<Movie> getMovie(String mid) {
-        log.info("영화 한편 조회");
-        return movieRepository.findById(mid);
+    // 영화단건 상세정보 + 해당 영화 댓글리스트 조회
+    // 영화 + 댓글 DTO 리스트 함께 반환
+    public Map<String, Object> getMovie(String mid) {
+        log.info("영화정보 상세조회");
+
+        // 1. 영화 조회
+        Movie movie = movieRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("영화 없음"));
+
+        // 2. 댓글 DTO 리스트 조회
+        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+
+        // 3. Map에 담아서 리턴
+        Map<String, Object> result = new HashMap<>();
+        result.put("movie", movie);
+        result.put("replies", replyDTOList);
+
+        return result;
     }
 
     // 전체 영화 목록 조회
@@ -263,8 +298,8 @@ public class MovieService {
         // }).collect(Collectors.toList());
 
         // movieDTO.setMovieImages(mImageDTOs);
-        movieDTO.setAvg(avg != null ? avg : 0.0);
-        movieDTO.setReviewCnt(count);
+        // movieDTO.setAvg(avg != null ? avg : 0.0);
+        // movieDTO.setReviewCnt(count);
 
         return movieDTO;
     }

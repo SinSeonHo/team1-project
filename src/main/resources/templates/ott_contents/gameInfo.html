@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovieInfo</title>
+    <style>
+  /* 강제 덮어쓰기 */
+  .anime__details__widget ul li span {
+    width: auto !important;
+    display: inline !important;
+    color: inherit !important;
+  }
+
+  .synopsis {
+        display: block; /* span은 인라인 요소이므로 block으로 전환 */
+        white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
+        word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
+        line-height: 1.5;
+        color: #ffffff !important; /* 글자색 흰색 */
+        font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
+  }
+
+  .synopsis_t {
+        font-weight: 600;
+  }
+
+  /* game 이미지크기조절 */
+  img {
+    height: 270px !important;
+  }
+</style>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="gradient-bg">
+        <!-- Breadcrumb Begin -->
+        <div class="breadcrumb-option">
+          <div class="container">
+            <div class="col-lg-12">
+              <a th:href="@{/}">Home</a>
+              <a href="#">></a>
+              <a th:href="@{/api/games/list}">GameList</a>
+              <a href="#">></a>
+              <a href="#">GameInfo</a>
+            </div>
+          </div>
+        </div>
+        <!-- Anime Section Begin -->
+
+        <section class="anime-details spad">
+          <div class="container">
+            <div class="anime__details__content">
+              <div class="row">
+                <div class="col-lg-3">
+                  <img
+                    th:src="@{'/images/gameimages/' + ${gameInfo.image.imgName}}"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="게임 이미지"
+                    loading="lazy"
+                    class="anime__details__pic"
+                  />
+                    <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
+                    <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
+                  
+                </div>
+                <div class="col-lg-9">
+                  <div class="anime__details__text">
+                    <div class="anime__details__title">
+                      <h3 th:text="${gameInfo.title}"></h3>
+                      <!-- <h4 th:text="시놉시스" class="synopsis_t"></h4>
+                      <span th:text="${gameInfo.synopsis}" class="synopsis"></span> -->
+                      <!-- <span th:text="'감독 : ' + ${movieInfo.director}"></span>
+                      <span th:text="'배우 : ' + ${movieInfo.actors}"></span> -->
+                    </div>
+                    <!-- 별점 추후 적용 -->
+                    <!-- <div class="anime__details__rating">
+                      <div class="rating">
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star"></i></a>
+                        <a href="#"><i class="fa fa-star-half-o"></i></a>
+                      </div>
+                      <span>1.029 Votes</span>
+                    </div> -->
+                    <!-- <p>
+                      Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
+                      For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
+                      her mother’s last words send Hina on a quest to find a legendary hero from the Waste War - the
+                      fabled Ace!
+                    </p> -->
+                    <div class="anime__details__widget">
+                      <div class="row">
+                        <!-- 왼쪽 열: 상위 5개 정보 -->
+                        <div class="col-lg-6 col-md-6">
+                          <ul class="list-unstyled">
+                            <li><span>동시접속자</span> <span th:text="${gameInfo.ccu} + '명'"></span></li>
+                            <li><span>장르</span><span th:text="${gameInfo.genres}"></span></li>
+                            <li>
+                              <span>가격</span>
+                              <span>
+                                <span
+                                  style="color: gray; text-decoration: line-through; margin-right: 8px"
+                                  th:if="${gameInfo.discountRate != 0}"
+                                  th:text="|$${gameInfo.originalPrice}|"
+                                ></span>
+                                <span style="font-weight: bold" th:text="|$${gameInfo.price}|"></span>
+                              </span>
+                            </li>
+                            <li><span>좋아요 수</span><span th:text="${gameInfo.positive} + '개'"></span></li>
+                            <li><span>싫어요 수</span><span th:text="${gameInfo.negative} + '개'"></span></li>
+                          </ul>
+                        </div>
+
+                        <!-- 오른쪽 열: 하위 5개 정보 -->
+                        <div class="col-lg-6 col-md-6">
+                          <ul class="list-unstyled">
+                            <li><span>개발사</span><span th:text="${gameInfo.developer}"></span></li>
+                            <li><span>배급사</span><span th:text="${gameInfo.publisher}"></span></li>
+                            <li><span>플랫폼</span><span th:text="${gameInfo.platform}"></span></li>
+                            <li><span>이용연령등급</span><span th:text="${gameInfo.ageRating}"></span></li>
+                            <li><span>순위</span><span th:text="${gameInfo.rank}"></span></li>
+                          </ul>
+                        </div>
+                      </div>
+                    <!-- </div> -->
+                    <div class="anime__details__btn">
+                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
+                        로그인한 상태에서만 보여짐 -->
+                      <button class="follow-btn follow" th:data-mid="${gameInfo.gid}">Follow</button>
+
+                      <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="center-line"></div>
+            <!-- <div class="row">
+              <div class="col-lg-8 col-md-8">
+                <div class="anime__details__review">
+                  <div class="section-title">
+                    <h5>Reviews</h5>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-1.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-2.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                      <p>Finally it came out ages ago</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-3.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
+                      <p>Where is the episode 15 ? Slow update! Tch</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-4.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-5.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                      <p>Finally it came out ages ago</p>
+                    </div>
+                  </div>
+                  <div class="anime__review__item">
+                    <div class="anime__review__item__pic">
+                      <img src="img/anime/review-6.jpg" alt="" />
+                    </div>
+                    <div class="anime__review__item__text">
+                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
+                      <p>Where is the episode 15 ? Slow update! Tch</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="anime__details__form">
+                  <div class="section-title">
+                    <h5>Your Comment</h5>
+                  </div>
+                  <form action="#">
+                    <textarea placeholder="Your Comment"></textarea>
+                    <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+                  </form>
+                </div>
+              </div>
+            </div> -->
+          </div>
+        </section>
+
+        <!-- Anime Section End -->
+        <!-- 댓글 영역 -->
+
+        <div class="col-lg-6 mx-auto">
+          <div class="anime__details__review">
+            <div class="section-title">
+              <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
+            </div>
+            <div class="p-4"></div>
+            <!-- 댓글 시작 -->
+            <div th:each="reply : ${replies}" class="anime__review__item">
+              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
+                <img src="img/anime/review-1.jpg" alt="" />
+              </div>
+              <div class="anime__review__item__text reply" th:data-id="${reply.rno}" th:data-replyer="${reply.replyer}">
+                <a class="replyer text-light" th:text="${reply.replyer}"></a>
+                <span class="text-secondary" th:text="' - '+${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+                <span class="text-secondary" th:if="${reply.mention}" th:text="${reply.mention}+에게"></span>
+                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-id="${reply.rno}">x</button>
+                <p th:text="${reply.text}">댓글 텍스트</p>
+              </div>
+            </div>
+
+            <!-- 댓글 리스트 끝-->
+          </div>
+
+          <!-- 댓글 작성 폼 -->
+          <div class="anime__details__form">
+            <div class="section-title">
+              <h5>댓글 작성</h5>
+            </div>
+            <a class="mention text-light"></a>
+            <form id="replyForm" method="post">
+              <input type="hidden" name="gid" th:value="${gameInfo.gid}" />
+              <!-- ToDo 실제 사용자의 아이디를 받아야함 todo -->
+              <input type="hidden" name="rno" />
+              <input type="hidden" name="replyer" th:value="user1" />
+              <input type="hidden" name="mention" />
+              <input type="hidden" name="ref" />
+              <textarea name="text" placeholder="Your Comment"></textarea>
+              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+            </form>
+          </div>
+          <!-- 댓글 작성 폼 끝 -->
+        </div>
+      </div>
+      <script>
+        const mid = "[[${gameInfo.gid}]]";
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script th:src="@{/js/reply.js}"></script>
+      <script th:src="@{/js/followbtn.js}"></script>
+    </div>
+    <!-- layout:fragment="content" 닫기 -->
+  </body>
+</html>

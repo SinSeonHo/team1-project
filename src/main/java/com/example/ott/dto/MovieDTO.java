@@ -1,8 +1,9 @@
 package com.example.ott.dto;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.ott.entity.Image;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,26 +21,27 @@ import lombok.ToString;
 public class MovieDTO {
 
     private String mid; // 영화코드
-
+    private String movieCd; // KOBIS 고유 코드
     private String title; // 영화명
-
     private String actors; // 배우들
-
     private String director; // 감독
+    private String openDate; // 개봉일
+    private int rank; // 순위
+    private String genres; // 장르
+    private int showTm; // 상영시간
+    private String nationNm; // 제작국가
+    private String gradeNm; // 이용등급
+    private String synopsis; // 줄거리
+
+    private String imgUrl;
 
     // @Builder.Default
-    // private List<MovieImageDTO> movieImages = new ArrayList<>();
+    // private List<Image> movieImages = new ArrayList<>();
 
-    private String openDate;
+    // @Builder.Default
+    // private List<Image> movieGenres = new ArrayList<>();
 
-    private int rank;
-
-    private String movieCd; // KOBIS 고유 코드
-
-    // 평점
-    private double avg;
-
-    // 리뷰수
-    private Long reviewCnt;
+    // @Builder.Default
+    // private List<Image> movieReplies = new ArrayList<>();
 
 }
