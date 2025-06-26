@@ -201,11 +201,6 @@ public class GameService {
         return gameRepository.findById(gid);
     }
 
-    // 전체 게임 목록 조회
-    public List<Game> getGameAll() {
-        return gameRepository.findAll();
-    }
-
     // 인기 게임 목록 조회
     public List<Game> getGameRank(int num) {
         List<Game> list = gameRepository.findAll(Sort.by("rank"));
@@ -217,6 +212,11 @@ public class GameService {
             result = new ArrayList<>(list);
         }
         return result;
+    }
+
+    // 전체 게임 목록 조회
+    public List<Game> getGameAll() {
+        return gameRepository.findAll();
     }
 
     public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
