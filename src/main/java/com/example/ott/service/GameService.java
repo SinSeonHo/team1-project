@@ -399,6 +399,7 @@ public class GameService {
                 .rank(game.getRank())
                 .replycnt(game.getReplies().size())
                 .synopsis(game.getSynopsis())
+                .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .build();
         return dto;

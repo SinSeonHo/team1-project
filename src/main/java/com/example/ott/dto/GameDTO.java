@@ -40,6 +40,7 @@ public class GameDTO {
     private int negative; // 싫어요 수
     private String synopsis; // 줄거리
 
+    private int followcnt;
     private String imgUrl; // 이미지경로
     private int replycnt; // 댓글갯수
 
