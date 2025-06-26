@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,16 +65,18 @@ public class MovieController {
 
     // 하나의 movie 상세정보
     @GetMapping("/read/{mid}")
-    public String getMovieInfo(@PathVariable String mid, Model model) {
+    public String getMovieInfo(@PathVariable String mid, Model model,
+            @AuthenticationPrincipal UserDetails userDetails) {
         Map<String, Object> data = movieService.getMovie(mid);
         Movie movie = (Movie) data.get("movie");
-
+        boolean isFollowed = false;
         // 상영시간 분 -> n시간 n분형태 변환메소드 호출
         String showTm = convertShowTm(movie.getShowTm());
 
         model.addAttribute("movieInfo", movie);
         model.addAttribute("replies", data.get("replies"));
         model.addAttribute("showTm", showTm); // 시간 분으로 변환된 상영시간 추가
+        model.addAttribute("isFollowed", isFollowed);
         log.info("로그확인 {}", model);
 
         return "ott_contents/movieInfo";

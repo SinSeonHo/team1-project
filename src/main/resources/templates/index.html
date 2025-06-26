@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-  <main layout:fragment="content">
+    <th:block layout:fragment="css">
+      <style>
+       
+      </style>
+    </th:block>
+  <body layout:fragment="content">
     <!-- <section class="hero">
       <div class="container">
       
@@ -18,11 +23,12 @@
               <div class="row">
               </div>
               </div>
+              <div class="center-line"></div>
             <div class="popular__product">
               <div class="row">
                 <div class="col-lg-8 col-md-8 col-sm-8">
                   <div class="section-title" >
-                    <h4>영화</h4>
+                    <h4>영화미리보기</h4>
                     
                   </div>
                 </div>
@@ -62,12 +68,13 @@
                 </div>
               </div>
             </div>
-          
+            <br/><br/><br/><br/><br/><br/>
+          <div class="center-line"></div>
           <div class="popular__product">
             <div class="row">
               <div class="col-lg-8 col-md-8 col-sm-8">
                 <div class="section-title" >
-                  <h4>게임</h4>
+                  <h4>게임미리보기</h4>
                 </div>
               </div>
               <div class="col-lg-4 col-md-4 col-sm-4">
@@ -120,7 +127,12 @@
               </div>
             </div>
           </div>
+          
       </div>
     </section>
-  </main>
+    <th:block layout:fragment="script">
+      <!-- 개별 페이지 script 작성 -->
+
+    </th:block>
+  </body>
 </html>

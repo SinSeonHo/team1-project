@@ -1,12 +1,12 @@
 import os
 import requests
-from urllib.request import urlretrieve
 import cx_Oracle
 import time
 import uuid
 import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import shutil
 
 # 이미지 저장 경로
 BASE_PATH = os.path.abspath("./src/main/resources/static/images/movieimages")
@@ -31,6 +31,25 @@ driver = webdriver.Chrome(options=options)
 # 이미지가 없는 영화 조회
 cursor.execute("SELECT mid, title FROM movie WHERE image_id IS NULL")
 movies = cursor.fetchall()
+
+
+# requests로 이미지 다운로드 (SSL 검증 끔)
+def download_image(url, path):
+    try:
+        response = requests.get(url, stream=True, verify=False)
+        if response.status_code == 200:
+            with open(path, "wb") as f:
+                shutil.copyfileobj(response.raw, f)
+            return True
+        else:
+            print(
+                f"[ERROR] 이미지 다운로드 실패 (status code={response.status_code}): {url}"
+            )
+            return False
+    except Exception as e:
+        print(f"[ERROR] 이미지 다운로드 중 오류: {e}")
+        return False
+
 
 for mid, title in movies:
     print(f"[{title}] 이미지 검색 시작...")
@@ -107,9 +126,12 @@ for mid, title in movies:
         )
         full_path = os.path.join(BASE_PATH, file_name)
 
-        # 이미지 저장
-        urlretrieve(poster_url, full_path)
-        print(f"[{title}] 이미지 저장 완료: {file_name}")
+        # 이미지 저장 (requests 이용)
+        if download_image(poster_url, full_path):
+            print(f"[{title}] 이미지 저장 완료: {file_name}")
+        else:
+            print(f"[{title}] 이미지 저장 실패: {file_name}")
+            continue
 
         # static부터 시작하는 상대경로 구하기
         relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
