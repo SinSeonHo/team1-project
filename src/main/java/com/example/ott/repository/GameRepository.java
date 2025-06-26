@@ -1,5 +1,6 @@
 package com.example.ott.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface GameRepository extends JpaRepository<Game, String> {
     String findLastGameId();
 
     Optional<Game> findByAppid(String appid);
+
+    List<Game> findByGameContainingIgnoreCase(String genre);
 }

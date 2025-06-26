@@ -1,9 +1,11 @@
 package com.example.ott.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 
 import com.example.ott.entity.Movie;
 
@@ -13,4 +15,6 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
     String findLastMovieId();
 
     Optional<Movie> findByMovieCd(String movieCd);
+
+    List<Movie> findByMovieContainingIgnoreCase(String genre);
 }

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>챗봇</title>
+    <style></style>
+    <link rel="stylesheet" href="/css/chatBot.css" />
+  </head>
+  <body>
+    <div>
+      <div class="contentClick">
+        <button name="movieButton" class="btn movieButton btn-primary">영화</button>
+
+        <button name="webToonButton" class="btn webToonButton btn-primary">만화</button>
+
+        <button name="gameButton" class="btn gameButton btn-primary">게임</button>
+      </div>
+
+      <div style="margin-top: 10px">
+        <input type="text" id="userInput" placeholder="내용을 입력해주세요" style="width: 60%" />
+        <button id="sendBtn">전송</button>
+      </div>
+      <div id="chatLog"></div>
+    </div>
+  </body>
+  <script>
+    const movieBtn = document.querySelector(".movieButton");
+    const gameBtn = document.querySelector(".gameButton");
+    const webToonBtn = document.querySelector(".webToonButton");
+    const input = document.querySelector("#userInput");
+    const sendBtn = document.querySelector("#sendBtn");
+    const chatLog = document.querySelector("#chatLog");
+
+    let selectedContent = "영화";
+
+    function selectContent(content) {
+      selectedContent = content;
+      [movieBtn, gameBtn, webToonBtn].forEach((btn) => {
+        btn.classList.remove("selected");
+      });
+      if (content == "영화") movieBtn.classList.add("selected");
+      else if (content == "게임") gameBtn.classList.add("selected");
+      else if (content == "만화") webToonBtn.classList.add("selected");
+    }
+    movieBtn.addEventListener("click", () => selectContent("영화"));
+    gameBtn.addEventListener("click", () => selectContent("게임"));
+    webToonBtn.addEventListener("click", () => selectContent("웹툰"));
+
+    async function sendChat() {
+      const text = input.value.trim();
+      if (!text) return alert("내용을 입력해주세요");
+
+      chatLog.innerHTML += `<div class="bubble user"><b>나:</b> ${text}</div>`;
+
+      const userInput = selectedContent + " " + text;
+      try {
+        const response = await fetch("/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userInput),
+        });
+        const data = await response.json();
+        chatLog.innerHTML += `<div class=" bubble bot"><b> 챗봇: </b> ${data.response} </div>`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+      } catch (error) {
+        chatLog.innerHTML += `<div style="color: red;"><b> 오류: </b> 요청실패</div>`;
+      }
+      input.value = "";
+      input.focus();
+    }
+    sendBtn.addEventListener("click", sendChat);
+    input.addEventListener("keypress", (e) => {
+      if (e.key == "Enter") sendChat();
+    });
+  </script>
+</html>

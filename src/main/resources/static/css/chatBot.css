@@ -1,0 +1,59 @@
+.chatBotMain {
+  max-width: 500px;
+  margin: auto;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.movieButton {
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-x: 0.6rem;
+  --bs-btn-font-size: 1.25rem;
+  --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+.webToonButton {
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-x: 0.6rem;
+  --bs-btn-font-size: 1.25rem;
+  --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+.gameButton {
+  --bs-btn-padding-y: 0.5rem;
+  --bs-btn-padding-x: 0.6rem;
+  --bs-btn-font-size: 1.25rem;
+  --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+#chatLog {
+  margin-top: 20px;
+  padding: 10px;
+  height: 250px;
+  border: 1px solid #ccc;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+.bubble {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 15px;
+  margin: 8px;
+  font-size: 1rem;
+  max-width: 80%;
+  word-break: break-word;
+  position: relative;
+  clear: both;
+}
+.user {
+  background-color: bisque;
+  align-self: flex-end;
+  float: right;
+}
+.bot {
+  background-color: skyblue;
+  float: left;
+}
+.selected {
+  background-color: #0d6efd !important;
+  color: white !important;
+}
