@@ -52,8 +52,10 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/games/import").hasRole("ADMIN")
                                                 .requestMatchers("/api/games/**").permitAll()
 
+                                                // 유저 관련
                                                 .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
-                                                .requestMatchers(HttpMethod.POST, "/replies/**").authenticated()
+                                                .requestMatchers(HttpMethod.POST, "/replies/**")
+                                                .hasAnyRole("USER", "MANAGER", "ADMIN")
                                                 .requestMatchers(HttpMethod.PUT, "/replies/**").authenticated()
                                                 .requestMatchers(HttpMethod.DELETE, "/replies/**").authenticated()
 
