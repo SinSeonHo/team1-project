@@ -28,7 +28,6 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
-import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.type.GenreType;
@@ -55,7 +54,7 @@ public class GameService {
         importGames(); // 기존 메서드 호출
     }
 
-    @Scheduled(cron = "00 12 18 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "10 46 11 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledGameImageImport() {
         log.info("자동 게임 포스터 반영");
@@ -64,16 +63,16 @@ public class GameService {
 
     public void runPythonGameCrawler() {
         try {
-            System.out.println("Python 크롤러 실행 시작");
+            System.out.println("Python 게임 크롤러 실행 시작");
 
             // 파이썬 스크립트 실행 (게임 이미지 크롤러)
             ProcessBuilder pbImage = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/gameImageCrwal.py");
+                    "C:/SOURCE/team1-project/python/gameImageCrwal.py");
             Map<String, String> envImage = pbImage.environment();
             envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processImage = pbImage.start();
             int exitCodeImage = processImage.waitFor();
-            System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+            System.out.println("게임 이미지 크롤러 종료. Exit code: " + exitCodeImage);
 
         } catch (Exception e) {
             System.err.println("파이썬 실행 실패: " + e.getMessage());

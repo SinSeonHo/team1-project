@@ -47,7 +47,7 @@ public class MovieService {
         importMovies();
     }
 
-    @Scheduled(cron = "00 01 10 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 39 11 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
@@ -56,26 +56,26 @@ public class MovieService {
 
     public void runPythonMovieCrawler() {
         try {
-            System.out.println("Python 크롤러 실행 시작");
+            System.out.println("Python 영화 크롤러 실행 시작");
 
             // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/movieSynopsisCrwal.py");
+                    "C:/SOURCE/team1-project/python/movieSynopsisCrwal.py");
             Map<String, String> env = pbSynopsis.environment();
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
             int exitCodeSynopsis = processSynopsis.waitFor();
-            System.out.println("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
+            System.out.println("영화 줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
                 ProcessBuilder pbImage = new ProcessBuilder("python",
-                        "C:/SOURCE/ott/python/movieImageCrwal.py");
+                        "C:/SOURCE/team1-project/python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();
                 int exitCodeImage = processImage.waitFor();
-                System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+                System.out.println("영화 이미지 크롤러 종료. Exit code: " + exitCodeImage);
             } else {
                 System.err.println("줄거리 크롤러가 실패하여 이미지 크롤러를 실행하지 않습니다.");
             }
@@ -139,7 +139,7 @@ public class MovieService {
 
         String apiUrl1 = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
                 + "?key=4cb94726cef5af841db6efd248a5af76"
-                + "&targetDt=" + formattedDate;
+                + "&targetDt=" + 20250624;
 
         try {
             RestTemplate restTemplate = new RestTemplate();
