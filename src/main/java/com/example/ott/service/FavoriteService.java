@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Favorite;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Image;
@@ -20,6 +19,7 @@ import com.example.ott.repository.FavoriteRepository;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.UserRepository;
+import com.example.ott.type.ContentsType;
 
 import lombok.RequiredArgsConstructor;
 

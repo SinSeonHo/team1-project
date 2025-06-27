@@ -10,9 +10,9 @@ import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.User;
-import com.example.ott.entity.UserRole;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
+import com.example.ott.type.UserRole;
 
 import jakarta.servlet.http.HttpServletRequest;
 

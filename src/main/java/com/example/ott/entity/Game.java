@@ -52,6 +52,7 @@ public class Game extends BaseEntity {
     @Column(length = 10000)
     private String synopsis;
 
+    @Builder.Default
     @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>();
 

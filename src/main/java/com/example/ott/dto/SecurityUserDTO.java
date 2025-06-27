@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.ott.customValidation.UniqueId;
 import com.example.ott.entity.Socials;
-import com.example.ott.entity.UserRole;
+import com.example.ott.type.UserRole;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

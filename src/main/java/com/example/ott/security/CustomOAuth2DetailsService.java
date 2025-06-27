@@ -15,9 +15,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
-import com.example.ott.entity.UserRole;
-
 import com.example.ott.repository.UserRepository;
+import com.example.ott.type.UserRole;
 
 import lombok.RequiredArgsConstructor;
 

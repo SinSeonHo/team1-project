@@ -1,9 +1,7 @@
 package com.example.ott.controller;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
+
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,11 +22,6 @@ import lombok.RequiredArgsConstructor;
 public class ReplyController {
     private final ReplyService replyService;
     private final UserService userService;
-
-    @GetMapping("/movie/{mid}")
-    public List<ReplyDTO> getMovieReplies(@PathVariable String mid) {
-        return replyService.movieReplies(mid);
-    }
 
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {

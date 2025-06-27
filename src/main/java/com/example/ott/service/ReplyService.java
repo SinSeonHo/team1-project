@@ -88,7 +88,6 @@ public class ReplyService {
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getId())
                 .replyerNickname(user.getNickname())
-                .recommend(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)

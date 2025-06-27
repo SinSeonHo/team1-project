@@ -48,6 +48,7 @@ public class Movie extends BaseEntity {
     @Column(length = 10000)
     private String synopsis;
 
+    @Builder.Default
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>();
 

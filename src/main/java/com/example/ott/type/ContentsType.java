@@ -1,4 +1,4 @@
-package com.example.ott.entity;
+package com.example.ott.type;
 
 public enum ContentsType {
     MOVIE, GAME;
