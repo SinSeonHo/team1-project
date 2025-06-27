@@ -87,7 +87,7 @@ public class ReplyService {
                 .rno(reply.getRno())
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getId())
-                .replyerNickname(user.getNickname())
+                .replyerNickname(user.getName())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
