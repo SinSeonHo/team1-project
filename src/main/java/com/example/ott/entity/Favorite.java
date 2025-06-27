@@ -12,10 +12,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Getter
-@ToString
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +29,7 @@ public class Favorite {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private ContentsType contentsType; // movie game
+    private ContentsType contentsType;
 
     private String contentsId;
 

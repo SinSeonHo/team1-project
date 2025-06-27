@@ -2,18 +2,13 @@ package com.example.ott.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Favorite;
@@ -39,11 +34,10 @@ public class FavoriteService {
 
     // 팔로우(토글방식)
     public void follow(User user, String contentsId) {
-        // TODO: Contents의 follow Cnt +-1 하는거 추가해야함
 
         // favorite이 이미 존재할경우 unFollow
         Optional<Favorite> targetOpt = favoriteRepository.findByUserAndContentsId(user, contentsId);
-        if (targetOpt.isPresent()) { // 최초 팔로우일 경우를 대비
+        if (targetOpt.isPresent()) {
             Favorite target = targetOpt.get();
             ContentsType targetContentsType = target.getContentsType();
             String targetContentsId = target.getContentsId();
@@ -109,7 +103,7 @@ public class FavoriteService {
     // 특정 유저가 팔로우하여 추가한 favorite Contents들을 리스트로 반환
     public List<Image> getFollowedContentsImages(String id) {
         User user = userRepository.findById(id).get();
-        List<Favorite> favoriteList = favoriteRepository.findByUser(user); // 존재하지 않을 경우 기능 이따가 추가
+        List<Favorite> favoriteList = favoriteRepository.findByUser(user);
         if (favoriteList.isEmpty()) {
             return Collections.emptyList();
         }

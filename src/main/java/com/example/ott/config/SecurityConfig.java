@@ -1,29 +1,21 @@
 package com.example.ott.config;
 
-import java.util.Arrays;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.ott.entity.User;
+import org.springframework.security.web.SecurityFilterChain;
+
 import com.example.ott.handler.CustomRegisterSuccessHandler;
 import com.example.ott.security.CustomOAuth2DetailsService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = false) // debug 확인용, 배포시 삭제해야함
+@EnableWebSecurity(debug = false)
 @Configuration
 public class SecurityConfig {
 
@@ -40,7 +32,7 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // 에러페이지/홈/회원가입/인증 관련
-                                                .requestMatchers("/", "/user/register", "/error/**", "/auth",
+                                                .requestMatchers("/", "/user/register", "/error/**",
                                                                 "/user/upgrade")
                                                 .permitAll()
 

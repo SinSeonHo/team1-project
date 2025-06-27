@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +37,6 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
-    private final ModelMapper modelMapper;
 
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
     @Transactional
@@ -56,7 +54,7 @@ public class MovieService {
 
     public void runPythonMovieCrawler() {
         try {
-            System.out.println("Python 크롤러 실행 시작");
+            log.info("Python 크롤러 실행 시작");
 
             // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
@@ -65,7 +63,7 @@ public class MovieService {
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
             int exitCodeSynopsis = processSynopsis.waitFor();
-            System.out.println("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
+            log.info("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
@@ -75,7 +73,7 @@ public class MovieService {
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();
                 int exitCodeImage = processImage.waitFor();
-                System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+                log.info("이미지 크롤러 종료. Exit code: " + exitCodeImage);
             } else {
                 System.err.println("줄거리 크롤러가 실패하여 이미지 크롤러를 실행하지 않습니다.");
             }
@@ -223,7 +221,6 @@ public class MovieService {
                         existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
-                        // insert new movie
                         MovieDTO dto = MovieDTO.builder()
                                 .mid("m_" + movieCd)
                                 .title(movieNm)
@@ -268,7 +265,6 @@ public class MovieService {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
-                // .map(movie -> modelMapper.map(movie, MovieDTO.class))
                 .map(movie -> entityToDto(movie))
                 .collect(Collectors.toList());
 
@@ -300,9 +296,6 @@ public class MovieService {
     public List<MovieDTO> getRandom(int num) {
         List<MovieDTO> result;
         List<Movie> list = movieRepository.findAll();
-        // result = list.stream()
-        // .map(movie -> modelMapper.map(movie, MovieDTO.class))
-        // .collect(Collectors.toCollection(ArrayList::new));
         result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(result);
         return result.subList(0, Math.min(num, result.size()));

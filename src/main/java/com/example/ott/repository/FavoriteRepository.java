@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Favorite;
 import com.example.ott.entity.User;
 

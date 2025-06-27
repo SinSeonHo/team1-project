@@ -19,13 +19,10 @@ import com.example.ott.service.FavoriteService;
 import com.example.ott.service.GameService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-// @RestController
 @Controller
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
-@Log4j2
 public class GameController {
 
     private final GameService gameService;
@@ -43,14 +40,13 @@ public class GameController {
         // DB에 저장된 전체 게임 목록 조회
         List<Game> gameList = gameService.getGameAll();
         model.addAttribute("games", gameList);
-        return "ott_contents/importGameResult"; // templates/importResult.html 로 포워딩
+        return "ott_contents/importGameResult";
     }
 
     // game 전체 리스트
     @GetMapping("/list")
     public String getGameList(Model model, PageRequestDTO pageRequestDTO) {
-        log.info("gameList 요청 {}", pageRequestDTO);
-        // List<Game> list = gameService.getGameAll();
+
         PageResultDTO<GameDTO> result = gameService.getSearch(pageRequestDTO);
         model.addAttribute("games", result.getDtoList());
         return "ott_contents/gameList";
@@ -66,7 +62,6 @@ public class GameController {
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", data.get("replies"));
         model.addAttribute("isFollowed", isFollowed);
-        log.info("로그확인 {}", model);
 
         return "ott_contents/gameInfo";
     }
