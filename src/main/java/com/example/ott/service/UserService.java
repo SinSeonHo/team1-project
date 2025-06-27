@@ -61,6 +61,7 @@ public class UserService {
                 .mileage(user.getMileage())
                 .profileImageUrl(userProfileUrl)
                 .socials(user.getSocials())
+                .grade(user.getUserRole().name())
                 .build();
     }
 
@@ -70,6 +71,8 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 User 정보 입니다."));
 
         user.setNickname(userProfileDTO.getNickname());
+        user.setName(userProfileDTO.getName());
+
         // user.setGenres(userProfileDTO.getGenres());
         userRepository.save(user);
     }

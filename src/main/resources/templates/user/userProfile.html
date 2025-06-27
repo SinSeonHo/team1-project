@@ -78,8 +78,13 @@
               />
             </div>
             <div class="user-info-item mb-3">
-              <label class="user-info-label">마일리지 등급</label>
-              <input type="text" class="form-control user-info-value" th:value="${userProfileDTO.grade}?:''" readonly />
+              <label class="user-info-label">유저 권한</label>
+              <input
+                type="text"
+                class="form-control user-info-value"
+                th:value="${userProfileDTO.grade == 'GUEST' or userProfileDTO.grade == 'USER' ? '사용자' : (userProfileDTO.grade == 'ADMIN' or userProfileDTO.grade == 'MANAGER' ? '관리자' : userProfileDTO.grade)}"
+                readonly
+              />
             </div>
           </div>
           <!-- 갤러리 -->

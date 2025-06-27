@@ -2532,3 +2532,7 @@ ol {
     background-color: #eee; /* fallback */
   }
 }
+
+.header__right {
+  white-space: nowrap;
+}

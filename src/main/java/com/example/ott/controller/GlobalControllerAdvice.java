@@ -24,8 +24,10 @@ public class GlobalControllerAdvice {
         if (userDetails != null) {
             User user = userService.getUser(userDetails.getUsername());
             String id = user.getId();
+            model.addAttribute("grade", user.getGrade());
             if (user.getImage() != null) {
                 model.addAttribute("profileImageUrl", user.getImage().getThumbnailPath());
+
             }
             model.addAttribute("userId", id);
         }

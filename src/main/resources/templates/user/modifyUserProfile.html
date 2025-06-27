@@ -35,16 +35,16 @@
               <div class="user-info-list mb-4">
                 <div class="user-info-item mb-3">
                   <label for="name" class="user-info-label">이름</label>
-                  <span class="form-control user-info-value">[[*{name}]]</span>
-                      <input
-                    type="hidden"
+                  <input
+                    type="text"
                     class="form-control user-info-value"
                     id="name"
                     name="name"
                     maxlength="20"
                     autocomplete="off"
-                    th:value="*{name}"
+                    th:field="*{name}"
                   />
+                  <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
                 </div>
                 <div class="user-info-item mb-3">
                   <label for="nickname" class="user-info-label">닉네임</label>
@@ -102,14 +102,11 @@
                   <p class="text-white small ml-3">원하는 계정 아이콘을 눌러 이메일 인증을 진행하세요.</p>
                 </div>
                 <div class="user-info-item mb-3">
-                  <label for="grade" class="user-info-label">마일리지 등급</label>
+                  <label class="user-info-label">유저 권한</label>
                   <input
                     type="text"
                     class="form-control user-info-value"
-                    id="grade"
-                    name="grade"
-                    th:value="*{grade} ?: ''"
-                    maxlength="10"
+                    th:value="${userProfileDTO.grade == 'GUEST' or userProfileDTO.grade == 'USER' ? '사용자' : (userProfileDTO.grade == 'ADMIN' or userProfileDTO.grade == 'MANAGER' ? '관리자' : userProfileDTO.grade)}"
                     readonly
                   />
                 </div>
