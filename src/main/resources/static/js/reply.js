@@ -32,7 +32,7 @@ replyForm.addEventListener("submit", (e) => {
       .put(`/replies/update`, data, {
         headers: {
           "Content-Type": "application/json",
-          // "X-CSRF-TOKEN": csrf,
+          "X-CSRF-TOKEN": csrf,
         },
       })
       .then((res) => {
@@ -51,7 +51,7 @@ replyForm.addEventListener("submit", (e) => {
         .post(`/replies/new`, data, {
           headers: {
             "Content-Type": "application/json",
-            // "X-CSRF-TOKEN": csrf,
+            "X-CSRF-TOKEN": csrf,
           },
         })
         .then((res) => {

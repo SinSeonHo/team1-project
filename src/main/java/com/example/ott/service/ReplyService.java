@@ -94,6 +94,12 @@ public class ReplyService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
         String formattedUpDate = reply.getUpdatedDate().format(formatter);
+        String thumbnailPath;
+        if (reply.getReplyer().getImage() == null) {
+            thumbnailPath = null;
+        } else {
+            thumbnailPath = reply.getReplyer().getImage().getThumbnailPath();
+        }
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
@@ -104,6 +110,7 @@ public class ReplyService {
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
                 .updatedDate(formattedUpDate)
+                .thumbnailPath(thumbnailPath)
                 .build();
         if (reply.getMovie() != null) {
             dto.setMid(reply.getMovie().getMid());

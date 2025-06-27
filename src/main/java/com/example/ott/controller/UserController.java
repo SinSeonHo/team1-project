@@ -107,10 +107,10 @@ public class UserController {
     @PostMapping("/modifyUserProfile")
     public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
             RedirectAttributes rttr, Model model) {
-                log.info("userProfile 정보 : {}", userProfileDTO);
+        log.info("userProfile 정보 : {}", userProfileDTO);
 
         if (bindingResult.hasErrors()) {
-             model.addAttribute("userProfileDTO", userProfileDTO);
+            model.addAttribute("userProfileDTO", userProfileDTO);
             return "/user/modifyUserProfile";
         } else {
             userService.updateUserProfile(userProfileDTO);
@@ -127,7 +127,6 @@ public class UserController {
             throws ServletException, IOException {
         userService.deleteUser(id);
 
-        
         request.logout(); // 로그아웃 요청
         return "redirect:/";
     }
@@ -139,6 +138,7 @@ public class UserController {
         }
         return "/user/login";
     }
+
     // 프로필 사진 업로드
     @PostMapping("/uploadProfile")
     public String postUploadProfile(@RequestParam("file") MultipartFile file, String id, RedirectAttributes rttr) {
@@ -150,7 +150,7 @@ public class UserController {
             userService.saveUserProfile(savedThumbnail, id);
 
         } catch (IOException e) {
-             e.printStackTrace(); // 이걸 추가!
+            e.printStackTrace(); // 이걸 추가!
             System.out.println("일단 에러났어요.");
         }
 
