@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok) {
           // 응답은 무시하고, 버튼 상태만 프론트에서 토글
           button.classList.toggle("follow");
-
           const isNowFollowed = button.classList.contains("follow");
           button.textContent = isNowFollowed ? "Followed" : "Follow";
+          isNowFollowed ? alert("팔로우 됨") : alert("팔로우 해제됨");
         } else {
           alert("서버 오류 발생!");
         }
