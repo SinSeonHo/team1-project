@@ -56,6 +56,7 @@ public class GameSearchRepositoryImpl implements GameSearchRepository {
         JPAQuery<Game> query = queryFactory
                 .selectFrom(game)
                 .where(builder)
+                .orderBy(game.rank.asc()) // 우선 랭크 기준으로 정렬!
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
