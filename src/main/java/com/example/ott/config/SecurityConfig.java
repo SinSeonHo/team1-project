@@ -4,15 +4,19 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.example.ott.entity.User;
 import com.example.ott.handler.CustomRegisterSuccessHandler;
 import com.example.ott.security.CustomOAuth2DetailsService;
 
@@ -27,23 +31,46 @@ public class SecurityConfig {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                // csrf 임시 비활성화
-                http
-                                .csrf(csrf -> csrf.disable());
 
-                // localhost:8080/auth 를 제외한 모든 경로 인증 확인
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**")
+                                                // 정적 리소스
+                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
+                                                                "/social/**")
                                                 .permitAll()
-                                                .anyRequest().permitAll());
 
-                // 현재 로그인 페이지는 security 기본 제공, 로그인 성공 시 "localhost:8080/"로 이동
+                                                // 에러페이지/홈/회원가입/인증 관련
+                                                .requestMatchers("/", "/user/register", "/error/**", "/auth",
+                                                                "/user/upgrade")
+                                                .permitAll()
+
+                                                // 영화 관련
+                                                .requestMatchers("/api/movies/import").hasRole("ADMIN")
+                                                .requestMatchers("/api/movies/**").permitAll()
+
+                                                // 게임 관련
+                                                .requestMatchers("/api/games/import").hasRole("ADMIN")
+                                                .requestMatchers("/api/games/**").permitAll()
+
+                                                // 유저 관련
+                                                .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/replies/**")
+                                                .hasAnyRole("USER", "MANAGER", "ADMIN")
+                                                .requestMatchers(HttpMethod.PUT, "/replies/**").authenticated()
+                                                .requestMatchers(HttpMethod.DELETE, "/replies/**").authenticated()
+
+                                                // 유저 관련(로그인 필요)
+                                                .requestMatchers("/user/modifyUserProfile", "/user/uploadProfile",
+                                                                "/user/userProfile", "/user/delete")
+                                                .authenticated()
+
+                                                // 기타 모든 경로는 인증 필요
+                                                .anyRequest().authenticated());
                 http
                                 // 일반 로그인
                                 .formLogin(login -> login
                                                 .loginPage("/user/login")
-                                                .defaultSuccessUrl("/")
+                                                .defaultSuccessUrl("/", true)
                                                 .failureUrl("/user/login?error=true")
                                                 .permitAll())
                                 // 소셜 로그인
@@ -62,25 +89,5 @@ public class SecurityConfig {
                                                 .logoutSuccessUrl("/"));
 
                 return http.build();
-        }
-
-        // CORS 에러
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(Arrays.asList("*"));
-                configuration.setAllowCredentials(true);
-
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-                return source;
-        }
-
-        // 회원가입 시 자동 로그인을 위한 빈 등록
-        @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-                return configuration.getAuthenticationManager();
         }
 }

@@ -32,7 +32,7 @@ replyForm.addEventListener("submit", (e) => {
       .put(`/replies/update`, data, {
         headers: {
           "Content-Type": "application/json",
-          // "X-CSRF-TOKEN": csrf,
+          "X-CSRF-TOKEN": csrf,
         },
       })
       .then((res) => {
@@ -51,7 +51,7 @@ replyForm.addEventListener("submit", (e) => {
         .post(`/replies/new`, data, {
           headers: {
             "Content-Type": "application/json",
-            // "X-CSRF-TOKEN": csrf,
+            "X-CSRF-TOKEN": csrf,
           },
         })
         .then((res) => {
@@ -104,7 +104,11 @@ document.querySelectorAll(".delete-btn").forEach((btn) => {
     //   if (!confirm("정말 삭제하시겠습니까? 대댓글까지 삭제됩니다.")) return;
     // }
     axios
-      .delete(`/replies/${rno}`)
+      .delete(`/replies/${rno}`, {
+        headers: {
+          "X-CSRF-TOKEN": csrf,
+        },
+      })
       .then((res) => {
         location.reload(); // 또는 DOM에서 제거
       })

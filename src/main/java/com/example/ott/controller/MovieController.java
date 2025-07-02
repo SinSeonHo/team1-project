@@ -70,6 +70,7 @@ public class MovieController {
         Map<String, Object> data = movieService.getMovie(mid);
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
+        isFollowed = favoriteService.isFollowed(userDetails, mid);
         // 상영시간 분 -> n시간 n분형태 변환메소드 호출
         String showTm = convertShowTm(movie.getShowTm());
 
@@ -85,7 +86,7 @@ public class MovieController {
     // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
     private String convertShowTm(Integer minutes) {
         if (minutes == null || minutes == 0)
-            return "[상영시간없음]";
+            return "상영시간없음";
         int hrs = minutes / 60;
         int mins = minutes % 60;
         return hrs + "시간 " + mins + "분";

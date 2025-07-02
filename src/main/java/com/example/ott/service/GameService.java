@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -26,9 +28,9 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
-import com.example.ott.entity.GenreEnum;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
+import com.example.ott.type.GenreType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,7 +54,7 @@ public class GameService {
         importGames(); // 기존 메서드 호출
     }
 
-    @Scheduled(cron = "00 12 18 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "10 46 11 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledGameImageImport() {
         log.info("자동 게임 포스터 반영");
@@ -61,16 +63,16 @@ public class GameService {
 
     public void runPythonGameCrawler() {
         try {
-            System.out.println("Python 크롤러 실행 시작");
+            System.out.println("Python 게임 크롤러 실행 시작");
 
             // 파이썬 스크립트 실행 (게임 이미지 크롤러)
             ProcessBuilder pbImage = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/gameImageCrwal.py");
+                    "C:/SOURCE/team1-project/python/gameImageCrwal.py");
             Map<String, String> envImage = pbImage.environment();
             envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processImage = pbImage.start();
             int exitCodeImage = processImage.waitFor();
-            System.out.println("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+            System.out.println("게임 이미지 크롤러 종료. Exit code: " + exitCodeImage);
 
         } catch (Exception e) {
             System.err.println("파이썬 실행 실패: " + e.getMessage());
@@ -159,15 +161,23 @@ public class GameService {
                     JsonNode dataNode = detailRoot.path(appid).path("data");
 
                     // 장르 처리
-                    String genres = "[장르정보없음]";
+                    String genres = "장르정보없음";
                     if (dataNode != null && dataNode.has("genres")) {
-                        List<String> genreList = new ArrayList<>();
+                        Set<String> genreSet = new HashSet<>();
+
                         for (JsonNode genreNode : dataNode.get("genres")) {
                             String engGenre = genreNode.get("description").asText();
-                            String korGenre = GenreEnum.toKorean(engGenre); // 여기서 한글 변환
-                            genreList.add(korGenre);
+                            String korGenre = GenreType.toKorean(engGenre);
+                            genreSet.add(korGenre);
                         }
-                        genres = String.join(", ", genreList);
+
+                        // 장르정보없음이 여러 번 들어가지 않도록
+                        if (genreSet.size() == 1 && genreSet.contains("장르정보없음")) {
+                            genres = "장르정보없음";
+                        } else {
+                            genreSet.remove("장르정보없음"); // 중복 제거
+                            genres = String.join(", ", genreSet);
+                        }
                     }
 
                     // 가격 처리
@@ -385,8 +395,9 @@ public class GameService {
                 .price(game.getPrice())
                 .publisher(game.getPublisher())
                 .rank(game.getRank())
-                .replies(game.getReplies().size())
+                .replycnt(game.getReplies().size())
                 .synopsis(game.getSynopsis())
+                .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .build();
         return dto;

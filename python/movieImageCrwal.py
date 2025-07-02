@@ -170,4 +170,4 @@ for mid, title in movies:
 driver.quit()
 cursor.close()
 conn.close()
-print("✅ 모든 작업 완료")
+print("모든 작업 완료")

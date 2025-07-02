@@ -2518,4 +2518,21 @@ ol {
   .anime__review__item__text {
     padding: 18px 20px 20px;
   }
+  .icon_profile {
+    display: inline-block;
+    width: 40px; /* 원하는 크기 */
+    height: 40px;
+    background-image: url("/images/profile_icon.png"); /* 본인의 이미지 경로 */
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%; /* 동그랗게 */
+    border: 2px solid #277aff;
+    box-shadow: 0 1.5px 5px 0 #0002;
+    /* 추가 디자인 */
+    background-color: #eee; /* fallback */
+  }
+}
+
+.header__right {
+  white-space: nowrap;
 }

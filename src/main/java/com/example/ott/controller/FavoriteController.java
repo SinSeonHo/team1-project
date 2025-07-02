@@ -36,7 +36,7 @@ public class FavoriteController {
     public void toggleFavorite(@AuthenticationPrincipal UserDetails userDetails, String contentsId) {
         System.out.println("도저언");
         User user = userService.getUser(userDetails.getUsername());
-        favoriteService.toggleFavorite(user, contentsId);
+        favoriteService.follow(user, contentsId);
 
     }
 

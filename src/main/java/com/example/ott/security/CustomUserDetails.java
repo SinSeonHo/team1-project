@@ -40,6 +40,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
                 .email(user.getEmail())
                 .name(user.getName())
                 .password(user.getPassword())
+                // .image(user.getImage())
                 .socials(user.getSocials())
                 .userRole(user.getUserRole())
                 .build();
@@ -79,7 +80,6 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         return this.attributes;
     }
 
-    // 최초 로그인 판별용
     @Override
     public String getName() {
         return "";

@@ -136,8 +136,13 @@
                     <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
-                      <button class="follow-btn follow" th:data-mid="${movieInfo.mid}" onclick="toggleFavorite(this)">Follow</button>
-
+                      <!-- <button class="follow-btn follow" th:data-mid="${movieInfo.mid}" onclick="toggleFavorite(this)">Follow</button> -->
+                      <button
+                        class="follow-btn"
+                        th:classappend="${isFollowed} ? ' follow' : ''"
+                        th:data-mid="${movieInfo.mid}"
+                        th:text="${isFollowed} ? 'Followed' : 'Follow'">
+                      </button>
                       <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
                     </div>
                   </div>
@@ -229,7 +234,16 @@
             <!-- 댓글 시작 -->
             <div th:each="reply : ${replies}" class="anime__review__item">
               <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
-                <img src="img/anime/review-1.jpg" alt="" />
+                <!-- 로그인: 프로필 이미지 프로필 이미지가 없을 경우, 기본 이미지출력 -->
+            
+              <img
+                th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' :'/images/view/' + ${reply.thumbnailPath}"
+                alt="프로필"
+                class="rounded-circle border border-primary shadow-sm"
+                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+              />
+       
+
               </div>
               <div
                 class="anime__review__item__text reply"
@@ -279,6 +293,7 @@
 
       <script>
         const mid = "[[${movieInfo.mid}]]";
+        const csrf = "[[${_csrf.token}]]";
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
       <script th:src="@{/js/reply.js}"></script>

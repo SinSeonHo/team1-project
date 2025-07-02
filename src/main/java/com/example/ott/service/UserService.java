@@ -30,7 +30,6 @@ import lombok.extern.log4j.Log4j2;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final ImageRepository imageRepository;
 
     // 계정 생성 + 자동 로그인
@@ -62,6 +61,7 @@ public class UserService {
                 .mileage(user.getMileage())
                 .profileImageUrl(userProfileUrl)
                 .socials(user.getSocials())
+                .grade(user.getUserRole().name())
                 .build();
     }
 
@@ -71,6 +71,8 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 User 정보 입니다."));
 
         user.setNickname(userProfileDTO.getNickname());
+        user.setName(userProfileDTO.getName());
+
         // user.setGenres(userProfileDTO.getGenres());
         userRepository.save(user);
     }
@@ -97,7 +99,6 @@ public class UserService {
         return "변경되었습니다";
     }
 
-    // test용 DB상 User 조회
     public User getUser(String id) {
         User user = null;
         try {
@@ -131,5 +132,12 @@ public class UserService {
         user.setImage(profileImage);
         userRepository.save(user);
         // 기존 사진 삭제
+    }
+
+    public void upgradeToAdmin(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
+        user.setUserRole(UserRole.ADMIN);
+        userRepository.save(user);
     }
 }

@@ -1,0 +1,13 @@
+.error-card {
+  max-width: 450px;
+  margin: 100px auto;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  background: #202b49; /* 어두운 남색 카드 */
+  color: #fff; /* 카드 안 텍스트 밝게 */
+}
+.error-icon {
+  font-size: 3rem;
+  color: #277aff;
+  margin-bottom: 16px;
+}

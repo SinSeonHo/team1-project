@@ -1,6 +1,7 @@
 package com.example.ott.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,4 +17,10 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findByUser(User user);
 
     Favorite findByContentsId(String contentsId);
+
+    Optional<Favorite> findByUserAndContentsId(User user, String contentsId);
+
+    boolean existsByUserAndContentsId(User user, String contentsId);
+
+    long countByContentsId(String contentsId);
 }
