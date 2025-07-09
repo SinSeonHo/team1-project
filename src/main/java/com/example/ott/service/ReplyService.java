@@ -57,16 +57,21 @@ public class ReplyService {
     public List<ReplyDTO> movieReplies(String mid) {
         Movie movie = movieRepository.findById(mid).get();
         List<Reply> list = replyRepository.findByMovie(movie);
-        List<Reply> sortedReplies = sortRepliesWithChildren(list);
-        List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
+        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
         return result;
     }
 
     // 게임의 댓글들 가져오기
     public List<ReplyDTO> gameReplies(String id) {
-        Game game = gameRepository.findById(id).get();
-        List<Reply> list = replyRepository.findByGame(game);
+        List<Reply> list;
+        if (id.contains("m")) {
+            Movie movie = movieRepository.findById(id).get();
+            list = replyRepository.findByMovie(movie);
+        } else {
+            Game game = gameRepository.findById(id).get();
+            list = replyRepository.findByGame(game);
+        }
         List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
                 .collect(Collectors.toList());
         return result;

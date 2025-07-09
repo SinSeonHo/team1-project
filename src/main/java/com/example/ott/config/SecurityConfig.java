@@ -45,12 +45,14 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // 영화 관련
-                                                .requestMatchers("/api/movies/import").hasRole("ADMIN")
+                                                // .requestMatchers("/api/movies/import").hasRole("ADMIN")
                                                 .requestMatchers("/api/movies/**").permitAll()
+                                                .requestMatchers("/movies/**").permitAll()
 
                                                 // 게임 관련
-                                                .requestMatchers("/api/games/import").hasRole("ADMIN")
+                                                // .requestMatchers("/api/games/import").hasRole("ADMIN")
                                                 .requestMatchers("/api/games/**").permitAll()
+                                                .requestMatchers("/games/**").permitAll()
 
                                                 // 유저 관련
                                                 .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()

@@ -64,24 +64,24 @@ public class MovieController {
     }
 
     // 하나의 movie 상세정보
-    @GetMapping("/read/{mid}")
-    public String getMovieInfo(@PathVariable String mid, Model model,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        Map<String, Object> data = movieService.getMovie(mid);
-        Movie movie = (Movie) data.get("movie");
-        boolean isFollowed = false;
-        isFollowed = favoriteService.isFollowed(userDetails, mid);
-        // 상영시간 분 -> n시간 n분형태 변환메소드 호출
-        String showTm = convertShowTm(movie.getShowTm());
+    // @GetMapping("/read/{mid}")
+    // public String getMovieInfo(@PathVariable String mid, Model model,
+    // @AuthenticationPrincipal UserDetails userDetails) {
+    // Map<String, Object> data = movieService.getMovie(mid);
+    // Movie movie = (Movie) data.get("movie");
+    // boolean isFollowed = false;
+    // isFollowed = favoriteService.isFollowed(userDetails, mid);
+    // // 상영시간 분 -> n시간 n분형태 변환메소드 호출
+    // String showTm = convertShowTm(movie.getShowTm());
 
-        model.addAttribute("movieInfo", movie);
-        model.addAttribute("replies", data.get("replies"));
-        model.addAttribute("showTm", showTm); // 시간 분으로 변환된 상영시간 추가
-        model.addAttribute("isFollowed", isFollowed);
-        log.info("로그확인 {}", model);
+    // model.addAttribute("movieInfo", movie);
+    // model.addAttribute("replies", data.get("replies"));
+    // model.addAttribute("showTm", showTm); // 시간 분으로 변환된 상영시간 추가
+    // model.addAttribute("isFollowed", isFollowed);
+    // log.info("로그확인 {}", model);
 
-        return "ott_contents/movieInfo";
-    }
+    // return "ott_contents/movieInfo";
+    // }
 
     // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
     private String convertShowTm(Integer minutes) {

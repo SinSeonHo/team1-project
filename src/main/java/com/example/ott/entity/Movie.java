@@ -45,7 +45,7 @@ public class Movie extends BaseEntity {
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
     private String genres; // 장르
-    private int showTm; // 상영시간
+    private String showTm; // 상영시간
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
     @Column(length = 10000)

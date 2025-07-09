@@ -233,7 +233,7 @@ public class MovieService {
                                 .director(directorName)
                                 .actors(actorStr)
                                 .genres(genreStr)
-                                .showTm(showTm)
+                                .showTm(convertShowTm(showTm))
                                 .nationNm(nationNm)
                                 .gradeNm(gradeNm)
                                 .synopsis(null) // 초기 줄거리 없음
@@ -249,19 +249,15 @@ public class MovieService {
     }
 
     // 영화 단건 상세정보 + 댓글 리스트 조회
-    public Map<String, Object> getMovie(String mid) {
+    public MovieDTO getMovie(String mid) {
         log.info("영화정보 상세조회");
 
         Movie movie = movieRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
-
+        MovieDTO dto = entityToDto(movie);
         List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("movie", movie);
-        result.put("replies", replyDTOList);
-
-        return result;
+        dto.setReplies(replyDTOList);
+        return dto;
     }
 
     public PageResultDTO<MovieDTO> getSearch(PageRequestDTO requestDTO) {
@@ -306,6 +302,15 @@ public class MovieService {
         result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(result);
         return result.subList(0, Math.min(num, result.size()));
+    }
+
+    // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
+    private String convertShowTm(Integer minutes) {
+        if (minutes == null || minutes == 0)
+            return "상영시간없음";
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return hrs + "시간 " + mins + "분";
     }
 
     // 영화 삭제
