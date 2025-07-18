@@ -249,13 +249,30 @@ public class MovieService {
     }
 
     // 영화 단건 상세정보 + 댓글 리스트 조회
-    public MovieDTO getMovie(String mid) {
+    public Map<String, Object> getMovie(String mid) {
+        log.info("영화정보 상세조회");
+
+        Movie movie = movieRepository.findById(mid)
+                .orElseThrow(() -> new RuntimeException("영화 없음"));
+
+        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("movie", movie);
+        result.put("replies", replyDTOList);
+
+        return result;
+    }
+
+    // Rest용 영화 단건 상세정보 + 댓글 리스트 조회
+    public MovieDTO restMovie(String mid) {
         log.info("영화정보 상세조회");
 
         Movie movie = movieRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
         MovieDTO dto = entityToDto(movie);
         List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+
         dto.setReplies(replyDTOList);
         return dto;
     }
@@ -294,23 +311,24 @@ public class MovieService {
     }
 
     public List<MovieDTO> getRandom(int num) {
-        List<MovieDTO> result;
+        List<MovieDTO> result = new ArrayList<>();
         List<Movie> list = movieRepository.findAll();
-        // result = list.stream()
-        // .map(movie -> modelMapper.map(movie, MovieDTO.class))
-        // .collect(Collectors.toCollection(ArrayList::new));
-        result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(result);
-        return result.subList(0, Math.min(num, result.size()));
-    }
+        // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        if (list.isEmpty()) {
+            return null;
+        }
 
-    // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
-    private String convertShowTm(Integer minutes) {
-        if (minutes == null || minutes == 0)
-            return "상영시간없음";
-        int hrs = minutes / 60;
-        int mins = minutes % 60;
-        return hrs + "시간 " + mins + "분";
+        // 2. list의 순서를 무작위로 섞습니다.
+        Collections.shuffle(list);
+
+        // 3. 'num'과 'list'의 실제 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        int countToRetrieve = Math.min(num, list.size());
+
+        // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
+        for (int i = 0; i < countToRetrieve; i++) {
+            result.add(entityToDto(list.get(i)));
+        }
+        return result;
     }
 
     // 영화 삭제
@@ -323,6 +341,15 @@ public class MovieService {
     public Movie updateMovie(Movie movie) {
         log.info("영화정보 수정");
         return movieRepository.save(movie);
+    }
+
+    // 상영시간을 n시간 n분형태로 변환하여 반환
+    private String convertShowTm(Integer minutes) {
+        if (minutes == null || minutes == 0)
+            return "상영시간없음";
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return hrs + "시간 " + mins + "분";
     }
 
     public MovieDTO entityToDto(Movie movie) {

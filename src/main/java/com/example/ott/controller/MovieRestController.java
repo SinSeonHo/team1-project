@@ -55,7 +55,7 @@ public class MovieRestController {
     @GetMapping("/read/{mid}")
     public MovieDTO getMovieInfo(@PathVariable String mid,
             @AuthenticationPrincipal UserDetails userDetails) {
-        MovieDTO dto = movieService.getMovie(mid);
+        MovieDTO dto = movieService.restMovie(mid);
         boolean isFollowed = favoriteService.isFollowed(userDetails, mid);
         dto.setFollow(isFollowed);
 

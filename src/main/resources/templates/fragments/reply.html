@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <div class="reply" th:fragment="reply">
+    <div class="anime__details__form">
+      <div class="section-title">
+        <h5>댓글 작성</h5>
+      </div>
+      <a class="mention text-light"></a>
+      <form id="replyForm" method="post">
+        <input type="hidden" name="id" th:value="${content.id}" />
+        <input type="hidden" name="rno" />
+        <input type="hidden" name="replyer" th:value="${#authentication.name}" />
+        <input type="hidden" name="mention" />
+        <input type="hidden" name="ref" />
+        <textarea name="text" placeholder="Your Comment"></textarea>
+        <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+        <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+      </form>
+    </div>
+  </div>
+</html>
