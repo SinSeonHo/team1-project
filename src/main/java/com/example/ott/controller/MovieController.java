@@ -37,7 +37,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final ReplyService replyService;
-    private final FollowedContentsService favoriteService;
+    private final FollowedContentsService followedContentsService;
 
     @GetMapping("/import")
     public String importMovies(Model model) {
@@ -70,7 +70,7 @@ public class MovieController {
         Map<String, Object> data = movieService.getMovie(mid);
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
-        isFollowed = favoriteService.isFollowed(userDetails, mid);
+        isFollowed = followedContentsService.isFollowed(userDetails, mid);
         // 상영시간 분 -> n시간 n분형태 변환메소드 호출
         String showTm = convertShowTm(movie.getShowTm());
 

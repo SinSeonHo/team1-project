@@ -27,8 +27,11 @@ import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.type.GenreType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,6 +49,7 @@ public class GameService {
     private final GameRepository gameRepository;
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
+    private final ContentsRepository contentsRepository;
 
     @Scheduled(cron = "0 02 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -113,6 +117,10 @@ public class GameService {
                 .build();
 
         gameRepository.save(game);
+
+        // contents 등록
+        Contents contents = Contents.builder().contentsId(gid).contentsType(ContentsType.GAME).game(game).build();
+        contentsRepository.save(contents);
 
         return game.getGid();
     }

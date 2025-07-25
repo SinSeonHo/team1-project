@@ -25,8 +25,7 @@ import lombok.Setter;
 public class Contents {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long num;
+    private String contentsId;
 
     @Enumerated(EnumType.STRING)
     private ContentsType contentsType;

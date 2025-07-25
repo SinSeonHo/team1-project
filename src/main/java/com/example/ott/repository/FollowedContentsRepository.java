@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.example.ott.entity.Contents;
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.User;
@@ -18,9 +19,9 @@ public interface FollowedContentsRepository extends JpaRepository<FollowedConten
 
     FollowedContents findByContentsId(String contentsId);
 
-    Optional<FollowedContents> findByUserAndContentsId(User user, String contentsId);
+    Optional<FollowedContents> findByUserAndContents(User user, String contents);
 
-    boolean existsByUserAndContentsId(User user, String contentsId);
+    boolean existsByUserAndContents(User user, Contents contents);
 
     long countByContentsId(String contentsId);
 }

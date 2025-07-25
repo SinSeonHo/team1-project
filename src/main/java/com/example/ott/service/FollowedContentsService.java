@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,12 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.example.ott.entity.Contents;
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.User;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.FollowedContentsRepository;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
@@ -32,17 +35,23 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FollowedContentsService {
 
-    private final FollowedContentsRepository favoriteRepository;
+    private final FollowedContentsRepository followedContentsRepository;
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
+    private final ContentsService contentsService;
+    private final ContentsRepository contentsRepository;
 
     // 팔로우(토글방식)
     public void follow(User user, String contentsId) {
-        // TODO: Contents의 follow Cnt +-1 하는거 추가해야함
 
-        // favorite이 이미 존재할경우 unFollow
-        Optional<FollowedContents> targetOpt = favoriteRepository.findByUserAndContentsId(user, contentsId);
+        // - contentsId를 이용하여 contents를 찾아야함.
+        Contents contents = contentsRepository.findById(contentsId)
+                .orElseThrow(() -> new NoSuchElementException("해당 컨텐츠를 조회할 수 없습니다."));
+
+        // TODO : 이 이후로 수정해야함
+        // 해당 contents가 이미 followed일 경우 -> unFollow
+        Optional<FollowedContents> targetOpt = followedContentsRepository.findByUserAndContents(user, contentsId);
         if (targetOpt.isPresent()) { // 최초 팔로우일 경우를 대비
             FollowedContents target = targetOpt.get();
             ContentsType targetContentsType = target.getContentsType();

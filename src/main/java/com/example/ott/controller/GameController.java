@@ -29,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class GameController {
 
     private final GameService gameService;
-    private final FollowedContentsService favoriteService;
+    private final FollowedContentsService followedContentsService;
 
     @GetMapping("/import")
     public String importGame(Model model) {
@@ -62,7 +62,7 @@ public class GameController {
         Map<String, Object> data = gameService.getGame(gid);
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
-        isFollowed = favoriteService.isFollowed(userDetails, gid);
+        isFollowed = followedContentsService.isFollowed(userDetails, gid);
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", data.get("replies"));
         model.addAttribute("isFollowed", isFollowed);
