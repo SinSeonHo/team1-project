@@ -13,7 +13,7 @@ import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.User;
 import com.example.ott.security.CustomUserDetails;
-import com.example.ott.service.FavoriteService;
+import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/favorite")
 @RestController
 @RequiredArgsConstructor
-public class FavoriteController {
-    private final FavoriteService favoriteService;
+public class FollowedContentsController {
+    private final FollowedContentsService favoriteService;
     private final UserService userService;
 
     @GetMapping("/toggle")

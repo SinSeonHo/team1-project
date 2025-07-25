@@ -15,7 +15,7 @@ import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Game;
-import com.example.ott.service.FavoriteService;
+import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.GameService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class GameController {
 
     private final GameService gameService;
-    private final FavoriteService favoriteService;
+    private final FollowedContentsService favoriteService;
 
     @GetMapping("/import")
     public String importGame(Model model) {

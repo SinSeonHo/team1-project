@@ -16,12 +16,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.example.ott.entity.ContentsType;
-import com.example.ott.entity.Favorite;
+import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.User;
-import com.example.ott.repository.FavoriteRepository;
+import com.example.ott.repository.FollowedContentsRepository;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.UserRepository;
@@ -30,9 +30,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class FavoriteService {
+public class FollowedContentsService {
 
-    private final FavoriteRepository favoriteRepository;
+    private final FollowedContentsRepository favoriteRepository;
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
@@ -42,9 +42,9 @@ public class FavoriteService {
         // TODO: Contents의 follow Cnt +-1 하는거 추가해야함
 
         // favorite이 이미 존재할경우 unFollow
-        Optional<Favorite> targetOpt = favoriteRepository.findByUserAndContentsId(user, contentsId);
+        Optional<FollowedContents> targetOpt = favoriteRepository.findByUserAndContentsId(user, contentsId);
         if (targetOpt.isPresent()) { // 최초 팔로우일 경우를 대비
-            Favorite target = targetOpt.get();
+            FollowedContents target = targetOpt.get();
             ContentsType targetContentsType = target.getContentsType();
             String targetContentsId = target.getContentsId();
             favoriteRepository.delete(target);
@@ -53,10 +53,10 @@ public class FavoriteService {
         }
 
         String contentsType = contentsId.split("_")[0];
-        Favorite favorite = null;
+        FollowedContents favorite = null;
         switch (contentsType) {
             case "m":
-                favorite = Favorite.builder()
+                favorite = FollowedContents.builder()
                         .user(user)
                         .contentsType(ContentsType.MOVIE)
                         .contentsId(contentsId)
@@ -68,7 +68,7 @@ public class FavoriteService {
                 break;
 
             case "g":
-                favorite = Favorite.builder()
+                favorite = FollowedContents.builder()
                         .user(user)
                         .contentsType(ContentsType.GAME)
                         .contentsId(contentsId)
@@ -109,7 +109,7 @@ public class FavoriteService {
     // 특정 유저가 팔로우하여 추가한 favorite Contents들을 리스트로 반환
     public List<Image> getFollowedContentsImages(String id) {
         User user = userRepository.findById(id).get();
-        List<Favorite> favoriteList = favoriteRepository.findByUser(user); // 존재하지 않을 경우 기능 이따가 추가
+        List<FollowedContents> favoriteList = favoriteRepository.findByUser(user); // 존재하지 않을 경우 기능 이따가 추가
         if (favoriteList.isEmpty()) {
             return Collections.emptyList();
         }

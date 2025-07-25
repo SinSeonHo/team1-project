@@ -16,7 +16,7 @@ import org.springframework.validation.BindingResult;
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.Image;
-import com.example.ott.service.FavoriteService;
+import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
 import com.example.ott.service.UserService;
 
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
 
     private final UserService userService;
-    private final FavoriteService favoriteService;
+    private final FollowedContentsService favoriteService;
     private final ImageService imageService;
 
     // // 회원가입 페이지 호출

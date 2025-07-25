@@ -19,7 +19,7 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
-import com.example.ott.service.FavoriteService;
+import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.MovieService;
 import com.example.ott.service.ReplyService;
 
@@ -37,7 +37,7 @@ public class MovieController {
 
     private final MovieService movieService;
     private final ReplyService replyService;
-    private final FavoriteService favoriteService;
+    private final FollowedContentsService favoriteService;
 
     @GetMapping("/import")
     public String importMovies(Model model) {
