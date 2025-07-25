@@ -22,23 +22,25 @@
             </nav>
           </div>
         </div>
-        <div class="col-lg-2">
+        <div class="col-2">
           <div class="btn__all">
             <div class="primary-btn">
               <form action="/api/movies/list" method="get" class="search-box">
-                <select name="content" id="content" onchange="updateCityOptions">
+                <select name="content" id="content" onchange="updateCityOptions()">
                   <option value="m">영화</option>
                   <option value="g">게임</option>
                 </select>
                 <select name="type" id="type">
-                  <option value="">선택</option>
+                  <option value="t">제목</option>
+                  <option value="d">감독</option>
+                  <option value="a">배우들</option>
                 </select>
                 <input type="text" name="keyword" id="search" />
               </form>
             </div>
           </div>
         </div>
-        <div class="col-lg-1 col-md-2">
+        <div class="col-lg-3 col-md-2">
           <div class="header__right d-flex align-items-center gap-3">
             <!-- 로그아웃 버튼 (로그인 상태에서만 보임) -->
             <form

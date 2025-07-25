@@ -242,14 +242,14 @@
               <div
               class="anime__review__item__text reply"
               th:data-rno="${reply.rno}"
-              th:data-replyer="${reply.replyer}"
-              th:data-replyerNickname="${reply.replyerNickname}"
+              th:data-replyer="${reply.replyerNickname}"
+              th:data-replyerNickname="${reply.replyer}"
               th:data-text="${reply.text}"
               th:data-id="${reply.gid}"
               th:data-mention="${reply.mention}"
               th:data-ref="${reply.ref}"
             >
-              <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
+              <span class="replyer text-light" th:text="${reply.replyer}"></span>
               <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
               <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
               <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}">x</button>
@@ -277,15 +277,20 @@
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
               <textarea name="text" placeholder="Your Comment"></textarea>
-              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
-            </form>
+              <div th:if="${#authentication.name != 'anonymousUser'}">
+          <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+          <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+        </div>
+        <div th:if="${#authentication.name == 'anonymousUser'}">
+          <button>로그인</button>
+        </div>
+      </form>
           </div>
           <!-- 댓글 작성 폼 끝 -->
         </div>
       </div>
       <script>
-        const gid = "[[${gameInfo.gid}]]";
+        const id = "[[${gameInfo.gid}]]";
         const csrf = "[[${_csrf.token}]]";
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

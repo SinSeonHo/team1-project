@@ -39,8 +39,8 @@ public class HomeController {
         // PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
         List<MovieDTO> movielist = movieService.getRandom(3);
         model.addAttribute("movies", movielist);
-        List<GameDTO> gamelist = gameService.getRandom(6);
-        model.addAttribute("games", gamelist);
+        // List<GameDTO> gamelist = gameService.getRandom(6);
+        // model.addAttribute("games", gamelist);
 
         return "index";
     }

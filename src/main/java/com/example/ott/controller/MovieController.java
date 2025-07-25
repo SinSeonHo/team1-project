@@ -72,7 +72,7 @@ public class MovieController {
         boolean isFollowed = false;
         isFollowed = favoriteService.isFollowed(userDetails, mid);
 
-        model.addAttribute("movieInfo", movie);
+        model.addAttribute("content", movie);
         model.addAttribute("replies", data.get("replies"));
         model.addAttribute("isFollowed", isFollowed);
         log.info("로그확인 {}", model);

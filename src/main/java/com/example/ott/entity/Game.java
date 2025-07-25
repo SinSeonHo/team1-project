@@ -5,10 +5,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -17,13 +14,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@ToString(exclude = { "images", "replies" })
+@ToString(exclude = { "image", "replies" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 public class Game extends BaseEntity {
 
@@ -67,64 +66,11 @@ public class Game extends BaseEntity {
     @Builder.Default
     private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "content_id")
+    private Content content;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
 
-    public void setFollowcnt(int followcnt) {
-        this.followcnt = followcnt;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public void setOriginalPrice(int originalPrice) {
-        this.originalPrice = originalPrice;
-    }
-
-    public void setDiscountRate(int discountRate) {
-        this.discountRate = discountRate;
-    }
-
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public void setAgeRating(String ageRating) {
-        this.ageRating = ageRating;
-    }
-
-    public void setPositive(int positive) {
-        this.positive = positive;
-    }
-
-    public void setNegative(int negative) {
-        this.negative = negative;
-    }
-
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    public void setCcu(int ccu) {
-        this.ccu = ccu;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public void setGenres(String genres) {
-        this.genres = genres;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-
-    }
 }

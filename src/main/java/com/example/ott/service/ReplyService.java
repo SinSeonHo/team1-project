@@ -35,40 +35,34 @@ public class ReplyService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
 
+    private boolean exist(Reply reply, ReplyDTO dto) {
+        // dto의 영화에 작성된 댓글이 있는지 확인
+        // if (reply.getMovie() != null ){
+        // return (reply.getMovie().getMid() == dto.getId()) ? true: false;
+        // }
+        // dto의 게임에 작성된 댓글이 있는지 확인
+        return false;
+    }
+
     public Reply insert(ReplyDTO dto) {
+        // 이미 댓글 단 컨텐츠인지 확인
+        // Optional<User> user = userRepository.findById(dto.getMention());
+        // if (user.isPresent()) {
+        // replyRepository.findByReplyer(user.get()).stream().anyMatch(reply ->
+        // exist(reply,
+        // dto));
+        // return replyRepository.save(dtoToEntityInsert(dto));
+        // }
         return replyRepository.save(dtoToEntityInsert(dto));
     }
 
-    // public Reply rereplyInsert(ReplyDTO dto) {
-
-    // if (dto.getRef() != null) {
-    // // Reply reply = Reply.builder()
-    // // .movie(Movie.builder().mid(dto.getMno()).build())
-    // // .text(dto.getText())
-    // // .replyer(User.builder().id(dto.getReplyer()).build())
-    // // .ref(dto.getRef())
-    // // .build();
-    // return replyRepository.save(dtoToEntity(dto));
-    // }
-    // return null;
-    // }
-
-    // 영화의 댓글들 가져오기
-    public List<ReplyDTO> movieReplies(String mid) {
-        Movie movie = movieRepository.findById(mid).get();
-        List<Reply> list = replyRepository.findByMovie(movie);
-        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
-                .collect(Collectors.toList());
-        return result;
-    }
-
-    // 게임의 댓글들 가져오기
-    public List<ReplyDTO> gameReplies(String id) {
-        List<Reply> list;
+    // 콘텐츠의 댓글들 가져오기
+    public List<ReplyDTO> contentReplies(String id) {
+        List<Reply> list = new ArrayList<>();
         if (id.contains("m")) {
             Movie movie = movieRepository.findById(id).get();
             list = replyRepository.findByMovie(movie);
-        } else {
+        } else if (id.contains("g")) {
             Game game = gameRepository.findById(id).get();
             list = replyRepository.findByGame(game);
         }
@@ -110,7 +104,7 @@ public class ReplyService {
                 .text(reply.getText())
                 .replyer(reply.getReplyer().getId())
                 .replyerNickname(user.getNickname())
-                .recommend(reply.getRecommend())
+                .rate(reply.getRecommend())
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
@@ -118,71 +112,37 @@ public class ReplyService {
                 .thumbnailPath(thumbnailPath)
                 .build();
         if (reply.getMovie() != null) {
-            dto.setMid(reply.getMovie().getMid());
+            dto.setId(reply.getMovie().getMid());
         } else if (reply.getGame() != null) {
             dto.setGid(reply.getGame().getGid());
         }
-        // 멘션이 있으면 추가해줌
-        // if (reply.getMention() != null) {
-        // dto.setMention(reply.getMention());
-        // }
         return dto;
-    }
-
-    private Reply dtoToEntity(ReplyDTO dto) {
-
-        Movie movie = null;
-        Game game = null;
-        WebToon webToon = null;
-
-        if (dto.getMid() != null) {
-            movie = Movie.builder().mid(dto.getMid()).build();
-        } else if (dto.getGid() != null) {
-            game = Game.builder().gid(dto.getGid()).build();
-        } else {
-            // webToon = WebToon.builder().wid(dto.getWid()).build();
-        }
-
-        Reply reply = Reply.builder()
-                // .rno(dto.getRno())
-                .text(dto.getText())
-                .replyer(User.builder().id(dto.getReplyer()).build())
-                .movie(movie)
-                .game(game)
-                // .webtoon(webToon)
-                .ref(dto.getRef())
-                .mention(dto.getMention())
-                .build();
-        return reply;
     }
 
     private Reply dtoToEntityInsert(ReplyDTO dto) {
         Movie movie = null;
         Game game = null;
-        WebToon webToon = null;
+        // 별점 제한
+        if (dto.getRate() < 0) {
+            dto.setRate(0);
+        } else if (dto.getRate() > 5) {
+            dto.setRate(5);
+        }
 
-        if (dto.getMid() != null) {
-            movie = Movie.builder().mid(dto.getMid()).build();
+        if (dto.getId() != null) {
+            movie = Movie.builder().mid(dto.getId()).build();
         } else if (dto.getGid() != null) {
             game = Game.builder().gid(dto.getGid()).build();
-        } else {
-            // webToon = WebToon.builder().wid(dto.getWid()).build();
         }
         Reply reply = Reply.builder()
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(movie)
                 .game(game)
-                // .webtoon(webToon)
                 .ref(dto.getRef())
                 .mention(dto.getMention())
+                .recommend(dto.getRate())
                 .build();
-        // 대댓글이면
-        // if (dto.getRef() != null) {
-        // reply.setRef(dto.getRef());
-        // reply.setMention(dto.getMention());
-        // }
-        log.info("reply 정보 {}", reply);
         return reply;
     }
 

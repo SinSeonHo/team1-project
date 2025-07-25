@@ -1,3 +1,8 @@
-.re-reply {
-  margin-left: 25px;
+.re-reply-tag {
+  float: left;
+  padding: 10px 5px;
+  margin: 0px 15px;
+  border: 2px solid gray;
+  border-top: 0;
+  border-right: 0;
 }

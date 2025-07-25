@@ -304,7 +304,7 @@ public class GameService {
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
 
         // 2. 댓글 DTO 리스트 조회
-        List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(gid);
 
         // 3. Map에 담아서 리턴
         Map<String, Object> result = new HashMap<>();
@@ -363,32 +363,24 @@ public class GameService {
     public List<GameDTO> getRandom(int num) {
         List<GameDTO> result = new ArrayList<>();
         List<Game> list = gameRepository.findAll();
-        // Collections.shuffle(list);
-        // while (num > 0) {
-        // int i = (int) (Math.random() * list.size());
-        // result.add(entityToDto(list.get(i)));
-        // num--;
-        // }
-        // int countToAdd = Math.min(num, list.size());
-        // for (int i = 0; i < countToAdd; i++) {
-        // result.add(entityToDto(list.get(i)));
-        // }
+
         // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
         if (list.isEmpty()) {
             return null;
         }
 
-        // 2. list의 순서를 무작위로 섞습니다.
-        // 이렇게 하면 앞에서부터 필요한 개수만큼 가져와도 무작위성이 보장됩니다.
-        Collections.shuffle(list);
-
-        // 3. 'num'과 'allMovies'의 실제 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
-        // 이는 'num'이 'allMovies' 크기보다 커도 오류 없이 최대치를 가져오도록 합니다.
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
         int countToRetrieve = Math.min(num, list.size());
-
+        int ran = 0;
+        List<Integer> eran = new ArrayList<>();
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
         // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
-        for (int i = 0; i < countToRetrieve; i++) {
-            result.add(entityToDto(list.get(i)));
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
         }
         return result;
     }
@@ -412,8 +404,6 @@ public class GameService {
                 .discountRate(game.getDiscountRate())
                 .genres(game.getGenres())
                 .gid(game.getGid())
-                // .imgUrl(game.getImage().getImgName())
-                .imgUrl(null)
                 .negative(game.getNegative())
                 .originalPrice(game.getOriginalPrice())
                 .platform(game.getPlatform())
@@ -426,6 +416,12 @@ public class GameService {
                 .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .build();
+
+        if (game.getImage() == null) {
+            dto.setImgUrl("a");
+        } else {
+            dto.setImgUrl(game.getImage().getImgName());
+        }
         return dto;
     }
 }

@@ -26,8 +26,12 @@ replyForm.addEventListener("submit", (e) => {
   if (data.ref.value === "undefined" || data.ref.value === "") {
     data.ref.value = null;
   }
+  if (data.mention.value === "undefined" || data.mention.value === "") {
+    data.mention.value = null;
+  }
 
   if (data.rno.value) {
+    // 댓글 수정
     axios
       .put(`/replies/update`, data, {
         headers: {
@@ -43,6 +47,7 @@ replyForm.addEventListener("submit", (e) => {
         alert("댓글 수정 실패");
       });
   } else {
+    // 댓글 추가
     if (data.replyer.value === "anonymousUser") {
       alert("로그인해 주세요");
       location.href = "/user/login";
@@ -59,7 +64,9 @@ replyForm.addEventListener("submit", (e) => {
           location.reload(); // 또는 동적으로 추가
         })
         .catch((err) => {
-          console.error(err);
+          console.log(data.text.value);
+
+          console.error(err.status);
           alert("댓글 등록 실패");
         });
     }
@@ -69,10 +76,6 @@ replyForm.addEventListener("submit", (e) => {
 // 수정 버튼으로 정보 가져오기
 document.querySelectorAll(".update-btn").forEach((e) => {
   e.addEventListener("click", (btn) => {
-    // replyCon.forEach((e) => {
-    //   e.addEventListener("click", (btn) => {
-    // console.log(btn.target);
-
     // 댓글 요소 가져오기
     const reply = e.closest(".reply");
     // 데이터 가져오기
@@ -86,7 +89,6 @@ document.querySelectorAll(".update-btn").forEach((e) => {
     replyForm.text.value = data.text;
     replyForm.replyer.value = data.replyer;
     // 컨텐츠 아이디
-    replyForm.mid.value = data.id;
     replyForm.mention.value = data.mention;
     replyForm.ref.value = data.ref;
   });
@@ -94,15 +96,10 @@ document.querySelectorAll(".update-btn").forEach((e) => {
 
 // 댓글 삭제
 document.querySelectorAll(".delete-btn").forEach((btn) => {
-  btn.addEventListener("click", function () {
-    const rno = this.getAttribute("data-rno");
+  btn.addEventListener("click", () => {
+    const rno = btn.getAttribute("data-rno");
     if (!confirm("정말 삭제하시겠습니까? 대댓글까지 삭제됩니다.")) return;
 
-    // if (ref == null) {
-    //   if (!confirm("정말 삭제하시겠습니까?")) return;
-    // } else {
-    //   if (!confirm("정말 삭제하시겠습니까? 대댓글까지 삭제됩니다.")) return;
-    // }
     axios
       .delete(`/replies/${rno}`, {
         headers: {
@@ -113,7 +110,6 @@ document.querySelectorAll(".delete-btn").forEach((btn) => {
         location.reload(); // 또는 DOM에서 제거
       })
       .catch((err) => {
-        // console.error(err);
         alert("댓글 삭제 실패");
       });
   });

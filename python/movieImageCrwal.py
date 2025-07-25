@@ -9,8 +9,8 @@ from selenium.webdriver.common.by import By
 import shutil
 
 # 이미지 저장 경로
-BASE_PATH = os.path.abspath("./src/main/resources/static/images/movieimages")
-STATIC_PATH = os.path.abspath("./src/main/resources/static")  # static 기준 경로
+BASE_PATH = os.path.abspath("../src/main/resources/static/images/movieimages")
+STATIC_PATH = os.path.abspath("../src/main/resources/static")  # static 기준 경로
 os.makedirs(BASE_PATH, exist_ok=True)
 
 # Oracle DB 연결

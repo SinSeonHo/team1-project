@@ -5,9 +5,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -255,26 +257,13 @@ public class MovieService {
         Movie movie = movieRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
 
-        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(mid);
 
         Map<String, Object> result = new HashMap<>();
         result.put("movie", movie);
         result.put("replies", replyDTOList);
 
         return result;
-    }
-
-    // Rest용 영화 단건 상세정보 + 댓글 리스트 조회
-    public MovieDTO restMovie(String mid) {
-        log.info("영화정보 상세조회");
-
-        Movie movie = movieRepository.findById(mid)
-                .orElseThrow(() -> new RuntimeException("영화 없음"));
-        MovieDTO dto = entityToDto(movie);
-        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
-
-        dto.setReplies(replyDTOList);
-        return dto;
     }
 
     public PageResultDTO<MovieDTO> getSearch(PageRequestDTO requestDTO) {
@@ -312,21 +301,24 @@ public class MovieService {
 
     public List<MovieDTO> getRandom(int num) {
         List<MovieDTO> result = new ArrayList<>();
-        List<Movie> list = movieRepository.findAll();
-        // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        List<Movie> list = movieRepository.findAll(); // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
         if (list.isEmpty()) {
             return null;
         }
 
-        // 2. list의 순서를 무작위로 섞습니다.
-        Collections.shuffle(list);
-
-        // 3. 'num'과 'list'의 실제 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
         int countToRetrieve = Math.min(num, list.size());
+        int ran = 0;
+        Set<Integer> eran = new HashSet<>();
 
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
         // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
-        for (int i = 0; i < countToRetrieve; i++) {
-            result.add(entityToDto(list.get(i)));
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
         }
         return result;
     }
@@ -366,7 +358,7 @@ public class MovieService {
                 .nationNm(movie.getNationNm())
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
-                .imgUrl(movie.getImage().getImgName())
+                .imgUrl((movie.getImage().getImgName() == null) ? movie.getImage().getImgName() : null)
                 .replycnt(movie.getReplies().size())
                 .followcnt(movie.getFollowcnt())
                 .build();
