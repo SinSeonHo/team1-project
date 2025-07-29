@@ -26,7 +26,6 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
-    private final MovieRepository movieRepository;
 
     // @Transactional
     // public ImageDTO saveImageForMovie(String mid, String uuid, String imgName,

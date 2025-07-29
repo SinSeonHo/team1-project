@@ -9,8 +9,9 @@ from selenium.webdriver.common.by import By
 import shutil
 
 # 이미지 저장 경로
-BASE_PATH = os.path.abspath("./src/main/resources/static/images/movieimages")
-STATIC_PATH = os.path.abspath("./src/main/resources/static")  # static 기준 경로
+# BASE_PATH = os.path.abspath("../src/main/resources/static/images/movieimages")
+BASE_PATH = r"C:/upload/images/movieimages"
+STATIC_PATH = os.path.abspath("../src/main/resources/static")  # static 기준 경로
 os.makedirs(BASE_PATH, exist_ok=True)
 
 # Oracle DB 연결
@@ -125,6 +126,7 @@ for mid, title in movies:
             f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
         )
         full_path = os.path.join(BASE_PATH, file_name)
+        # full_path = os.path.join("/images/gameimages/", file_name)
 
         # 이미지 저장 (requests 이용)
         if download_image(poster_url, full_path):
@@ -147,7 +149,7 @@ for mid, title in movies:
             {
                 "uuid": unique_id,
                 "img_name": file_name,
-                "path": relative_path,
+                "path": "images/movieimages/" + file_name,
                 "output_inum": output_inum,
             },
         )

@@ -388,7 +388,7 @@ public class GameService {
                 .discountRate(game.getDiscountRate())
                 .genres(game.getGenres())
                 .gid(game.getGid())
-                .imgUrl(game.getImage().getImgName())
+                // .imgUrl(game.getImage().getImgName())
                 .negative(game.getNegative())
                 .originalPrice(game.getOriginalPrice())
                 .platform(game.getPlatform())
@@ -401,6 +401,12 @@ public class GameService {
                 .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .build();
+
+        if (game.getImage() == null) {
+            dto.setImgUrl("");
+        } else {
+            dto.setImgUrl(game.getImage().getImgName());
+        }
         return dto;
     }
 }

@@ -139,7 +139,7 @@ public class MovieService {
 
         String apiUrl1 = "https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
                 + "?key=4cb94726cef5af841db6efd248a5af76"
-                + "&targetDt=" + 20250624;
+                + "&targetDt=" + formattedDate;
 
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -334,10 +334,16 @@ public class MovieService {
                 .nationNm(movie.getNationNm())
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
-                .imgUrl(movie.getImage().getImgName())
+                // .imgUrl(movie.getImage().getImgName())
                 .replycnt(movie.getReplies().size())
                 .followcnt(movie.getFollowcnt())
                 .build();
+
+        if (movie.getImage() == null) {
+            dto.setImgUrl("");
+        } else {
+            dto.setImgUrl(movie.getImage().getImgName());
+        }
         return dto;
     }
 }
