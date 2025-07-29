@@ -1,33 +1,16 @@
 package com.example.ott.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.example.ott.entity.Contents;
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.FollowedContents;
-import com.example.ott.entity.Game;
-import com.example.ott.entity.Image;
-import com.example.ott.entity.Movie;
 import com.example.ott.entity.User;
 import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.FollowedContentsRepository;
-import com.example.ott.repository.GameRepository;
-import com.example.ott.repository.MovieRepository;
-import com.example.ott.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,10 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class FollowedContentsService {
 
     private final FollowedContentsRepository followedContentsRepository;
-    private final MovieRepository movieRepository;
-    private final GameRepository gameRepository;
-    private final UserRepository userRepository;
-    private final ContentsService contentsService;
     private final ContentsRepository contentsRepository;
     private final UserService userService;
 
@@ -87,7 +66,6 @@ public class FollowedContentsService {
             // 팔로우 되지 않은 콘텐츠
             FollowedContents followedContents = FollowedContents.builder()
                     .contents(contents)
-                    .contentsId(contentsId)
                     .user(user)
                     .build();
 

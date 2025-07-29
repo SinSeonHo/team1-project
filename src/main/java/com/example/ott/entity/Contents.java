@@ -4,8 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -29,6 +27,8 @@ public class Contents {
 
     @Enumerated(EnumType.STRING)
     private ContentsType contentsType;
+
+    private String title;
 
     // contents Ids
     @OneToOne(fetch = FetchType.LAZY)
