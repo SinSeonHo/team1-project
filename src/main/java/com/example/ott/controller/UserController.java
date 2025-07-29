@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
@@ -47,6 +48,7 @@ public class UserController {
     private final UserService userService;
     private final FollowedContentsService favoriteService;
     private final ImageService imageService;
+    private final FollowedContentsService followedContentsService;
 
     // // 회원가입 페이지 호출
     // @GetMapping("/register")
@@ -85,11 +87,13 @@ public class UserController {
     public String getUserProfile(String id, Model model) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
         log.info("유저 권한 : {}", userProfileDTO.getGrade());
-        // 유저가 팔로우 한 콘텐츠들 사진 정보
-        List<Image> images = favoriteService.getFollowedContentsImages(userProfileDTO.getId());
+
+        // 해당 user가 follow한 contents List 조회
+        List<FollowedContents> followedContentsList = followedContentsService
+                .getFollowedContentsList(userProfileDTO.getNickname());
 
         model.addAttribute("userProfileDTO", userProfileDTO);
-        model.addAttribute("images", images);
+        model.addAttribute("followedContentsList", followedContentsList);
 
         return "/user/userProfile";
     }

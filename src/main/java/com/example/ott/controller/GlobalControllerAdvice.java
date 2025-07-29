@@ -25,7 +25,7 @@ public class GlobalControllerAdvice {
     @ModelAttribute
     public void currentUser(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails != null) {
-            User user = userService.getUser(userDetails.getUsername());
+            User user = userService.getUserById(userDetails.getUsername());
             String id = user.getId();
             model.addAttribute("grade", user.getGrade());
             if (user.getImage() != null) {

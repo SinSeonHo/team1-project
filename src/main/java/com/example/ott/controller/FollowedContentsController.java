@@ -34,18 +34,9 @@ public class FollowedContentsController {
 
     @GetMapping("/toggle")
     public void toggleFavorite(@AuthenticationPrincipal UserDetails userDetails, String contentsId) {
-        System.out.println("도저언");
-        User user = userService.getUser(userDetails.getUsername());
+        User user = userService.getUserById(userDetails.getUsername());
         favoriteService.follow(user, contentsId);
 
     }
-
-    // @ResponseBody
-    // @GetMapping("/favoriteList")
-    // public String getList(@AuthenticationPrincipal UserDetails userDetails) {
-    // User user = userService.getUser(userDetails.getUsername());
-    // List<Image> images = favoriteService.getFollowedContentsImages(user);
-    // return images.get(0).getPath();
-    // }
 
 }

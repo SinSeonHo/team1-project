@@ -25,6 +25,8 @@ public class FollowedContents {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long num;
 
+    private String contentsId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

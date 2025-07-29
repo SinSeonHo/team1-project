@@ -99,13 +99,24 @@ public class UserService {
         return "변경되었습니다";
     }
 
-    public User getUser(String id) {
+    public User getUserById(String id) {
         User user = null;
         try {
             user = userRepository.findById(id).get();
             log.info("검색한 user 내용 : {}", user);
         } catch (NoSuchElementException e) {
             log.info("user 정보를 찾을 수 없음");
+        }
+        return user;
+    }
+
+    public User getUserByNickname(String nickname) {
+        User user = null;
+        try {
+            user = userRepository.findByNickname(nickname);
+
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("해당 유저는 존재하지 않는 유저입니다.");
         }
         return user;
     }

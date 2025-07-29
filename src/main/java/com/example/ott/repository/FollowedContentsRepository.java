@@ -19,9 +19,9 @@ public interface FollowedContentsRepository extends JpaRepository<FollowedConten
 
     FollowedContents findByContentsId(String contentsId);
 
-    Optional<FollowedContents> findByUserAndContents(User user, String contents);
+    FollowedContents findByUserAndContents(User user, Contents contents); // 사용
 
-    boolean existsByUserAndContents(User user, Contents contents);
+    boolean existsByUserAndContents(User user, Contents contents); // 사용
 
-    long countByContentsId(String contentsId);
+    long countByContentsId(String contentsId); // 사용
 }

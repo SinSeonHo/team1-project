@@ -49,7 +49,7 @@ public class ReplyController {
     @PostMapping("/new")
     public void postMovie(@RequestBody ReplyDTO dto) {
         log.info("댓글 추가 요청: {}", dto);
-        User user = userService.getUser(dto.getReplyer());
+        User user = userService.getUserById(dto.getReplyer());
         dto.setReplyerNickname(user.getNickname()); // nickname 설정
         // replyService.insert(dto).getRno()
         replyService.insert(dto);
