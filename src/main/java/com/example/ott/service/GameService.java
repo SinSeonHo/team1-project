@@ -415,13 +415,8 @@ public class GameService {
                 .synopsis(game.getSynopsis())
                 .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
+                .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
-
-        if (game.getImage() == null) {
-            dto.setImgUrl("a");
-        } else {
-            dto.setImgUrl(game.getImage().getImgName());
-        }
         return dto;
     }
 }

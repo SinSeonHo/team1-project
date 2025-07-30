@@ -67,11 +67,12 @@ public class GameController {
         // 별점 정보
         List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
         int rating = 0;
-        for (ReplyDTO dto : replies) {
-            rating += dto.getRate();
+        if (replies.size() != 0) {
+            for (ReplyDTO dto : replies) {
+                rating += dto.getRate();
+            }
+            rating = rating / replies.size();
         }
-        rating = rating / replies.size();
-
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);

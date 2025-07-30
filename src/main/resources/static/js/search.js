@@ -1,4 +1,4 @@
-const cityOptions = {
+const contentOptions = {
   m: [
     { code: "t", name: "제목" },
     { code: "d", name: "감독" },
@@ -10,18 +10,23 @@ const cityOptions = {
     { code: "p", name: "배급사" },
   ],
 };
+const action = {
+  m: "/api/movies/list",
+  g: "/api/games/list",
+};
 
 function updateCityOptions() {
-  const country = document.getElementById("content").value;
+  const content = document.getElementById("content").value;
   const typeSelect = document.getElementById("type");
-  typeSelect.textContent = "123";
-  // 나라에 해당하는 도시 목록 추가
-  if (country && cityOptions[country]) {
-    cityOptions[country].forEach((city) => {
+  typeSelect.textContent = "제목";
+  // 컨텐츠에 해당하는 키워드 목록 추가
+  if (content && contentOptions[content]) {
+    contentOptions[content].forEach((city) => {
       const option = document.createElement("option");
       option.value = city.code;
       option.textContent = city.name;
       typeSelect.appendChild(option);
     });
+    document.querySelector(".search-box").action = action[content];
   }
 }
