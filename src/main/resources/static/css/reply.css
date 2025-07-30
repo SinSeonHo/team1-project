@@ -6,3 +6,21 @@
   border-top: 0;
   border-right: 0;
 }
+
+.rating span {
+  font-size: 20px;
+  color: #e89f12;
+  display: inline-block;
+}
+
+.replyForm textarea {
+  width: 100%;
+  font-size: 15px;
+  color: #b7b7b7;
+  padding-left: 20px;
+  padding-top: 12px;
+  border: none;
+  border-radius: 5px;
+  resize: none;
+  margin-bottom: 24px;
+}

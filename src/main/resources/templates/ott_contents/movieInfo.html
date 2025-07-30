@@ -44,9 +44,13 @@
         font-weight: 600;
       }
 
+      .rating span {
+  font-size: 24px;
+  color: #e89f12;
+  display: inline-block;}
       
     </style>
-<!-- <link rel="stylesheet" th:href="@{/css/abc.css}"> -->
+<!-- <link rel="stylesheet" th:href="@{/css/abc.css}> -->
     </th:block>
   
   <body>
@@ -92,17 +96,7 @@
                       <h4 th:text="시놉시스" class="synopsis_t"></h4>
                       <span th:text="${content.synopsis}" class="synopsis"></span>
                     </div>
-                    <!-- 별점 추후 적용 -->
-                    <!-- <div class="anime__details__rating">
-                      <div class="rating">
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star-half-o"></i></a>
-                      </div>
-                      <span>1.029 Votes</span>
-                    </div> -->
+                    
                     <!-- <p>
                       Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
                       For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
@@ -141,7 +135,7 @@
             <div class="center-line"></div>
           </div>
         </section>
-  <div class="col-lg-6 mx-auto" th:fragment="reply">
+  <div class="col-lg-6 mx-auto">
     <div class="anime__details__review">
       <div class="section-title">
         <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
@@ -167,10 +161,11 @@
           th:data-mid="${reply.id}"
           th:data-mention="${reply.mention}"
           th:data-ref="${reply.ref}"
+          th:data-rate="${reply.rate}"
         >
           <span class="replyer text-light" th:text="${reply.replyer}"></span>
           <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
-          <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+          <span class="text-secondary" th:text="' - ' + ${reply.createdDate}"> 작성자 - 1 Hour ago</span>
           <button
             type="button"
             class="delete-btn btn btn-secondary btn-sm"
@@ -195,31 +190,43 @@
           >
             대댓글
           </button>
+          <!-- 리뷰는 별점 표시 -->
+          <span>
+            <i th:if="${reply.ref == null}" th:each="idx : ${#numbers.sequence(0, 4)}" class="fa-star" th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"></i>
+          </span>
           <p th:text="${reply.text}">댓글 텍스트</p>
         </div>
       </div>
       <!-- 댓글 리스트 끝-->
     </div>
-
     <!-- 댓글 작성 폼 -->
     <div class="anime__details__form">
       <div class="section-title">
         <h5>댓글 작성</h5>
       </div>
-      <span class="mention text-light"></span>
+      <span class="mention badge badge-secondary"></span>
       <form id="replyForm" method="post">
+      <!-- 별점 -->
+                    <div class="anime__details__rating">
+                      <input type="hidden" name="rate">
+                      <span class="rating" name="rate">
+                        <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
+                      </span>
+                      <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
+                    </div>
         <input type="hidden" name="id" th:value="${content.mid}" />
         <input type="hidden" name="rno" />
         <input type="hidden" name="replyer" th:value="${#authentication.name}" />
         <input type="hidden" name="mention" />
         <input type="hidden" name="ref" />
-        <textarea name="text" placeholder="Your Comment"></textarea>
+        <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
+        <span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자
         <div th:if="${#authentication.name != 'anonymousUser'}">
-          <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
+          <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
           <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
         </div>
         <div th:if="${#authentication.name == 'anonymousUser'}">
-          <button>로그인</button>
+          <button class="btn btn-sm ">로그인</button>
         </div>
       </form>
     </div>

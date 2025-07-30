@@ -6,14 +6,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
-import com.example.ott.entity.WebToon;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
@@ -35,24 +33,25 @@ public class ReplyService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
 
-    private boolean exist(Reply reply, ReplyDTO dto) {
-        // dto의 영화에 작성된 댓글이 있는지 확인
-        // if (reply.getMovie() != null ){
-        // return (reply.getMovie().getMid() == dto.getId()) ? true: false;
-        // }
-        // dto의 게임에 작성된 댓글이 있는지 확인
-        return false;
-    }
-
     public Reply insert(ReplyDTO dto) {
-        // 이미 댓글 단 컨텐츠인지 확인
-        // Optional<User> user = userRepository.findById(dto.getMention());
-        // if (user.isPresent()) {
-        // replyRepository.findByReplyer(user.get()).stream().anyMatch(reply ->
-        // exist(reply,
-        // dto));
-        // return replyRepository.save(dtoToEntityInsert(dto));
-        // }
+        User user = userRepository.findById(dto.getReplyer()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (dto.getRef() == null) {
+            if (dto.getId() != null) {
+                Movie movie = movieRepository.findById(dto.getId())
+                        .orElseThrow(() -> new RuntimeException("Movie not found"));
+                if (replyRepository.findByReplyerAndMovieAndRefIsNull(user, movie).isPresent()) {
+                    return null; // 이미 리뷰를 작성했습니다.
+                }
+            } else if (dto.getGid() != null) {
+                Game game = gameRepository.findById(dto.getGid())
+                        .orElseThrow(() -> new RuntimeException("Game not found"));
+                if (replyRepository.findByReplyerAndGameAndRefIsNull(user, game).isPresent()) {
+                    return null; // 이미 리뷰를 작성했습니다.
+                }
+            }
+        }
+
         return replyRepository.save(dtoToEntityInsert(dto));
     }
 
@@ -75,6 +74,7 @@ public class ReplyService {
     public ReplyDTO updateReply(ReplyDTO dto) {
         Reply reply = replyRepository.findById(dto.getRno()).get();
         reply.changeText(dto.getText());
+        reply.changeRate(dto.getRate());
 
         return entityToDto(replyRepository.save(reply));
     }
@@ -93,7 +93,8 @@ public class ReplyService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
         String formattedUpDate = reply.getUpdatedDate().format(formatter);
-        String thumbnailPath;
+        String thumbnailPath, badge = null;
+
         if (reply.getReplyer().getImage() == null) {
             thumbnailPath = null;
         } else {
@@ -110,6 +111,7 @@ public class ReplyService {
                 .createdDate(formattedDate)
                 .updatedDate(formattedUpDate)
                 .thumbnailPath(thumbnailPath)
+                .badgePath(badge)
                 .build();
         if (reply.getMovie() != null) {
             dto.setId(reply.getMovie().getMid());
@@ -183,9 +185,8 @@ public class ReplyService {
         List<Reply> children = childrenMap.get(parent.getRno());
         if (children != null) {
             for (Reply child : children) {
-                addWithChildren(child, childrenMap, result); // 재귀: 자식의 자식까지 정렬
+                addWithChildren(child, childrenMap, result);
             }
         }
     }
-
 }

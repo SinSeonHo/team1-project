@@ -358,7 +358,7 @@ public class MovieService {
                 .nationNm(movie.getNationNm())
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
-                .imgUrl((movie.getImage().getImgName() == null) ? movie.getImage().getImgName() : null)
+                .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
                 .replycnt(movie.getReplies().size())
                 .followcnt(movie.getFollowcnt())
                 .build();

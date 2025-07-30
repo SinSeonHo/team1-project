@@ -12,21 +12,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Movie;
-import com.example.ott.entity.Reply;
 import com.example.ott.service.FavoriteService;
 import com.example.ott.service.MovieService;
 import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import org.springframework.web.bind.annotation.RequestParam;
 
 // @RestController
 @Controller
@@ -72,9 +69,18 @@ public class MovieController {
         boolean isFollowed = false;
         isFollowed = favoriteService.isFollowed(userDetails, mid);
 
+        // 별점 정보
+        List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
+        int rating = 0;
+        for (ReplyDTO dto : replies) {
+            rating += dto.getRate();
+        }
+        rating = rating / replies.size();
+
         model.addAttribute("content", movie);
-        model.addAttribute("replies", data.get("replies"));
+        model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);
+        model.addAttribute("rating", rating);
         log.info("로그확인 {}", model);
 
         return "ott_contents/movieInfo";
