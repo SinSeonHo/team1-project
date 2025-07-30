@@ -7,8 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.ott.dto.ContentsDTO;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.service.ContentsService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +25,12 @@ public class ContentsRepositoryTest {
 
     @Autowired
     private GameRepository gameRepository;
+    
+    @Autowired
+    private ContentsRepository contentsRepository;
+
+    @Autowired
+    private ContentsService contentsService;
 
     // 영화 1개 mid로 조회하기
     @Transactional
@@ -55,4 +64,17 @@ public class ContentsRepositoryTest {
         }
     }
 
+    @Test
+    public void addContentsTest() {
+        List<Movie> movies = movieRepository.findAll();
+        for (Movie movie : movies) {
+            ContentsDTO contentsDTO = ContentsDTO.builder()
+            .contentsId(movie.getMid())
+            .title(movie.getTitle())
+            .contentsType(ContentsType.MOVIE)
+            .genres(movie.getGenres())
+            .build();
+            contentsService.insertContents(contentsDTO);
+        }
+    }
 }

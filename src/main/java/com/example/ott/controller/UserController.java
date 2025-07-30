@@ -86,15 +86,20 @@ public class UserController {
     @GetMapping("/userProfile")
     public String getUserProfile(String id, Model model) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        log.info("유저 권한 : {}", userProfileDTO.getGrade());
+        log.info("유저 닉네임 : {}", userProfileDTO.getNickname());
 
         // 해당 user가 follow한 contents List 조회
         List<FollowedContents> followedContentsList = followedContentsService
                 .getFollowedContentsList(userProfileDTO.getNickname());
 
+        log.info("이미지 확인");
+        followedContentsList.forEach(followedContents -> {
+            log.info("이미지 주소 : {}" ,followedContents.getContents().getMovie().getImage().getPath());
+        });
+
         model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("followedContentsList", followedContentsList);
-
+        
         return "/user/userProfile";
     }
 

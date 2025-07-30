@@ -88,15 +88,16 @@
             </div>
           </div>
           <!-- 갤러리 -->
-          <section class="user-gallery-section mt-4" th:unless="${images.size() == 0}">
-            <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem">좋아하는 영화/게임들</h3>
+          <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem">좋아하는 영화/게임들</h3>
+          <section class="user-gallery-section mt-4" th:object="${followedContentsList}" th:unless="${followedContentsList.size == 0}">
+            
             <div class="user-gallery-grid">
               <img
-                th:each="image, iterStat : ${images}"
-                th:if="${iterStat.index < 4}"
-                th:src="@{'/' + ${image.path}}"
-                alt="gallery-img"
-                class="gallery-img"
+              th:each="followedContents, iterStat : ${followedContentsList}"
+              th:if="${iterStat.index < 3}"
+              th:src="@{|/${followedContents.contents.movie.image.path}|}"
+              alt="gallery-img"
+              class="gallery-img"
               />
             </div>
           </section>

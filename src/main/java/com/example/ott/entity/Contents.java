@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,18 +24,20 @@ public class Contents {
     @Id
     private String contentsId;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     private ContentsType contentsType;
 
     private String title;
 
     // contents Ids
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mid", unique = true)
     private Movie movie;
 
+    @Setter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gid", unique = true)
     private Game game;
-
 }
