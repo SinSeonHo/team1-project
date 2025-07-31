@@ -33,7 +33,7 @@ public class ReplyService {
     private final GameRepository gameRepository;
     private final UserRepository userRepository;
 
-    public Reply insert(ReplyDTO dto) {
+    public int insert(ReplyDTO dto) {
         User user = userRepository.findById(dto.getReplyer()).orElseThrow(() -> new RuntimeException("User not found"));
 
         if (dto.getRef() == null) {
@@ -41,18 +41,18 @@ public class ReplyService {
                 Movie movie = movieRepository.findById(dto.getId())
                         .orElseThrow(() -> new RuntimeException("Movie not found"));
                 if (replyRepository.findByReplyerAndMovieAndRefIsNull(user, movie).isPresent()) {
-                    return null; // 이미 리뷰를 작성했습니다.
+                    return 2; // 이미 리뷰를 작성했습니다.
                 }
             } else if (dto.getGid() != null) {
                 Game game = gameRepository.findById(dto.getGid())
                         .orElseThrow(() -> new RuntimeException("Game not found"));
                 if (replyRepository.findByReplyerAndGameAndRefIsNull(user, game).isPresent()) {
-                    return null; // 이미 리뷰를 작성했습니다.
+                    return 2; // 이미 리뷰를 작성했습니다.
                 }
             }
         }
-
-        return replyRepository.save(dtoToEntityInsert(dto));
+        replyRepository.save(dtoToEntityInsert(dto));
+        return 0;
     }
 
     // 콘텐츠의 댓글들 가져오기

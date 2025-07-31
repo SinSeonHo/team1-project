@@ -66,12 +66,16 @@ public class GameController {
         isFollowed = favoriteService.isFollowed(userDetails, gid);
         // 별점 정보
         List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
-        int rating = 0;
-        if (replies.size() != 0) {
-            for (ReplyDTO dto : replies) {
+        long rating = 0;
+        int size = 0;
+        for (ReplyDTO dto : replies) {
+            if (dto.getRate() > 0) {
                 rating += dto.getRate();
+                size++;
             }
-            rating = rating / replies.size();
+        }
+        if (size > 0) {
+            rating = rating / size;
         }
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", replies);

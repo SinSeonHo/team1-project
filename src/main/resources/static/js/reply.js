@@ -48,6 +48,7 @@ replyForm.addEventListener("submit", (e) => {
           },
         })
         .then((res) => {
+          alert(res.data.message);
           location.reload(); // 또는 동적으로 추가
         })
         .catch((err) => {
@@ -131,7 +132,6 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
     const data = e.target.closest(".anime__review__item__text").dataset;
     const rno = data.rno;
     const reviewer = data.replyernickname;
-    console.log(rno);
 
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
@@ -162,7 +162,7 @@ replyForm.addEventListener("click", (e) => {
 // 별점 기능
 const starsContainer = document.querySelector(".rating");
 const allStars = document.querySelectorAll(".rating .fa-star");
-const selectedRatingText = document.querySelector(".current-rating");
+// const selectedRatingText = document.querySelector(".current-rating");
 
 let currentRating = parseInt(starsContainer.dataset.rating); // 현재 선택된 별점 (초기값)
 
@@ -175,7 +175,7 @@ starsContainer.addEventListener("click", (event) => {
     currentRating = clickedValue; // 현재 선택된 별점 업데이트
     starsContainer.dataset.rating = currentRating; // data-rating 속성 업데이트
     highlightStars(currentRating); // 별점 UI 업데이트
-    selectedRatingText.textContent = currentRating; // 텍스트 업데이트
+    // selectedRatingText.textContent = currentRating; // 텍스트 업데이트
 
     // 여기서 서버로 별점 데이터를 전송하는 로직을 추가할 수 있습니다.
     console.log(`별점 ${currentRating}점이 선택되었습니다.`);

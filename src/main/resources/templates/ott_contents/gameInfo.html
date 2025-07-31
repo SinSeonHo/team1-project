@@ -171,15 +171,15 @@
               <div
               class="anime__review__item__text reply"
               th:data-rno="${reply.rno}"
-              th:data-replyer="${reply.replyerNickname}"
-              th:data-replyerNickname="${reply.replyer}"
+              th:data-replyer="${reply.replyer}"
+              th:data-replyerNickname="${reply.replyerNickname}"
               th:data-text="${reply.text}"
               th:data-mid="${reply.gid}"
               th:data-mention="${reply.mention}"
           th:data-rate="${reply.rate}"
               th:data-ref="${reply.ref}"
             >
-              <span class="replyer text-light" th:text="${reply.replyer}"></span>
+              <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
               <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
               <span class="text-secondary" th:text="' - ' +${reply.createdDate}"> 작성자 - 1 Hour ago</span>
               <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}">x</button>
