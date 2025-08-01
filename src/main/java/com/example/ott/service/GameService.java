@@ -417,6 +417,12 @@ public class GameService {
                 .title(game.getTitle())
                 .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
+
+        if (game.getImage() == null) {
+            dto.setImgUrl("");
+        } else {
+            dto.setImgUrl(game.getImage().getImgName());
+        }
         return dto;
     }
 }
