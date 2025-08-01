@@ -1,5 +1,6 @@
 package com.example.ott.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
+import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
 import com.example.ott.service.FavoriteService;
+import com.example.ott.service.ImageService;
 import com.example.ott.service.MovieService;
 import com.example.ott.service.ReplyService;
 
@@ -38,6 +41,7 @@ public class MovieController {
     private final MovieService movieService;
     private final ReplyService replyService;
     private final FavoriteService favoriteService;
+    private final ImageService imageService;
 
     @GetMapping("/import")
     public String importMovies(Model model) {
@@ -70,14 +74,26 @@ public class MovieController {
         Map<String, Object> data = movieService.getMovie(mid);
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
+
+        // 즐겨찾기 여부
         isFollowed = favoriteService.isFollowed(userDetails, mid);
+
         // 상영시간 분 -> n시간 n분형태 변환메소드 호출
         String showTm = convertShowTm(movie.getShowTm());
 
+        // 이미지 및 스크린샷 처리
+        Image image = movie.getImage(); // Image 객체 얻기
+        List<String> screenshots = new ArrayList<>();
+        if (image != null && image.getInum() != null) {
+            screenshots = imageService.getScreenshotsByImageId(image.getInum());
+        }
+
+        // 모델에 데이터 추가
         model.addAttribute("movieInfo", movie);
         model.addAttribute("replies", data.get("replies"));
         model.addAttribute("showTm", showTm); // 시간 분으로 변환된 상영시간 추가
         model.addAttribute("isFollowed", isFollowed);
+        model.addAttribute("screenshotUrls", screenshots);
         log.info("로그확인 {}", model);
 
         return "ott_contents/movieInfo";

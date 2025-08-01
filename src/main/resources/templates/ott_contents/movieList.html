@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-6" th:each="movie : ${movies}">
+          <div class="col-lg-2 col-md-6 col-sm-9" th:each="movie : ${movies}">
             <div class="product__item">
               <div class="product__item__pic">
                 <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
@@ -53,6 +53,7 @@
                   <!-- 댓글갯수  -->
                   <div class="view_movie" th:text="'Re: ' + ${movie.replycnt} + 개"></div>
                 </a>
+
                 <!-- <div class="ep">18 / 18</div> -->
               </div>
 

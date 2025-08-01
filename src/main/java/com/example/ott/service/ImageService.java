@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,6 +28,13 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+
+    // 이미지 스크린샷리스트 가져오기 0730 추가
+    public List<String> getScreenshotsByImageId(Long imageId) {
+        return imageRepository.findById(imageId)
+                .map(Image::getScreenshots)
+                .orElse(Collections.emptyList());
+    }
 
     // @Transactional
     // public ImageDTO saveImageForMovie(String mid, String uuid, String imgName,

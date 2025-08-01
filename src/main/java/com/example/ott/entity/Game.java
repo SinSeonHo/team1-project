@@ -45,8 +45,8 @@ public class Game extends BaseEntity {
 
     private String genres; // 장르
 
-    private int originalPrice; // 할인 전 가격
-    private int price; // 할인 적용된 현재 가격
+    private String originalPrice; // 할인 전 가격
+    private String price; // 할인 적용된 현재 가격
     private int discountRate; // 할인율 (예: 20 -> 20%)
     private String publisher; // 배급사
     private String ageRating; // 이용연령등급
@@ -75,11 +75,11 @@ public class Game extends BaseEntity {
         this.followcnt = followcnt;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public void setOriginalPrice(int originalPrice) {
+    public void setOriginalPrice(String originalPrice) {
         this.originalPrice = originalPrice;
     }
 
