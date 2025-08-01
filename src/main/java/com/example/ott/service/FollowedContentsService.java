@@ -13,7 +13,9 @@ import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.FollowedContentsRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class FollowedContentsService {
@@ -21,6 +23,7 @@ public class FollowedContentsService {
     private final FollowedContentsRepository followedContentsRepository;
     private final ContentsRepository contentsRepository;
     private final UserService userService;
+    private final UserGenrePreferenceService userGenrePreferenceService;
 
     // 팔로우 여부를 확인하는 메서드
     public boolean isFollowed(UserDetails userDetails, String contentsId) {
@@ -60,6 +63,7 @@ public class FollowedContentsService {
         if (isFollowed) {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
+            userGenrePreferenceService.removePreference(user, contents);
             followedContentsRepository.delete(followedContents);
 
         } else {
@@ -70,6 +74,13 @@ public class FollowedContentsService {
                     .build();
 
             followedContentsRepository.save(followedContents);
+            try {
+                userGenrePreferenceService.addUserPreference(user, contents);
+
+            } catch (Exception e) {
+                log.info("이 구간에서 문제가 있어요. \n user : {} \n contents {}", user, contents);
+                e.printStackTrace();
+            }
         }
 
     }

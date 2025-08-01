@@ -25,7 +25,7 @@ public class ContentsRepositoryTest {
 
     @Autowired
     private GameRepository gameRepository;
-    
+
     @Autowired
     private ContentsRepository contentsRepository;
 
@@ -66,15 +66,29 @@ public class ContentsRepositoryTest {
 
     @Test
     public void addContentsTest() {
+        // 영화 -> 콘텐츠 테이블에 추가
         List<Movie> movies = movieRepository.findAll();
         for (Movie movie : movies) {
             ContentsDTO contentsDTO = ContentsDTO.builder()
-            .contentsId(movie.getMid())
-            .title(movie.getTitle())
-            .contentsType(ContentsType.MOVIE)
-            .genres(movie.getGenres())
-            .build();
+                    .contentsId(movie.getMid())
+                    .title(movie.getTitle())
+                    .contentsType(ContentsType.MOVIE)
+                    .genres(movie.getGenres())
+                    .build();
             contentsService.insertContents(contentsDTO);
         }
+
+        // 게임 -> 콘텐츠 테이블에 추가
+        List<Game> games = gameRepository.findAll();
+        games.forEach(game -> {
+            ContentsDTO contentsDTO = ContentsDTO.builder()
+                    .contentsId(game.getGid())
+                    .title(game.getTitle())
+                    .contentsType(ContentsType.GAME)
+                    .genres(game.getGenres())
+                    .build();
+            contentsService.insertContents(contentsDTO);
+
+        });
     }
 }
