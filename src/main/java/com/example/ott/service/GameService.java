@@ -28,9 +28,10 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
+import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
-import com.example.ott.type.GenreType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,6 +47,7 @@ public class GameService {
     private final GameRepository gameRepository;
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
+    private final ImageService imageService;
 
     @Scheduled(cron = "0 02 10 * * *") // 매일 오전10시에 실행
     @Transactional
@@ -78,6 +80,8 @@ public class GameService {
             System.err.println("파이썬 실행 실패: " + e.getMessage());
             e.printStackTrace();
         }
+
+        // 이미지 서비스 호출
     }
 
     // 게임 등록
@@ -122,19 +126,21 @@ public class GameService {
     public void importGames() {
         String apiUrl1 = "https://steamspy.com/api.php?request=top100owned";
 
-        double krwToUsdRate = 1300.0; // 초기값 (예비용)
+        // double krwToUsdRate = 1300.0; // 초기값 (예비용)
 
         try {
             RestTemplate restTemplate = new RestTemplate();
 
             // 1. 환율 API 호출 (KRW -> USD)
-            String rateApiUrl = "https://api.exchangerate.host/latest?base=KRW&symbols=USD";
-            ResponseEntity<String> rateResponse = restTemplate.getForEntity(rateApiUrl, String.class);
-            if (rateResponse.getStatusCode().is2xxSuccessful()) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode rateRoot = mapper.readTree(rateResponse.getBody());
-                krwToUsdRate = rateRoot.path("rates").path("USD").asDouble(krwToUsdRate);
-            }
+            // String rateApiUrl =
+            // "https://api.exchangerate.host/latest?base=KRW&symbols=USD";
+            // ResponseEntity<String> rateResponse = restTemplate.getForEntity(rateApiUrl,
+            // String.class);
+            // if (rateResponse.getStatusCode().is2xxSuccessful()) {
+            // ObjectMapper mapper = new ObjectMapper();
+            // JsonNode rateRoot = mapper.readTree(rateResponse.getBody());
+            // krwToUsdRate = rateRoot.path("rates").path("USD").asDouble(krwToUsdRate);
+            // }
 
             // 2. SteamSpy API 호출
             ResponseEntity<String> response = restTemplate.getForEntity(apiUrl1, String.class);
@@ -162,20 +168,30 @@ public class GameService {
 
                     // 장르 처리
                     String genres = "장르정보없음";
+
                     if (dataNode != null && dataNode.has("genres")) {
                         Set<String> genreSet = new HashSet<>();
 
                         for (JsonNode genreNode : dataNode.get("genres")) {
-                            String engGenre = genreNode.get("description").asText();
-                            String korGenre = GenreType.toKorean(engGenre);
-                            genreSet.add(korGenre);
+                            if (genreNode.has("id")) {
+                                int genreId = genreNode.get("id").asInt();
+
+                                // id가 37 or 70이면 건너뜀 (무료 게임 or 얼리 액세스)
+                                if (genreId == 37 || genreId == 70) {
+                                    continue;
+                                }
+                            }
+
+                            // description이 존재하면 장르 추가
+                            if (genreNode.has("description")) {
+                                String engGenre = genreNode.get("description").asText().trim();
+                                if (!engGenre.isEmpty()) {
+                                    genreSet.add(engGenre);
+                                }
+                            }
                         }
 
-                        // 장르정보없음이 여러 번 들어가지 않도록
-                        if (genreSet.size() == 1 && genreSet.contains("장르정보없음")) {
-                            genres = "장르정보없음";
-                        } else {
-                            genreSet.remove("장르정보없음"); // 중복 제거
+                        if (!genreSet.isEmpty()) {
                             genres = String.join(", ", genreSet);
                         }
                     }
@@ -299,11 +315,11 @@ public class GameService {
     // 게임 + 댓글 DTO 리스트 함께 반환
 
     public Map<String, Object> getGame(String gid) {
-        log.info("영화정보 상세조회");
+        log.info("게임정보 상세조회");
 
         // 1. 게임 조회
         Game game = gameRepository.findById(gid)
-                .orElseThrow(() -> new RuntimeException("영화 없음"));
+                .orElseThrow(() -> new RuntimeException("게임 없음"));
 
         // 2. 댓글 DTO 리스트 조회
         List<ReplyDTO> replyDTOList = replyService.contentReplies(gid);
@@ -419,12 +435,6 @@ public class GameService {
                 .title(game.getTitle())
                 .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
-
-        if (game.getImage() == null) {
-            dto.setImgUrl("");
-        } else {
-            dto.setImgUrl(game.getImage().getImgName());
-        }
         return dto;
     }
 }

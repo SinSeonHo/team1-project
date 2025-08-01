@@ -1,62 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-  
-<th:block layout:fragment="css">
-
-    <style>
-      /* 강제 덮어쓰기 */
-      .anime__details__widget ul li span {
-        width: auto !important;
-        display: inline !important;
-        color: inherit !important;
-      }
-      .anime__details__widget li {
-        list-style: none;
-        font-size: 16px;
-        line-height: 32px;
-        color: #ffffff;
-        font-weight: 400;
-      }
-
-      .anime__details__widget li span:first-child {
-        color: #b7b7b7; /* 라벨(왼쪽) 색상 */
-        font-weight: 600;
-        margin-right: 10px;
-        display: inline-block;
-        min-width: 100px; /* 라벨 길이 통일 */
-      }
-
-      .anime__details__widget li span:last-child {
-        color: #ffffff; /* 값(오른쪽) 색상 */
-        font-weight: 400;
-      }
-
-      .synopsis {
-        display: block; /* span은 인라인 요소이므로 block으로 전환 */
-        white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
-        word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
-        line-height: 1.5;
-        color: #ffffff !important; /* 글자색 흰색 */
-        font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
-      }
-
-      .synopsis_t {
-        font-weight: 600;
-      }
-
-      .rating span {
-  font-size: 24px;
-  color: #e89f12;
-  display: inline-block;}
-      
-    </style>
-<!-- <link rel="stylesheet" th:href="@{/css/abc.css}> -->
-    </th:block>
-  
   <body>
     <div layout:fragment="content">
+      <!-- 자식 템플릿 전용 스타일 (head 밖, content 내부 최상단에 둠) -->
+      <style>
+        /* 강제 덮어쓰기 */
+        .anime__details__widget ul li span {
+          width: auto !important;
+          display: inline !important;
+          color: inherit !important;
+        }
+        .anime__details__widget li {
+          list-style: none;
+          font-size: 16px;
+          line-height: 32px;
+          color: #ffffff;
+          font-weight: 400;
+        }
+
+        .anime__details__widget li span:first-child {
+          color: #b7b7b7; /* 라벨(왼쪽) 색상 */
+          font-weight: 600;
+          margin-right: 10px;
+          display: inline-block;
+          min-width: 100px; /* 라벨 길이 통일 */
+        }
+
+        .anime__details__widget li span:last-child {
+          color: #ffffff; /* 값(오른쪽) 색상 */
+          font-weight: 400;
+        }
+      </style>
+
       <div class="gradient-bg">
-        <!-- Breadcrumb Begin -->
+        <!-- 영화상세페이지 -->
         <div class="breadcrumb-option">
           <div class="container">
             <div class="col-lg-12">
@@ -68,8 +45,8 @@
             </div>
           </div>
         </div>
-        <!-- Anime Section Begin -->
 
+        <!-- 상세정보 -->
         <section class="anime-details spad">
           <div class="container">
             <div class="anime__details__content">
@@ -82,9 +59,6 @@
                     loading="lazy"
                     class="anime__details__pic"
                   />
-                    <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                    <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
-          
                 </div>
                 <div class="col-lg-9">
                   <div class="anime__details__text">
@@ -96,13 +70,7 @@
                       <h4 text="시놉시스" class="synopsis_t"></h4>
                       <span th:text="${movieInfo.synopsis}" class="synopsis"></span>
                     </div>
-                    
-                    <!-- <p>
-                      Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
-                      For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
-                      her mother’s last words send Hina on a quest to find a legendary hero from the Waste War - the
-                      fabled Ace!
-                    </p> -->
+
                     <div class="anime__details__widget">
                       <div class="row">
                         <div class="col-lg-6 col-md-6">
@@ -115,22 +83,36 @@
                           </ul>
                         </div>
                       </div>
+                    </div>
+
                     <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
-                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
-                        로그인한 상태에서만 보여짐 -->
-                      <!-- <button class="follow-btn follow" th:data-id="${movieInfo.id}" onclick="toggleFavorite(this)">Follow</button> -->
                       <button
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
                         th:data-mid="${movieInfo.mid}"
-                        th:text="${isFollowed} ? 'Followed' : 'Follow'">
-                      </button>
-                      <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
+                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
+                      ></button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            <!-- 스크린샷 이미지 리스트 -->
+            <div class="slider-container" id="sliderContainer">
+              <div class="slider" id="slider">
+                <img th:each="url : ${screenshotUrls}" th:src="${url}" alt="스크린샷 이미지" />
+              </div>
+            </div>
+
+            <!-- 모달창 -->
+            <div id="modal" class="modal" style="display: none">
+              <span id="modalClose" class="modal-close">&times;</span>
+              <button id="prevBtn" class="nav-btn prev-btn">&#10094;</button>
+              <img id="modalImg" src="" alt="확대 이미지" />
+              <button id="nextBtn" class="nav-btn next-btn">&#10095;</button>
+            </div>
+
             <div class="center-line"></div>
           </div>
         </section>
@@ -238,7 +220,8 @@
     </script>
   </div>
       <script th:src="@{/js/followbtn.js}"></script>
+      <script th:src="@{/js/imgSlider.js}"></script>
+      <script th:src="@{/js/imgModal.js}"></script>
     </div>
-    <!-- layout:fragment="content" 닫기 -->
   </body>
 </html>

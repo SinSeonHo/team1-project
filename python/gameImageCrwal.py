@@ -7,9 +7,8 @@ import re
 import time
 
 # 이미지 저장 경로
-# BASE_PATH = os.path.abspath("../src/main/resources/static/images/gameimages")
 BASE_PATH = r"C:/upload/images/gameimages"
-STATIC_PATH = os.path.abspath("../src/main/resources/static")  # static 기준 경로
+STATIC_PATH = os.path.abspath("../src/main/resources/static")
 os.makedirs(BASE_PATH, exist_ok=True)
 
 # Oracle DB 연결
@@ -39,7 +38,7 @@ def download_image(url, full_path, title):
 
 
 for gid, title, appid in games:
-    print(f"[{title}] 이미지 수집 시작...")
+    print(f"\n[{title}] 이미지 수집 시작...")
 
     unique_id = str(uuid.uuid4())
     safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip())
@@ -49,19 +48,19 @@ for gid, title, appid in games:
         f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
     )
     full_path = os.path.join(BASE_PATH, file_name)
-    # full_path = os.path.join("/images/gameimages/", file_name)
 
     # 1순위: Steam capsule 이미지
     capsule_url = (
         f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
     )
-
     success = download_image(capsule_url, full_path, title)
 
-    # 실패 시: Steam Storefront API header_image 사용
+    # 실패 시: header_image 사용
+    data = None
     if not success:
         print(f"[{title}] capsule 실패 → header_image 시도")
         try:
+            time.sleep(0.5)
             res = requests.get(
                 f"https://store.steampowered.com/api/appdetails?appids={appid}",
                 timeout=5,
@@ -75,13 +74,21 @@ for gid, title, appid in games:
         except Exception as e:
             print(f"[{title}] Storefront API 호출 오류: {e}")
             success = False
+    else:
+        try:
+            time.sleep(0.5)
+            res = requests.get(
+                f"https://store.steampowered.com/api/appdetails?appids={appid}",
+                timeout=5,
+            )
+            data = res.json()
+        except Exception as e:
+            print(f"[{title}] Storefront API 호출 오류(스크린샷용): {e}")
+            data = None
 
     if not success:
         print(f"[{title}] 이미지 수집 실패 - 건너뜀")
         continue
-
-    # 이미지 저장 후 잠시 대기 (파일 저장 보장)
-    time.sleep(1)
 
     # DB 저장
     try:
@@ -111,13 +118,48 @@ for gid, title, appid in games:
             {"imgid": image_id, "gid": gid},
         )
 
+        # screenshots 처리
+        try:
+            if data and "data" in data.get(str(appid), {}):
+                game_data = data[str(appid)]["data"]
+
+                # screenshots
+                screenshots = game_data.get("screenshots", [])
+                if screenshots:
+                    for shot in screenshots:
+                        url = shot.get("path_thumbnail")
+                        if url:
+                            try:
+                                cursor.execute(
+                                    """
+                                    INSERT INTO image_screenshots (image_id, screenshot_url)
+                                    VALUES (:image_id, :screenshot_url)
+                                    """,
+                                    {
+                                        "image_id": image_id,
+                                        "screenshot_url": url,
+                                    },
+                                )
+                                print(f"[{title}] 스크린샷 저장: {url}")
+                                time.sleep(0.1)
+                            except Exception as se:
+                                print(f"[{title}] 스크린샷 저장 실패: {url} → {se}")
+                else:
+                    print(f"[{title}] screenshots 데이터 없음")
+
+            else:
+                print(f"[{title}] Storefront API의 data 필드 없음")
+        except Exception as e:
+            print(f"[{title}] 썸네일/영상 처리 오류: {e}")
+
         conn.commit()
-        print(f"[{title}] DB 저장 및 연결 완료")
+        print(f"[{title}] DB 저장 완료")
 
     except Exception as e:
         print(f"[ERROR] {title} DB 저장 실패: {e}")
+        conn.rollback()
 
 # 마무리
 cursor.close()
 conn.close()
-print("모든 게임 이미지 처리 완료")
+print("\n모든 게임 이미지 처리 완료")

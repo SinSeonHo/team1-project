@@ -73,4 +73,60 @@ public class Game extends BaseEntity {
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
 
+    public void setFollowcnt(int followcnt) {
+        this.followcnt = followcnt;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setOriginalPrice(String originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    public void setDiscountRate(int discountRate) {
+        this.discountRate = discountRate;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setAgeRating(String ageRating) {
+        this.ageRating = ageRating;
+    }
+
+    public void setPositive(int positive) {
+        this.positive = positive;
+    }
+
+    public void setNegative(int negative) {
+        this.negative = negative;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    public void setCcu(int ccu) {
+        this.ccu = ccu;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public void setGenres(String genres) {
+        this.genres = genres;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+
+    }
 }
