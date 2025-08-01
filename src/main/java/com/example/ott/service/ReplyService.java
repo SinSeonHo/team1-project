@@ -148,6 +148,23 @@ public class ReplyService {
         return reply;
     }
 
+    public double rating(List<ReplyDTO> replies) {
+        double rating = 0;
+        int size = 0;
+        double rate = 0;
+        for (ReplyDTO dto : replies) {
+            if (dto.getRate() > 0) {
+                rating += dto.getRate();
+                size++;
+            }
+        }
+        if (size > 0) {
+            rate = rating / size;
+            rate = Math.round(rate * 10) / 10.0;
+        }
+        return rate;
+    }
+
     public List<Reply> sortRepliesWithChildren(List<Reply> allReplies) {
         // Map<부모 ID, List<자식 댓글>>
         Map<Long, List<Reply>> childrenMap = new HashMap<>();

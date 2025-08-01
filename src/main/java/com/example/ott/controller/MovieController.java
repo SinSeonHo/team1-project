@@ -68,21 +68,12 @@ public class MovieController {
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
         isFollowed = favoriteService.isFollowed(userDetails, mid);
+        List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
 
         // 별점 정보
-        List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
-        long rating = 0;
-        int size = 0;
-        for (ReplyDTO dto : replies) {
-            if (dto.getRate() > 0) {
-                rating += dto.getRate();
-                size++;
-            }
-        }
-        if (size > 0) {
-            rating = rating / size;
-        }
-        model.addAttribute("content", movie);
+        double rating = replyService.rating(replies);
+
+        model.addAttribute("movieInfo", movie);
         model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);
         model.addAttribute("rating", rating);

@@ -18,6 +18,7 @@ import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.service.FavoriteService;
 import com.example.ott.service.GameService;
+import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,6 +32,7 @@ public class GameController {
 
     private final GameService gameService;
     private final FavoriteService favoriteService;
+    private final ReplyService replyService;
 
     @GetMapping("/import")
     public String importGame(Model model) {
@@ -66,17 +68,10 @@ public class GameController {
         isFollowed = favoriteService.isFollowed(userDetails, gid);
         // 별점 정보
         List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
-        long rating = 0;
-        int size = 0;
-        for (ReplyDTO dto : replies) {
-            if (dto.getRate() > 0) {
-                rating += dto.getRate();
-                size++;
-            }
-        }
-        if (size > 0) {
-            rating = rating / size;
-        }
+
+        // 별점 정보
+        double rating = replyService.rating(replies);
+
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);

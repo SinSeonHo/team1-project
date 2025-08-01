@@ -76,7 +76,7 @@
               <div class="row">
                 <div class="col-lg-3">
                   <img
-                    th:src="@{${content.image != null} ? '/images/movieimages/' + ${content.image.imgName} : '/images/sample.png'}"
+                    th:src="@{${movieInfo.image != null} ? '/images/movieimages/' + ${movieInfo.image.imgName} : '/images/sample.png'}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="영화 이미지"
                     loading="lazy"
@@ -89,12 +89,12 @@
                 <div class="col-lg-9">
                   <div class="anime__details__text">
                     <div class="anime__details__title">
-                      <h3 th:text="${content.title}"></h3>
-                      <span th:text="'감독 : ' + ${content.director}"></span>
-                      <span th:text="'배우 : ' + ${content.actors}"></span>
+                      <h3 th:text="${movieInfo.title}"></h3>
+                      <span th:text="'감독 : ' + ${movieInfo.director}"></span>
+                      <span th:text="'배우 : ' + ${movieInfo.actors}"></span>
                       <br />
-                      <h4 th:text="시놉시스" class="synopsis_t"></h4>
-                      <span th:text="${content.synopsis}" class="synopsis"></span>
+                      <h4 text="시놉시스" class="synopsis_t"></h4>
+                      <span th:text="${movieInfo.synopsis}" class="synopsis"></span>
                     </div>
                     
                     <!-- <p>
@@ -107,23 +107,22 @@
                       <div class="row">
                         <div class="col-lg-6 col-md-6">
                           <ul>
-                            <li><span>개봉일</span> <span th:text="${content.openDate}"></span></li>
-                            <li><span>장르</span><span th:text="${content.genres}"></span></li>
-                            <li><span>상영시간</span><span th:text="${showTm}"></span></li>
-                            <li><span>적정관람등급</span><span th:text="${content.gradeNm}"></span></li>
-                            <li><span>개봉국가</span><span th:text="${content.nationNm}"></span></li>
+                            <li><span>개봉일</span> <span th:text="${movieInfo.openDate}"></span></li>
+                            <li><span>장르</span><span th:text="${movieInfo.genres}"></span></li>
+                            <li><span>상영시간</span><span th:text="${movieInfo.showTm}"></span></li>
+                            <li><span>적정관람등급</span><span th:text="${movieInfo.gradeNm}"></span></li>
+                            <li><span>개봉국가</span><span th:text="${movieInfo.nationNm}"></span></li>
                           </ul>
                         </div>
                       </div>
-                    </div>
                     <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
                       <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
                         로그인한 상태에서만 보여짐 -->
-                      <!-- <button class="follow-btn follow" th:data-id="${content.id}" onclick="toggleFavorite(this)">Follow</button> -->
+                      <!-- <button class="follow-btn follow" th:data-id="${movieInfo.id}" onclick="toggleFavorite(this)">Follow</button> -->
                       <button
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
-                        th:data-mid="${content.mid}"
+                        th:data-mid="${movieInfo.mid}"
                         th:text="${isFollowed} ? 'Followed' : 'Follow'">
                       </button>
                       <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
@@ -165,7 +164,7 @@
         >
           <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
           <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
-          <span class="text-secondary" th:text="' - ' + ${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+          <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}"> 작성자 - 1 Hour ago</span>
           <button
             type="button"
             class="delete-btn btn btn-secondary btn-sm"
@@ -214,7 +213,7 @@
                       </span>
                       <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
                     </div>
-        <input type="hidden" name="id" th:value="${content.mid}" />
+        <input type="hidden" name="id" th:value="${movieInfo.mid}" />
         <input type="hidden" name="rno" />
         <input type="hidden" name="replyer" th:value="${#authentication.name}" />
         <input type="hidden" name="mention" />
@@ -234,7 +233,7 @@
     <script th:src="@{/js/reply.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      const id = "[[${content.mid}]]";
+      const id = "[[${movieInfo.mid}]]";
       const csrf = "[[${_csrf.token}]]";
     </script>
   </div>

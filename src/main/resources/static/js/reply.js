@@ -48,8 +48,11 @@ replyForm.addEventListener("submit", (e) => {
           },
         })
         .then((res) => {
-          alert(res.data.message);
-          location.reload(); // 또는 동적으로 추가
+          if (res.status == 201) {
+            location.reload(); // 또는 동적으로 추가
+          } else {
+            alert(res.data.message);
+          }
         })
         .catch((err) => {
           console.error(err);
@@ -67,16 +70,16 @@ document.querySelectorAll(".update-btn").forEach((e) => {
     // 데이터 가져오기
     const data = reply.dataset;
 
-    // 수정 버튼 눌렀는지
-    // if (e.classList.contains(".update-btn")) {
-    // 수정
     //replyForm 안에 보여주기
     replyForm.rno.value = data.rno;
     replyForm.text.value = data.text;
     replyForm.replyer.value = data.replyer;
-    // 컨텐츠 아이디
+    // 리뷰 정보
     replyForm.mention.value = data.mention;
     replyForm.ref.value = data.ref;
+    // 별점
+    replyForm.rate.value = data.rate;
+    highlightStars(data.rate);
   });
 });
 
