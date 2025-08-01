@@ -155,7 +155,7 @@ public class GameService {
                     String developer = gameNode.path("developer").asText();
                     int ccu = gameNode.path("ccu").asInt();
 
-                    String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid;
+                    String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid + "&l=koreana";
                     ResponseEntity<String> detailResponse = restTemplate.getForEntity(apiUrl2, String.class);
                     JsonNode detailRoot = objectMapper.readTree(detailResponse.getBody());
                     JsonNode dataNode = detailRoot.path(appid).path("data");
@@ -181,25 +181,27 @@ public class GameService {
                     }
 
                     // 가격 처리
-                    int originalPrice = 0;
+                    String originalPrice = "[가격정보없음]";
+                    String discountPrice = "[가격정보없음]";
                     int discountRate = 0;
-                    int discountPrice = 0;
 
                     if (dataNode != null) {
                         JsonNode priceOverview = dataNode.path("price_overview");
-                        if (!priceOverview.isMissingNode()) {
-                            String currency = priceOverview.path("currency").asText("USD");
-                            int initial = priceOverview.path("initial").asInt(0);
-                            int finalPrice = priceOverview.path("final").asInt(0);
-                            discountRate = priceOverview.path("discount_percent").asInt(0);
 
-                            if ("KRW".equalsIgnoreCase(currency)) {
-                                originalPrice = (int) Math.round(initial / krwToUsdRate);
-                                discountPrice = (int) Math.round(finalPrice / krwToUsdRate);
-                            } else {
-                                originalPrice = initial / 100;
-                                discountPrice = finalPrice / 100;
-                            }
+                        boolean isFree = dataNode.path("is_free").asBoolean(false);
+
+                        if (isFree) {
+                            discountPrice = "무료플레이";
+                            originalPrice = "0";
+                            discountRate = 0;
+                        } else if (!priceOverview.isMissingNode()) {
+                            String tempOriginal = priceOverview.path("initial_formatted").asText("");
+                            originalPrice = tempOriginal.isEmpty() ? "0" : tempOriginal;
+
+                            String tempDiscount = priceOverview.path("final_formatted").asText("");
+                            discountPrice = tempDiscount.isEmpty() ? "0" : tempDiscount;
+
+                            discountRate = priceOverview.path("discount_percent").asInt(0);
                         }
                     }
 
