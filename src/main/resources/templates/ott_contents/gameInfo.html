@@ -103,9 +103,9 @@
                                 <span
                                   style="color: gray; text-decoration: line-through; margin-right: 8px"
                                   th:if="${gameInfo.discountRate != 0}"
-                                  th:text="|$${gameInfo.originalPrice}|"
+                                  th:text="|${gameInfo.originalPrice}|"
                                 ></span>
-                                <span style="font-weight: bold" th:text="|$${gameInfo.price}|"></span>
+                                <span style="font-weight: bold" th:text="|${gameInfo.price}|"></span>
                               </span>
                             </li>
                             <li><span>좋아요 수</span><span th:text="${gameInfo.positive} + '개'"></span></li>
@@ -143,78 +143,6 @@
               </div>
             </div>
             <div class="center-line"></div>
-            <!-- <div class="row">
-              <div class="col-lg-8 col-md-8">
-                <div class="anime__details__review">
-                  <div class="section-title">
-                    <h5>Reviews</h5>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-1.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-2.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                      <p>Finally it came out ages ago</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-3.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                      <p>Where is the episode 15 ? Slow update! Tch</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-4.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-5.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                      <p>Finally it came out ages ago</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-6.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                      <p>Where is the episode 15 ? Slow update! Tch</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="anime__details__form">
-                  <div class="section-title">
-                    <h5>Your Comment</h5>
-                  </div>
-                  <form action="#">
-                    <textarea placeholder="Your Comment"></textarea>
-                    <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
-                  </form>
-                </div>
-              </div>
-            </div> -->
           </div>
         </section>
 
@@ -229,7 +157,8 @@
             <div class="p-4"></div>
             <!-- 댓글 시작 -->
             <div th:each="reply : ${replies}" class="anime__review__item">
-              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
+        <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
+              <div class="anime__review__item__pic">
             <!-- 로그인: 프로필 이미지 프로필 이미지가 없을 경우, 기본 이미지출력 -->
             
               <img
@@ -242,21 +171,26 @@
               <div
               class="anime__review__item__text reply"
               th:data-rno="${reply.rno}"
-              th:data-replyer="${reply.replyer}"
-              th:data-replyerNickname="${reply.replyerNickname}"
+              th:data-replyer="${reply.replyerNickname}"
+              th:data-replyerNickname="${reply.replyer}"
               th:data-text="${reply.text}"
-              th:data-id="${reply.gid}"
+              th:data-mid="${reply.gid}"
               th:data-mention="${reply.mention}"
+          th:data-rate="${reply.rate}"
               th:data-ref="${reply.ref}"
             >
-              <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
+              <span class="replyer text-light" th:text="${reply.replyer}"></span>
               <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
-              <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
+              <span class="text-secondary" th:text="' - ' +${reply.createdDate}"> 작성자 - 1 Hour ago</span>
               <button type="button" class="delete-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}">x</button>
               <button type="button" class="update-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name == reply.replyer}" >수정</button>
               <button type="button" class="mention-btn btn btn-secondary btn-sm" th:data-rno="${reply.rno}" th:if="${#authentication.name != 'anonymousUser'}">
                 대댓글
               </button>
+              <!-- 리뷰는 별점 표시 -->
+          <span >
+            <i th:if="${reply.ref == null}" th:each="idx : ${#numbers.sequence(0, 4)}" class="fa-star" th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"></i>
+          </span>
               <p th:text="${reply.text}">댓글 텍스트</p>
             </div>
             </div>
@@ -269,23 +203,37 @@
             <div class="section-title">
               <h5>댓글 작성</h5>
             </div>
-            <a class="mention text-light"></a>
+            <span class="mention badge badge-secondary"></span>
             <form id="replyForm" method="post">
+              <!-- 별점 -->
+                    <div class="anime__details__rating">
+                      <input type="hidden" name="rate">
+                      <span class="rating" name="rate">
+                        <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
+                      </span>
+                      <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
+                    </div>
               <input type="hidden" name="gid" th:value="${gameInfo.gid}" />
               <input type="hidden" name="rno" />
               <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
-              <textarea name="text" placeholder="Your Comment"></textarea>
-              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
-            </form>
+              <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
+              <span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자
+              <div th:if="${#authentication.name != 'anonymousUser'}">
+          <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
+          <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+        </div>
+        <div th:if="${#authentication.name == 'anonymousUser'}">
+          <button class="btn btn-sm ">로그인</button>
+        </div>
+      </form>
           </div>
           <!-- 댓글 작성 폼 끝 -->
         </div>
       </div>
       <script>
-        const gid = "[[${gameInfo.gid}]]";
+        const id = "[[${gameInfo.gid}]]";
         const csrf = "[[${_csrf.token}]]";
       </script>
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

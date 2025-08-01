@@ -6,22 +6,23 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @ToString(exclude = { "image", "replies" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 @Entity
 public class Movie extends BaseEntity {
@@ -45,7 +46,7 @@ public class Movie extends BaseEntity {
     private String actors; // 배우 이름들을 쉼표로 나열한 문자열
 
     private String genres; // 장르
-    private int showTm; // 상영시간
+    private String showTm; // 상영시간
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
     @Column(length = 10000)
@@ -61,40 +62,7 @@ public class Movie extends BaseEntity {
     @Builder.Default
     private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
 
-    public void setFollowcnt(int followcnt) {
-        this.followcnt = followcnt;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setOpenDate(String openDate) {
-        this.openDate = openDate;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    public void setDirector(String director) {
-        this.director = director;
-    }
-
-    public void setActors(String actors) {
-        this.actors = actors;
-    }
-
-    public void setGenres(String genres) {
-        this.genres = genres;
-    }
-
-    public void setSynopsis(String synopsis) {
-        this.synopsis = synopsis;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "content_id")
+    private Content content;
 }

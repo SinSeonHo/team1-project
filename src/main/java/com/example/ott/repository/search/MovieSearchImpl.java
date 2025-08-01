@@ -40,6 +40,12 @@ public class MovieSearchImpl implements MovieSearch {
                     case "d":
                         searchBuilder.or(movie.director.containsIgnoreCase(keyword));
                         break;
+                    case "a":
+                        searchBuilder.or(movie.actors.containsIgnoreCase(keyword));
+                        break;
+                    case "c":
+                        searchBuilder.or(movie.nationNm.containsIgnoreCase(keyword));
+                        break;
                 }
             }
             builder.and(searchBuilder);

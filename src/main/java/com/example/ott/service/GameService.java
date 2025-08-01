@@ -304,7 +304,7 @@ public class GameService {
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
 
         // 2. 댓글 DTO 리스트 조회
-        List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(gid);
 
         // 3. Map에 담아서 리턴
         Map<String, Object> result = new HashMap<>();
@@ -312,11 +312,6 @@ public class GameService {
         result.put("replies", replyDTOList);
 
         return result;
-    }
-
-    // 전체 게임 목록 조회
-    public List<Game> getGameAll() {
-        return gameRepository.findAll();
     }
 
     // 인기 게임 목록 조회
@@ -332,6 +327,10 @@ public class GameService {
         return result;
     }
 
+    // 전체 게임 목록 조회
+    public List<Game> getGameAll() {
+        return gameRepository.findAll();
+    }
     // 주석처리 6/25
     // public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
     // Page<Game> result = gameRepository.search(requestDTO);
@@ -362,11 +361,28 @@ public class GameService {
     }
 
     public List<GameDTO> getRandom(int num) {
-        List<GameDTO> result;
+        List<GameDTO> result = new ArrayList<>();
         List<Game> list = gameRepository.findAll();
-        result = list.stream().map(game -> entityToDto(game)).collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(result);
-        return result.subList(0, Math.min(num, result.size()));
+
+        // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        int countToRetrieve = Math.min(num, list.size());
+        int ran = 0;
+        List<Integer> eran = new ArrayList<>();
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
+        // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
+        }
+        return result;
     }
 
     // 게임 삭제
@@ -388,7 +404,6 @@ public class GameService {
                 .discountRate(game.getDiscountRate())
                 .genres(game.getGenres())
                 .gid(game.getGid())
-                // .imgUrl(game.getImage().getImgName())
                 .negative(game.getNegative())
                 .originalPrice(game.getOriginalPrice())
                 .platform(game.getPlatform())
@@ -400,6 +415,7 @@ public class GameService {
                 .synopsis(game.getSynopsis())
                 .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
+                .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
 
         if (game.getImage() == null) {

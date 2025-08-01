@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
 import com.example.ott.service.FavoriteService;
 import com.example.ott.service.GameService;
@@ -63,9 +64,19 @@ public class GameController {
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
         isFollowed = favoriteService.isFollowed(userDetails, gid);
+        // 별점 정보
+        List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
+        int rating = 0;
+        if (replies.size() != 0) {
+            for (ReplyDTO dto : replies) {
+                rating += dto.getRate();
+            }
+            rating = rating / replies.size();
+        }
         model.addAttribute("gameInfo", game);
-        model.addAttribute("replies", data.get("replies"));
+        model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);
+        model.addAttribute("rating", rating);
         log.info("로그확인 {}", model);
 
         return "ott_contents/gameInfo";
