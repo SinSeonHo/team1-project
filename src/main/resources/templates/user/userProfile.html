@@ -87,21 +87,28 @@
               />
             </div>
           </div>
-          <!-- 갤러리 -->
-          <h3 class="gallery-title mb-3" style="color: #fff; font-size: 1.2rem">좋아하는 영화/게임들</h3>
-          <section class="user-gallery-section mt-4" th:object="${followedContentsList}" th:unless="${followedContentsList.size == 0}">
-            
-            <div class="user-gallery-grid">
-              <img
+        </div>
+      </div>
+      <h3 class="gallery-title mb-3 row-sm-6 text-center divider" style="color: #fff; font-size: 1.2rem">
+        <span>팔로우한 콘텐츠</span>
+      </h3>
+      <div class="row w-100 justify-content-center">
+        <!-- 갤러리 -->
+        <section
+          class="user-gallery-section mt-4"
+          th:object="${followedContentsList}"
+          th:unless="${followedContentsList.size == 0}"
+        >
+          <div class="user-gallery-grid">
+            <img
               th:each="followedContents, iterStat : ${followedContentsList}"
-              th:if="${iterStat.index < 3}"
+              th:if="${iterStat.index < 4}"
               th:src="@{|/${followedContents.contents.movie.image.path}|}"
               alt="gallery-img"
-              class="gallery-img"
-              />
-            </div>
-          </section>
-        </div>
+              class="gallery-img col p-0"
+            />
+          </div>
+        </section>
       </div>
     </div>
   </main>

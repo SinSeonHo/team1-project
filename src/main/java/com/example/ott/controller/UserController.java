@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
@@ -27,16 +32,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 
@@ -46,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class UserController {
 
     private final UserService userService;
-    private final FollowedContentsService favoriteService;
+
     private final ImageService imageService;
     private final FollowedContentsService followedContentsService;
 
@@ -94,12 +89,12 @@ public class UserController {
 
         log.info("이미지 확인");
         followedContentsList.forEach(followedContents -> {
-            log.info("이미지 주소 : {}" ,followedContents.getContents().getMovie().getImage().getPath());
+            log.info("이미지 주소 : {}", followedContents.getContents().getMovie().getImage().getPath());
         });
 
         model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("followedContentsList", followedContentsList);
-        
+
         return "/user/userProfile";
     }
 
