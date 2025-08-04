@@ -2,15 +2,19 @@ package com.example.ott.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ott.dto.ContentRecommendation;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.ContentsGenre;
 import com.example.ott.entity.Genre;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserGenrePreference;
 import com.example.ott.repository.ContentsGenreRepository;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.UserGenrePreferenceRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class UserGenrePreferenceService {
 
+    private final ContentsRepository contentsRepository;
     private final ContentsGenreRepository contentsGenreRepository;
     private final UserGenrePreferenceRepository userGenrePreferenceRepository;
 
@@ -51,7 +56,8 @@ public class UserGenrePreferenceService {
         });
     }
 
-    public void removePreference(User user, Contents contents) {
+    // 언팔로우한 콘텐츠를 받아 그 콘텐츠들의 장르를 유저 취향에서 제거
+    public void removeUserPreference(User user, Contents contents) {
         // unfollow한 콘텐츠의 장르 추출
         List<ContentsGenre> contentsGenres = contentsGenreRepository.findByContents(contents);
 
@@ -66,5 +72,20 @@ public class UserGenrePreferenceService {
                     .forEach(userGenrePreference -> userGenrePreferenceRepository.delete(userGenrePreference));
 
         });
+    }
+
+    // user의 장르 취향에 최대한 적합한 콘텐츠들 조회
+    public List<Contents> getRecommendationContents(String userId) {
+        List<ContentRecommendation> recommendedContents = userGenrePreferenceRepository
+                .recommendByUserPreference(userId);
+        // List<ContentsRecommendation> -> List<Contents>로 변경 + contentsRecommendation의
+        // score가 (임시)2이하이면 걸러
+        List<Contents> result = recommendedContents.stream()
+                .filter(cr -> cr.getScore() >= 2)
+                .map(cr -> contentsRepository.findById(cr.getContentsId()))
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
+
+        return result;
     }
 }

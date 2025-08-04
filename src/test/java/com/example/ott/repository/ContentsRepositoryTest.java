@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.ott.dto.ContentsDTO;
+import com.example.ott.dto.ContentRecommendation;
+import com.example.ott.entity.ContentsGenre;
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
@@ -31,6 +33,9 @@ public class ContentsRepositoryTest {
 
     @Autowired
     private ContentsService contentsService;
+
+    @Autowired
+    private UserGenrePreferenceRepository userGenrePreferenceRepository;
 
     // 영화 1개 mid로 조회하기
     @Transactional
@@ -90,5 +95,20 @@ public class ContentsRepositoryTest {
             contentsService.insertContents(contentsDTO);
 
         });
+
+    }
+
+    @Test
+    public void recommendTest() {
+        List<ContentRecommendation> recommendedContents = userGenrePreferenceRepository
+                .recommendByUserPreference("admin");
+        recommendedContents.forEach(recommendedContent -> {
+
+            if (recommendedContent.getScore() > 1) {
+                log.info("추천 콘텐츠 아이디 : {} \t 해당 콘텐츠의 점수 : {} \n",
+                        recommendedContent.getContentsId(), recommendedContent.getScore());
+            }
+        });
+
     }
 }

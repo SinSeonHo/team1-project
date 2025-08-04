@@ -63,7 +63,7 @@ public class FollowedContentsService {
         if (isFollowed) {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
-            userGenrePreferenceService.removePreference(user, contents);
+            userGenrePreferenceService.removeUserPreference(user, contents);
             followedContentsRepository.delete(followedContents);
 
         } else {
