@@ -24,7 +24,10 @@ import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.MovieRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +44,7 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
+    private final ContentsRepository contentsRepository;
 
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
     @Transactional
@@ -118,6 +122,10 @@ public class MovieService {
                 .build();
 
         movieRepository.save(movie);
+
+        // contents 테이블에 등록
+        Contents contents = Contents.builder().contentsId(mid).movie(movie).contentsType(ContentsType.MOVIE).build();
+        contentsRepository.save(contents);
 
         return movie.getMid();
     }
@@ -225,7 +233,6 @@ public class MovieService {
                         existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
-                        // insert new movie
                         MovieDTO dto = MovieDTO.builder()
                                 .mid("m_" + movieCd)
                                 .title(movieNm)
@@ -270,7 +277,6 @@ public class MovieService {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
-                // .map(movie -> modelMapper.map(movie, MovieDTO.class))
                 .map(movie -> entityToDto(movie))
                 .collect(Collectors.toList());
 

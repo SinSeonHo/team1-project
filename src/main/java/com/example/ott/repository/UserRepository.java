@@ -7,6 +7,8 @@ import com.example.ott.entity.User;
 public interface UserRepository extends JpaRepository<User, String> {
     User findByEmail(String email);
 
+    User findByNickname(String nickname);
+
     User findByIdAndPassword(String id, String password);
 
     boolean existsById(String id);

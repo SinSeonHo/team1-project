@@ -1,11 +1,13 @@
 const contentOptions = {
   m: [
     { code: "t", name: "제목" },
-    { code: "d", name: "감독" },
-    { code: "a", name: "배우들" },
+    { code: "g", name: "장르" },
+    { code: "d", name: "감독명" },
+    { code: "a", name: "배우명" },
   ],
   g: [
     { code: "t", name: "제목" },
+    { code: "g", name: "장르" },
     { code: "d", name: "개발사" },
     { code: "p", name: "배급사" },
   ],
@@ -18,9 +20,7 @@ const action = {
 function updateCityOptions() {
   const typeSelect = document.getElementById("type");
   const content = document.getElementById("content").value;
-
-  typeSelect.innerHTML = ""; // 키워드 제거
-
+  typeSelect.innerHTML = "";
   // 컨텐츠에 해당하는 키워드 목록 추가
   if (content && contentOptions[content]) {
     contentOptions[content].forEach((city) => {

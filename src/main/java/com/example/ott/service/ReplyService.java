@@ -22,9 +22,7 @@ import com.example.ott.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ReplyService {

@@ -46,6 +46,8 @@ public class MovieSearchImpl implements MovieSearch {
                     case "c":
                         searchBuilder.or(movie.nationNm.containsIgnoreCase(keyword));
                         break;
+                    case "g":
+                        searchBuilder.or(movie.genres.containsIgnoreCase(keyword));
                 }
             }
             builder.and(searchBuilder);

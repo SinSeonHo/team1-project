@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -27,10 +26,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@ToString(exclude = "replies")
+@ToString(exclude = { "replies", "image" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -44,11 +42,11 @@ public class User {
     private String id;
 
     @Setter
-    private String name; // 실명
+    private String name;
 
     @Setter
     @Column(unique = true)
-    private String nickname; // 별명
+    private String nickname;
 
     @Setter
     @Column(unique = true)
@@ -81,8 +79,6 @@ public class User {
     @Setter
     private String grade;
 
-    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
-
     @Setter
     @OneToOne(cascade = CascadeType.REMOVE)
     private Image image;
@@ -90,11 +86,9 @@ public class User {
     @OneToMany(mappedBy = "replyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reply> replies;
 
-    // @OneToOne(mappedBy = "user")
-    // private Favorites favorites;
-
     public void changeAccountInfo(String id, String password) {
         this.id = id;
         this.password = password;
     }
+
 }

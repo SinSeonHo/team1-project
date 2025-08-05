@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@ToString(exclude = { "image", "replies" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,39 +27,39 @@ import lombok.ToString;
 public class Movie extends BaseEntity {
 
     @Id
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String mid; // 영화코드 ex: m_1 / m_2
+
+    private String mid;
 
     @Column(nullable = false)
-    private String title; // 영화명
-    private String openDate; // 개봉일
+    private String title;
+    private String openDate;
 
     @Column(nullable = false)
-    private int rank; // 순위
+    private int rank;
 
     @Column(unique = true)
-    private String movieCd; // KOBIS 고유 코드
+    private String movieCd;
 
-    private String director; // 감독 이름
+    private String director;
     @Column(length = 1000)
-    private String actors; // 배우 이름들을 쉼표로 나열한 문자열
+    private String actors;
 
     private String genres; // 장르
     private String showTm; // 상영시간
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
     @Column(length = 10000)
-    private String synopsis; // 줄거리
+    private String synopsis;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
-    private List<Reply> replies = new ArrayList<>(); // 댓글
+    private List<Reply> replies = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "image_id", nullable = true) // 외래 키는 image 테이블의 PK
+    @JoinColumn(name = "image_id", nullable = true)
     private Image image;
 
     @Builder.Default
-    private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
+    private int followcnt = 0;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")

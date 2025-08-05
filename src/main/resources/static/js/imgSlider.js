@@ -1,40 +1,60 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const container = document.getElementById("sliderContainer");
-  const slider = document.getElementById("slider");
+/**
+ * 다중 슬라이더 지원 JS
+ *
+ * movieInfo.html용 슬라이더:
+ *  - 컨테이너: .slider-container
+ *  - 슬라이더: .slider
+ *
+ * index.html용 슬라이더:
+ *  - 영화 슬라이더: .sliderContainerMovie > .sliderMovie
+ *  - 게임 슬라이더: .sliderContainerGame > .sliderGame
+ */
+[
+  // movieInfo.html 슬라이더
+  { containerClass: "slider-container", sliderClass: "slider" },
 
-  if (!container || !slider) {
-    console.error("slider 또는 sliderContainer 요소가 존재하지 않습니다.");
-    return;
-  }
+  // index.html 영화 슬라이더
+  { containerClass: "sliderContainerMovie", sliderClass: "sliderMovie" },
 
-  // 슬라이더 복제해서 이어 붙이기
-  slider.innerHTML += slider.innerHTML;
-
-  let scrollAmount = 0;
-  let intervalId;
-
-  function autoScroll() {
-    scrollAmount += 1;
-    if (scrollAmount >= slider.scrollWidth / 2) {
-      // 절반만큼 스크롤되면 다시 처음으로
-      scrollAmount = 0;
+  // index.html 게임 슬라이더
+  { containerClass: "sliderContainerGame", sliderClass: "sliderGame" },
+].forEach(({ containerClass, sliderClass }) => {
+  const containers = document.querySelectorAll(`.${containerClass}`);
+  containers.forEach((container) => {
+    const slider = container.querySelector(`.${sliderClass}`);
+    if (!slider) {
+      console.error(`슬라이더 요소를 찾을 수 없습니다: ${sliderClass}`);
+      return;
     }
-    container.scrollLeft = scrollAmount;
-  }
 
-  function startScroll() {
-    if (!intervalId) {
-      intervalId = setInterval(autoScroll, 10); // 숫자가 작을수록 빠름
+    // 슬라이더 내용을 두 배로 복제해 무한 스크롤 효과
+    slider.innerHTML += slider.innerHTML;
+
+    let scrollAmount = 0;
+    let intervalId;
+
+    function autoScroll() {
+      scrollAmount++;
+      if (scrollAmount >= slider.scrollWidth / 2) {
+        scrollAmount = 0;
+      }
+      container.scrollLeft = scrollAmount;
     }
-  }
 
-  function stopScroll() {
-    clearInterval(intervalId);
-    intervalId = null;
-  }
+    function startScroll() {
+      if (!intervalId) {
+        intervalId = setInterval(autoScroll, 10);
+      }
+    }
 
-  startScroll();
+    function stopScroll() {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
 
-  container.addEventListener("mouseover", stopScroll);
-  container.addEventListener("mouseleave", startScroll);
+    startScroll();
+
+    container.addEventListener("mouseover", stopScroll);
+    container.addEventListener("mouseleave", startScroll);
+  });
 });

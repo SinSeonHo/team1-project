@@ -9,20 +9,20 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum UserRole {
     GUEST("GUEST"),
-    USER("USER"), // UserRole USER - New UserRole("USER")
+    USER("USER"),
     MANAGER("USER,MANAGER"),
     ADMIN("USER,MANAGER,ADMIN");
 
     private final String roles;
 
-     UserRole(String roles) {
+    UserRole(String roles) {
         this.roles = roles;
     }
 
     // CustomUserDetails에서 권한 불러올 때 사용
     public List<GrantedAuthority> getAuthorities() {
         return Arrays.stream(roles.split(","))
-            .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-            .collect(Collectors.toList());
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toList());
     }
 }

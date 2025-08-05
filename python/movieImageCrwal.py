@@ -9,27 +9,29 @@ from selenium.webdriver.common.by import By
 import shutil
 
 # 1. 이미지 저장 경로 설정
-BASE_PATH = r"C:/upload/images/movieimages"
-STATIC_PATH = os.path.abspath("../src/main/resources/static")
-os.makedirs(BASE_PATH, exist_ok=True)
+BASE_PATH = r"C:/upload/images/movieimages"  # 저장할 실제 이미지 경로
+STATIC_PATH = os.path.abspath(
+    "../src/main/resources/static"
+)  # static 기준 상대경로 산출용
+os.makedirs(BASE_PATH, exist_ok=True)  # 디렉토리 없으면 생성
 
-# 2. Oracle DB 연결
+# 2. Oracle DB 연결 설정
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
 conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
 cursor = conn.cursor()
 
-# 3. TMDb API 설정
+# 3. TMDb API 정보
 API_KEY = "cfa721d14c0aa4e4b28b3f26e81369f9"
 SEARCH_API_URL = "https://api.themoviedb.org/3/search/movie"
 DETAIL_API_URL = "https://api.themoviedb.org/3/movie/{movie_id}/images"
 IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
-# 4. Selenium (크롬 헤드리스)
+# 4. 셀레니움 (크롬) 설정 - headless 모드
 options = webdriver.ChromeOptions()
-options.add_argument("--headless")
+options.add_argument("--headless")  # 창 없이 실행
 driver = webdriver.Chrome(options=options)
 
-# 5. 이미지가 없는 영화 조회
+# 5. 이미지가 없는 영화만 조회
 cursor.execute("SELECT mid, title FROM movie WHERE image_id IS NULL")
 movies = cursor.fetchall()
 
@@ -57,17 +59,13 @@ try:
         print(f"\n[{title}] 이미지 검색 시작")
 
         poster_url = None
-        movie_id = None  # TMDb의 고유 movie_id 저장용
+        movie_id = None  # TMDb 고유 ID 저장용
         backdrops = []
 
-        # 1) TMDb 검색
+        # 1) TMDb API를 통해 영화 포스터 검색
         try:
             print(f"[{title}] → TMDb 검색 시도 중...")
-            params = {
-                "query": title,
-                "language": "ko-KR",
-                "api_key": API_KEY,
-            }
+            params = {"query": title, "language": "ko-KR", "api_key": API_KEY}
             response = requests.get(SEARCH_API_URL, params=params)
             if response.status_code == 200:
                 data = response.json()
@@ -97,7 +95,7 @@ try:
         except Exception as e:
             print(f"[{title}] → TMDb 오류: {e}")
 
-        # 2) TMDb 실패 → 네이버 이미지 검색
+        # 2) TMDb 실패 시 네이버 이미지 검색 시도
         if not poster_url:
             try:
                 print(f"[{title}] → TMDb 실패 → 네이버 이미지 검색 시도")
@@ -123,19 +121,18 @@ try:
             except Exception as e:
                 print(f"[{title}] → 네이버 이미지 검색 오류: {e}")
 
-        # 3) 포스터 없으면 건너뜀
+        # 3) 최종적으로 포스터 없으면 해당 영화 건너뜀
         if not poster_url:
             print(f"[{title}] → 최종적으로 포스터 없음 → 건너뜀")
             continue
 
         try:
-            # 안전한 파일명 생성
+            # 4) 파일명 및 경로 안전하게 구성
             unique_id = str(uuid.uuid4())
             safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip())
             ext = poster_url.split(".")[-1].split("?")[0]
             if len(ext) > 5 or "/" in ext:
                 ext = "jpg"
-
             file_name = (
                 f"{unique_id}_{safe_title}.{ext}"
                 if safe_title
@@ -143,17 +140,17 @@ try:
             )
             full_path = os.path.join(BASE_PATH, file_name)
 
-            # 이미지 다운로드
+            # 5) 이미지 저장
             if download_image(poster_url, full_path):
                 print(f"[{title}] → 이미지 저장 완료: {file_name}")
             else:
                 print(f"[{title}] → 이미지 저장 실패: {file_name}")
                 continue
 
-            # static 기준 상대경로
+            # 6) 상대 경로 구성 (static 기준)
             relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
 
-            # 이미지 테이블 저장
+            # 7) image 테이블에 포스터 정보 저장
             output_inum = cursor.var(cx_Oracle.NUMBER)
             cursor.execute(
                 """
@@ -168,16 +165,15 @@ try:
                     "output_inum": output_inum,
                 },
             )
-
             image_id = int(output_inum.getvalue()[0])
 
-            # movie 테이블 업데이트
+            # 8) movie 테이블에 image_id 업데이트
             cursor.execute(
                 "UPDATE movie SET image_id = :imgid WHERE mid = :mid",
                 {"imgid": image_id, "mid": mid},
             )
 
-            # backdrops(스틸컷) 정보 요청 및 저장
+            # 9) 스틸컷(backdrops) 이미지 최대 10장까지 저장
             if movie_id:
                 try:
                     detail_url = DETAIL_API_URL.format(movie_id=movie_id)
@@ -185,7 +181,11 @@ try:
                     if detail_res.status_code == 200:
                         image_data = detail_res.json()
                         backdrops = image_data.get("backdrops", [])
+
+                        count = 0  # 저장한 스틸컷 개수
                         for b in backdrops:
+                            if count >= 10:
+                                break  # 최대 10장까지만 저장
                             path = b.get("file_path")
                             if path:
                                 screenshot_url = IMAGE_BASE_URL + path
@@ -200,6 +200,7 @@ try:
                                             "screenshot_url": screenshot_url,
                                         },
                                     )
+                                    count += 1
                                     print(f"[{title}] → 스틸컷 저장: {screenshot_url}")
                                     time.sleep(0.1)
                                 except Exception as se:
@@ -209,6 +210,7 @@ try:
                 except Exception as e:
                     print(f"[{title}] → 스틸컷 처리 오류: {e}")
 
+            # 10) 커밋
             conn.commit()
             print(f"[{title}] → DB 저장 완료")
 
@@ -216,6 +218,7 @@ try:
             print(f"[ERROR] {title} 처리 중 오류 발생: {e}")
             conn.rollback()
 
+# 11) 마무리 정리
 finally:
     driver.quit()
     cursor.close()
