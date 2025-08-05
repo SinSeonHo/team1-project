@@ -1,5 +1,6 @@
 package com.example.ott.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,14 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
+import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
+
 import com.example.ott.service.FollowedContentsService;
+
+import com.example.ott.entity.Image;
+
 import com.example.ott.service.GameService;
+import com.example.ott.service.ImageService;
+import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-// @RestController
 @Controller
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
@@ -29,7 +36,11 @@ import lombok.extern.log4j.Log4j2;
 public class GameController {
 
     private final GameService gameService;
+
     private final FollowedContentsService followedContentsService;
+
+    private final ImageService imageService;
+    private final ReplyService replyService;
 
     @GetMapping("/import")
     public String importGame(Model model) {
@@ -62,10 +73,32 @@ public class GameController {
         Map<String, Object> data = gameService.getGame(gid);
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
+
         isFollowed = followedContentsService.isFollowed(userDetails, gid);
+
+        // 이미지 및 스크린샷 처리
+        Image image = game.getImage(); // Image 객체 얻기
+        List<String> screenshots = new ArrayList<>();
+        if (image != null && image.getInum() != null) {
+            screenshots = imageService.getScreenshotsByImageId(image.getInum());
+        }
+
+        // 즐겨찾기 여부
+        isFollowed = followedContentsService.isFollowed(userDetails, gid);
+        // 별점 정보
+        List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
+
+        // 별점 정보
+        double rating = replyService.rating(replies);
+
+        // 모델에 데이터 추가
+
         model.addAttribute("gameInfo", game);
-        model.addAttribute("replies", data.get("replies"));
+        model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);
+        model.addAttribute("rating", rating);
+        model.addAttribute("screenshotUrls", screenshots);
+
         log.info("로그확인 {}", model);
 
         return "ott_contents/gameInfo";

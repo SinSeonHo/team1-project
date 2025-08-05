@@ -37,7 +37,7 @@ public class HomeController {
     @GetMapping("/")
     public String getHome(Model model, PageRequestDTO requestDTO) {
         // PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
-        List<MovieDTO> movielist = movieService.getRandom(3);
+        List<MovieDTO> movielist = movieService.getRandom(10);
         model.addAttribute("movies", movielist);
         List<GameDTO> gamelist = gameService.getRandom(6);
         model.addAttribute("games", gamelist);

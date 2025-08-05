@@ -1,9 +1,11 @@
 package com.example.ott.controller;
 
-import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,18 +29,6 @@ public class ReplyController {
     private final ReplyService replyService;
     private final UserService userService;
 
-    // @GetMapping("/{rno}")
-    // public List<ReplyDTO> getReply(@PathVariable Long rno) {
-    // log.info("{}번 댓글 요청", rno);
-    // return replyService.reply(rno);
-    // }
-
-    @GetMapping("/movie/{mid}")
-    public List<ReplyDTO> getMovieReplies(@PathVariable String mid) {
-        log.info("{}번 영화 댓글 요청", mid);
-        return replyService.movieReplies(mid);
-    }
-
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
         log.info("댓글 내용 수정 요청: {}", dto);
@@ -47,21 +37,22 @@ public class ReplyController {
     }
 
     @PostMapping("/new")
-    public void postMovie(@RequestBody ReplyDTO dto) {
+    public ResponseEntity<Map<String, String>> postMovie(@RequestBody ReplyDTO dto) {
         log.info("댓글 추가 요청: {}", dto);
         User user = userService.getUserById(dto.getReplyer());
         dto.setReplyerNickname(user.getNickname()); // nickname 설정
-        // replyService.insert(dto).getRno()
-        replyService.insert(dto);
-
-        return;
+        int result = replyService.insert(dto);
+        switch (result) {
+            case 0:
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "입력되었습니다."));
+            case 1:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "컨텐츠를 찾을 수 없습니다."));
+            case 2:
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "이미 리뷰를 작성했습니다."));
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "오류"));
+        }
     }
-
-    // @PostMapping("/movie/newRe")
-    // public Long postMovieRecoment(@RequestBody ReplyDTO dto) {
-    // log.info("대댓글 추가 요청: {}", dto);
-    // return replyService.rereplyInsert(dto).getRno();
-    // }
 
     @DeleteMapping("/{id}")
     public void deleteReply(@PathVariable Long id) {

@@ -30,10 +30,11 @@ import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
+import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.GameRepository;
-import com.example.ott.type.GenreType;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -82,6 +83,8 @@ public class GameService {
             System.err.println("파이썬 실행 실패: " + e.getMessage());
             e.printStackTrace();
         }
+
+        // 이미지 서비스 호출
     }
 
     // 게임 등록
@@ -130,19 +133,8 @@ public class GameService {
     public void importGames() {
         String apiUrl1 = "https://steamspy.com/api.php?request=top100owned";
 
-        double krwToUsdRate = 1300.0; // 초기값 (예비용)
-
         try {
             RestTemplate restTemplate = new RestTemplate();
-
-            // 1. 환율 API 호출 (KRW -> USD)
-            String rateApiUrl = "https://api.exchangerate.host/latest?base=KRW&symbols=USD";
-            ResponseEntity<String> rateResponse = restTemplate.getForEntity(rateApiUrl, String.class);
-            if (rateResponse.getStatusCode().is2xxSuccessful()) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode rateRoot = mapper.readTree(rateResponse.getBody());
-                krwToUsdRate = rateRoot.path("rates").path("USD").asDouble(krwToUsdRate);
-            }
 
             // 2. SteamSpy API 호출
             ResponseEntity<String> response = restTemplate.getForEntity(apiUrl1, String.class);
@@ -163,51 +155,63 @@ public class GameService {
                     String developer = gameNode.path("developer").asText();
                     int ccu = gameNode.path("ccu").asInt();
 
-                    String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid;
+                    String apiUrl2 = "https://store.steampowered.com/api/appdetails?appids=" + appid + "&l=koreana";
                     ResponseEntity<String> detailResponse = restTemplate.getForEntity(apiUrl2, String.class);
                     JsonNode detailRoot = objectMapper.readTree(detailResponse.getBody());
                     JsonNode dataNode = detailRoot.path(appid).path("data");
 
                     // 장르 처리
                     String genres = "장르정보없음";
+
                     if (dataNode != null && dataNode.has("genres")) {
                         Set<String> genreSet = new HashSet<>();
 
                         for (JsonNode genreNode : dataNode.get("genres")) {
-                            String engGenre = genreNode.get("description").asText();
-                            String korGenre = GenreType.toKorean(engGenre);
-                            genreSet.add(korGenre);
+                            if (genreNode.has("id")) {
+                                int genreId = genreNode.get("id").asInt();
+
+                                // id가 37 or 70이면 건너뜀 (무료 게임 or 얼리 액세스)
+                                if (genreId == 37 || genreId == 70) {
+                                    continue;
+                                }
+                            }
+
+                            // description이 존재하면 장르 추가
+                            if (genreNode.has("description")) {
+                                String engGenre = genreNode.get("description").asText().trim();
+                                if (!engGenre.isEmpty()) {
+                                    genreSet.add(engGenre);
+                                }
+                            }
                         }
 
-                        // 장르정보없음이 여러 번 들어가지 않도록
-                        if (genreSet.size() == 1 && genreSet.contains("장르정보없음")) {
-                            genres = "장르정보없음";
-                        } else {
-                            genreSet.remove("장르정보없음"); // 중복 제거
+                        if (!genreSet.isEmpty()) {
                             genres = String.join(", ", genreSet);
                         }
                     }
 
                     // 가격 처리
-                    int originalPrice = 0;
+                    String originalPrice = "[가격정보없음]";
+                    String discountPrice = "[가격정보없음]";
                     int discountRate = 0;
-                    int discountPrice = 0;
 
                     if (dataNode != null) {
                         JsonNode priceOverview = dataNode.path("price_overview");
-                        if (!priceOverview.isMissingNode()) {
-                            String currency = priceOverview.path("currency").asText("USD");
-                            int initial = priceOverview.path("initial").asInt(0);
-                            int finalPrice = priceOverview.path("final").asInt(0);
-                            discountRate = priceOverview.path("discount_percent").asInt(0);
 
-                            if ("KRW".equalsIgnoreCase(currency)) {
-                                originalPrice = (int) Math.round(initial / krwToUsdRate);
-                                discountPrice = (int) Math.round(finalPrice / krwToUsdRate);
-                            } else {
-                                originalPrice = initial / 100;
-                                discountPrice = finalPrice / 100;
-                            }
+                        boolean isFree = dataNode.path("is_free").asBoolean(false);
+
+                        if (isFree) {
+                            discountPrice = "무료플레이";
+                            originalPrice = "0";
+                            discountRate = 0;
+                        } else if (!priceOverview.isMissingNode()) {
+                            String tempOriginal = priceOverview.path("initial_formatted").asText("");
+                            originalPrice = tempOriginal.isEmpty() ? "0" : tempOriginal;
+
+                            String tempDiscount = priceOverview.path("final_formatted").asText("");
+                            discountPrice = tempDiscount.isEmpty() ? "0" : tempDiscount;
+
+                            discountRate = priceOverview.path("discount_percent").asInt(0);
                         }
                     }
 
@@ -305,14 +309,14 @@ public class GameService {
     // 게임 + 댓글 DTO 리스트 함께 반환
 
     public Map<String, Object> getGame(String gid) {
-        log.info("영화정보 상세조회");
+        log.info("게임정보 상세조회");
 
         // 1. 게임 조회
         Game game = gameRepository.findById(gid)
-                .orElseThrow(() -> new RuntimeException("영화 없음"));
+                .orElseThrow(() -> new RuntimeException("게임 없음"));
 
         // 2. 댓글 DTO 리스트 조회
-        List<ReplyDTO> replyDTOList = replyService.gameReplies(gid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(gid);
 
         // 3. Map에 담아서 리턴
         Map<String, Object> result = new HashMap<>();
@@ -320,11 +324,6 @@ public class GameService {
         result.put("replies", replyDTOList);
 
         return result;
-    }
-
-    // 전체 게임 목록 조회
-    public List<Game> getGameAll() {
-        return gameRepository.findAll();
     }
 
     // 인기 게임 목록 조회
@@ -340,6 +339,10 @@ public class GameService {
         return result;
     }
 
+    // 전체 게임 목록 조회
+    public List<Game> getGameAll() {
+        return gameRepository.findAll();
+    }
     // 주석처리 6/25
     // public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
     // Page<Game> result = gameRepository.search(requestDTO);
@@ -370,11 +373,28 @@ public class GameService {
     }
 
     public List<GameDTO> getRandom(int num) {
-        List<GameDTO> result;
+        List<GameDTO> result = new ArrayList<>();
         List<Game> list = gameRepository.findAll();
-        result = list.stream().map(game -> entityToDto(game)).collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(result);
-        return result.subList(0, Math.min(num, result.size()));
+
+        // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        int countToRetrieve = Math.min(num, list.size());
+        int ran = 0;
+        List<Integer> eran = new ArrayList<>();
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
+        // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
+        }
+        return result;
     }
 
     // 게임 삭제
@@ -396,7 +416,6 @@ public class GameService {
                 .discountRate(game.getDiscountRate())
                 .genres(game.getGenres())
                 .gid(game.getGid())
-                .imgUrl(game.getImage().getImgName())
                 .negative(game.getNegative())
                 .originalPrice(game.getOriginalPrice())
                 .platform(game.getPlatform())
@@ -408,6 +427,7 @@ public class GameService {
                 .synopsis(game.getSynopsis())
                 .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
+                .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
         return dto;
     }

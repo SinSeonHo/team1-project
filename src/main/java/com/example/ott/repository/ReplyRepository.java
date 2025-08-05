@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
@@ -22,6 +24,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     @Query("select r from Reply r where r.game = :game")
     List<Reply> findByGame(@org.springframework.data.repository.query.Param("game") Game game);
 
-    // @Query("select r from Reply r where r.webtoon = :webtoon")
-    // List<Reply> findByWebToon(WebToon webtoon);
+    Optional<Reply> findByReplyerAndMovieAndRefIsNull(User replyer, Movie movie);
+
+    Optional<Reply> findByReplyerAndGameAndRefIsNull(User replyer, Game game);
 }
