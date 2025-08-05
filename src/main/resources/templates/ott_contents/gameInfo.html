@@ -130,7 +130,12 @@
             <!-- 스크린샷 이미지 리스트 추가 0730 -->
             <div class="slider-container" id="sliderContainer">
               <div class="slider" id="slider">
-                <img th:each="url : ${screenshotUrls}" th:src="${url}" alt="스크린샷 이미지" />
+                <img
+                  th:each="url : ${screenshotUrls}"
+                  th:src="${url}"
+                  alt="스크린샷 이미지"
+                  style="border-radius: 10px"
+                />
               </div>
             </div>
 
