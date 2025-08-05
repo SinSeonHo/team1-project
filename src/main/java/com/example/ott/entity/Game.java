@@ -62,19 +62,15 @@ public class Game extends BaseEntity {
     @JoinColumn(name = "image_id", nullable = true)
     private Image image;
 
-    @Builder.Default
-    private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
+    // @Builder.Default
+    // private int followcnt = 0;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id")
-    private Content content;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "content_id")
+    // private Content content;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
-
-    public void setFollowcnt(int followcnt) {
-        this.followcnt = followcnt;
-    }
 
     public void setPrice(String price) {
         this.price = price;

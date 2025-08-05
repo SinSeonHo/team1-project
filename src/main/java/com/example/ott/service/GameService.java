@@ -423,7 +423,7 @@ public class GameService {
                 .rank(game.getRank())
                 .replycnt(game.getReplies().size())
                 .synopsis(game.getSynopsis())
-                .followcnt(game.getFollowcnt())
+                // .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();
