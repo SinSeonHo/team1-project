@@ -77,9 +77,6 @@ public class UserController {
                 .getFollowedContentsList(userProfileDTO.getNickname());
 
         log.info("이미지 확인");
-        followedContentsList.forEach(followedContents -> {
-            log.info("이미지 주소 : {}", followedContents.getContents().getMovie().getImage().getPath());
-        });
 
         model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("followedContentsList", followedContentsList);

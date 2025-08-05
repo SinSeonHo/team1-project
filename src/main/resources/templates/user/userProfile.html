@@ -103,7 +103,11 @@
             <img
               th:each="followedContents, iterStat : ${followedContentsList}"
               th:if="${iterStat.index < 4}"
-              th:src="@{|/${followedContents.contents.movie.image.path}|}"
+              th:src="@{|/${
+        followedContents.contents.movie != null
+          ? followedContents.contents.movie.image.path
+          : followedContents.contents.game.image.path
+      }|}"
               alt="gallery-img"
               class="gallery-img col p-0"
             />
