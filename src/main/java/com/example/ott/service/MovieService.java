@@ -233,7 +233,6 @@ public class MovieService {
                         existing.setGenres(genreStr);
                         movieRepository.save(existing);
                     } else {
-                        // insert new movie
                         MovieDTO dto = MovieDTO.builder()
                                 .mid("m_" + movieCd)
                                 .title(movieNm)
@@ -278,7 +277,6 @@ public class MovieService {
         Page<Movie> result = movieRepository.search(requestDTO);
 
         List<MovieDTO> dtoList = result.stream()
-                // .map(movie -> modelMapper.map(movie, MovieDTO.class))
                 .map(movie -> entityToDto(movie))
                 .collect(Collectors.toList());
 

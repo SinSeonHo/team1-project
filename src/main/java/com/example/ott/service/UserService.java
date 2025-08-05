@@ -66,7 +66,6 @@ public class UserService {
         user.setNickname(userProfileDTO.getNickname());
         user.setName(userProfileDTO.getName());
 
-        // user.setGenres(userProfileDTO.getGenres());
         userRepository.save(user);
     }
 
@@ -98,9 +97,8 @@ public class UserService {
         User user = null;
         try {
             user = userRepository.findById(id).get();
-            log.info("검색한 user 내용 : {}", user);
         } catch (NoSuchElementException e) {
-            log.info("user 정보를 찾을 수 없음");
+            log.error("user 정보를 찾을 수 없음");
         }
         return user;
     }
@@ -137,7 +135,6 @@ public class UserService {
         }
         user.setImage(profileImage);
         userRepository.save(user);
-        // 기존 사진 삭제
     }
 
     public void upgradeToAdmin(String userId) {

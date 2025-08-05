@@ -1,12 +1,9 @@
 package com.example.ott.service;
 
-import com.example.ott.dto.ImageDTO;
 import com.example.ott.entity.Image;
-import com.example.ott.entity.Movie;
-import com.example.ott.repository.ImageRepository;
-import com.example.ott.repository.MovieRepository;
 
-import jakarta.transaction.Transactional;
+import com.example.ott.repository.ImageRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnails;
@@ -22,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-@Service
 @Log4j2
+@Service
 @RequiredArgsConstructor
 public class ImageService {
 
