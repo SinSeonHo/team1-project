@@ -25,17 +25,18 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
-    private final MovieService movieService;
-    private final GameService gameService;
+        private final MovieService movieService;
+        private final GameService gameService;
 
-    @GetMapping("/")
-    public String getHome(Model model, PageRequestDTO requestDTO) {
-        List<MovieDTO> movielist = movieService.getRandom(3);
-        model.addAttribute("movies", movielist);
-        List<GameDTO> gamelist = gameService.getRandom(6);
-        model.addAttribute("games", gamelist);
+        @GetMapping("/")
+        public String getHome(Model model, PageRequestDTO requestDTO) {
+                // PageResultDTO<GameDTO> gamelist = gameService.getSearch(requestDTO);
+                List<MovieDTO> movielist = movieService.getRandom(10);
+                model.addAttribute("movies", movielist);
+                List<GameDTO> gamelist = gameService.getRandom(6);
+                model.addAttribute("games", gamelist);
 
-        return "index";
-    }
+                return "index";
+        }
 
 }

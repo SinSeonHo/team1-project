@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,10 +35,11 @@ public class Reply {
     private Long rno;
 
     @Column(nullable = false)
+    @Size(max = 200)
     private String text;
 
     @Builder.Default
-    // 댓글의 추천수
+    // 리뷰의 평점
     private int recommend = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -68,5 +70,9 @@ public class Reply {
 
     public void changeText(String text) {
         this.text = text;
+    }
+
+    public void changeRate(int recommend) {
+        this.recommend = recommend;
     }
 }

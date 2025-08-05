@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,21 +15,28 @@ import lombok.Setter;
 @Setter
 public class MovieDTO {
 
-    private String mid;
-    private String movieCd;
-    private String title;
-    private String actors;
-    private String director;
-    private String openDate;
-    private int rank;
-    private String genres;
-    private int showTm;
-    private String nationNm;
-    private String gradeNm;
-    private String synopsis;
+    private String mid; // 영화코드
+    private String movieCd; // KOBIS 고유 코드
+    private String title; // 영화명
+    private String actors; // 배우들
+    private String director; // 감독
+    private String openDate; // 개봉일
+    private int rank; // 순위
+    private String genres; // 장르
+    private String showTm; // 상영시간
+    private String nationNm; // 제작국가
+    private String gradeNm; // 이용등급
+    private String synopsis; // 줄거리
 
     private int followcnt;
-    private String imgUrl;
+    private boolean follow;
+
+    private String imgUrl; // 이미지경로
+
     private int replycnt;
+    private List<ReplyDTO> Replies; // 댓글
+
+    // @Builder.Default
+    // private List<Image> movieGenres = new ArrayList<>();
 
 }

@@ -23,11 +23,11 @@ public class GameDTO {
     private int rank;
     private String genres;
 
-    private int originalPrice;
-    private int price;
-    private int discountRate;
-    private String publisher;
-    private String ageRating;
+    private String originalPrice; // 할인 전 가격
+    private String price; // 할인 적용된 현재 가격
+    private int discountRate; // 할인율 (예: 20 -> 20%)
+    private String publisher; // 배급사
+    private String ageRating; // 이용연령등급
 
     private int positive;
     private int negative;

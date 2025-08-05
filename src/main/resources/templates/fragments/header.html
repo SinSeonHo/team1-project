@@ -3,15 +3,11 @@
   <header class="header" th:fragment="header">
     <div class="container">
       <div class="row">
-        <div class="col-lg-2">
-          <div class="header__logo">
-            <!-- <a href="./index.html">
-              <img src="img/logo.png" alt="" />
-            </a> -->
-          </div>
+        <div>
+          <div class="header__logo"></div>
         </div>
 
-        <div class="col-lg-8">
+        <div class="col-lg-7 col-sm-4">
           <div class="header__nav">
             <nav class="header__menu mobile-menu">
               <ul>
@@ -19,75 +15,86 @@
                 <li>
                   <!-- <a th:href="@{/api/movies/list}">Movie List<span class="arrow_carrot-down"></span></a> -->
                   <a th:href="@{/api/movies/list}">Movie List</a>
-                  <!-- <ul class="dropdown">
-                    <li><a href="./categories.html">Categories</a></li>
-                    <li><a href="./anime-details.html">Anime Details</a></li>
-                    <li><a href="./anime-watching.html">Anime Watching</a></li>
-                    <li><a href="./blog-details.html">Blog Details</a></li>
-                    <li><a href="./signup.html">Sign Up</a></li>
-                    <li><a href="./login.html">Login</a></li>
-                  </ul> -->
                 </li>
                 <li><a th:href="@{/api/games/list}">Game List</a></li>
-                <!-- <li><a href="#">Webtoon List</a></li> -->
+                <li><a href="#">Chart</a></li>
               </ul>
             </nav>
           </div>
         </div>
-        <div class="col-lg-2">
-          <div class="header__right d-flex align-items-center gap-3">
-            <!-- 로그아웃 버튼 (로그인 상태에서만 보임) -->
-            <form
-              th:if="${#authorization.expr('isAuthenticated()')}"
-              th:action="@{/logout}"
-              method="post"
-              class="m-0 p-0"
-              style="display: inline"
-            >
-              <button type="submit" class="btn btn-outline-primary btn-sm ms-1 mr-2">로그아웃</button>
-            </form>
+        <div class="col-lg-5">
+          <div class="btn__all">
+            <div class="primary-btn d-flex">
+              <!-- 검색창 -->
+              <form
+                action="/api/movies/list"
+                method="get"
+                class="search-box"
+                style="display: flex; gap: 10px; align-items: center"
+              >
+                <select name="content" id="content" onchange="updateCityOptions()">
+                  <option value="m">영화</option>
+                  <option value="g">게임</option>
+                </select>
+                <select name="type" id="type">
+                  <option value="t">제목</option>
+                  <option value="g">장르</option>
+                  <option value="d">감독명</option>
+                  <option value="a">배우명</option>
+                </select>
+                <input type="text" name="keyword" id="search" placeholder="검색어" />
+                <input type="submit" value="검색" />
+              </form>
 
-            <!-- 로그인: 프로필 이미지 -->
-            <a
-              th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl != null}"
-              th:href="@{/user/userProfile(id=${userId})}"
-              class="d-flex align-items-center text-decoration-none"
-            >
-              <img
-                th:src="'/images/view/' + ${profileImageUrl}"
-                alt="프로필"
-                class="rounded-circle border border-primary shadow-sm"
-                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
-              />
-            </a>
+              <!-- 프로필/로그아웃 -->
+              <div class="col-lg-5" style="display: flex; align-items: center; gap: 10px">
+                <!-- 로그아웃 버튼 -->
+                <form
+                  th:if="${#authorization.expr('isAuthenticated()')}"
+                  th:action="@{/logout}"
+                  method="post"
+                  style="display: inline"
+                >
+                  <button type="submit" class="btn btn-outline-primary btn-sm ms-1 mr-2">로그아웃</button>
+                </form>
 
-            <!-- 로그인: 프로필 이미지가 없을 경우, 기본 이미지로 이동 -->
-            <a
-              th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl == null}"
-              th:href="@{/user/userProfile(id=${userId})}"
-              class="d-flex align-items-center text-decoration-none"
-            >
-              <img
-                src="/images/sample.jpg"
-                alt="기본 프로필"
-                class="rounded-circle border border-primary shadow-sm"
-                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
-              />
-            </a>
+                <!-- 로그인: 프로필 이미지 -->
+                <a
+                  th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl != null}"
+                  th:href="@{/user/userProfile(id=${userId})}"
+                >
+                  <img
+                    th:src="'/images/view/' + ${profileImageUrl}"
+                    alt="프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
 
-            <!-- 비로그인: 기본 이미지만 보임 (클릭하면 로그인 페이지로) -->
-            <a
-              th:if="${#authorization.expr('isAnonymous()')}"
-              th:href="@{/user/login}"
-              class="d-flex align-items-center text-decoration-none"
-            >
-              <img
-                src="/images/sample.jpg"
-                alt="기본 프로필"
-                class="rounded-circle border border-primary shadow-sm"
-                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
-              />
-            </a>
+                <!-- 로그인: 기본 이미지 -->
+                <a
+                  th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl == null}"
+                  th:href="@{/user/userProfile(id=${userId})}"
+                >
+                  <img
+                    src="/images/sample.jpg"
+                    alt="기본 프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
+
+                <!-- 비로그인 -->
+                <a th:if="${#authorization.expr('isAnonymous()')}" th:href="@{/user/login}">
+                  <img
+                    src="/images/sample.jpg"
+                    alt="기본 프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

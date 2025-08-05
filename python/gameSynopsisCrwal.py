@@ -54,7 +54,7 @@ for gid, appid, title in games:
         print(f"저장 완료: {title}")
     else:
         print(f"시놉시스 없음 또는 불일치: {title}")
-    time.sleep(1)
+    # time.sleep(1)
 
 cursor.close()
 conn.close()

@@ -5,9 +5,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -45,7 +47,7 @@ public class MovieService {
         importMovies();
     }
 
-    @Scheduled(cron = "00 01 10 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 39 11 * * *") // 매일 오전10:01에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
@@ -54,26 +56,26 @@ public class MovieService {
 
     public void runPythonMovieCrawler() {
         try {
-            log.info("Python 크롤러 실행 시작");
+            System.out.println("Python 영화 크롤러 실행 시작");
 
             // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/movieSynopsisCrwal.py");
+                    "C:/SOURCE/team1-project/python/movieSynopsisCrwal.py");
             Map<String, String> env = pbSynopsis.environment();
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
             int exitCodeSynopsis = processSynopsis.waitFor();
-            log.info("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
+            System.out.println("영화 줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
                 ProcessBuilder pbImage = new ProcessBuilder("python",
-                        "C:/SOURCE/ott/python/movieImageCrwal.py");
+                        "C:/SOURCE/team1-project/python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();
                 int exitCodeImage = processImage.waitFor();
-                log.info("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+                System.out.println("영화 이미지 크롤러 종료. Exit code: " + exitCodeImage);
             } else {
                 System.err.println("줄거리 크롤러가 실패하여 이미지 크롤러를 실행하지 않습니다.");
             }
@@ -230,7 +232,7 @@ public class MovieService {
                                 .director(directorName)
                                 .actors(actorStr)
                                 .genres(genreStr)
-                                .showTm(showTm)
+                                .showTm(convertShowTm(showTm))
                                 .nationNm(nationNm)
                                 .gradeNm(gradeNm)
                                 .synopsis(null) // 초기 줄거리 없음
@@ -252,7 +254,7 @@ public class MovieService {
         Movie movie = movieRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
 
-        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(mid);
 
         Map<String, Object> result = new HashMap<>();
         result.put("movie", movie);
@@ -294,11 +296,27 @@ public class MovieService {
     }
 
     public List<MovieDTO> getRandom(int num) {
-        List<MovieDTO> result;
-        List<Movie> list = movieRepository.findAll();
-        result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(result);
-        return result.subList(0, Math.min(num, result.size()));
+        List<MovieDTO> result = new ArrayList<>();
+        List<Movie> list = movieRepository.findAll(); // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        int countToRetrieve = Math.min(num, list.size());
+        int ran = 0;
+        Set<Integer> eran = new HashSet<>();
+
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
+        // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
+        }
+        return result;
     }
 
     // 영화 삭제
@@ -311,6 +329,15 @@ public class MovieService {
     public Movie updateMovie(Movie movie) {
         log.info("영화정보 수정");
         return movieRepository.save(movie);
+    }
+
+    // 상영시간을 n시간 n분형태로 변환하여 반환
+    private String convertShowTm(Integer minutes) {
+        if (minutes == null || minutes == 0)
+            return "상영시간없음";
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return hrs + "시간 " + mins + "분";
     }
 
     public MovieDTO entityToDto(Movie movie) {
@@ -327,10 +354,16 @@ public class MovieService {
                 .nationNm(movie.getNationNm())
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
-                .imgUrl(movie.getImage().getImgName())
+                .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
                 .replycnt(movie.getReplies().size())
                 .followcnt(movie.getFollowcnt())
                 .build();
+
+        if (movie.getImage() == null) {
+            dto.setImgUrl("");
+        } else {
+            dto.setImgUrl(movie.getImage().getImgName());
+        }
         return dto;
     }
 }

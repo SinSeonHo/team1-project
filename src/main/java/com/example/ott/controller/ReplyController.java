@@ -1,9 +1,11 @@
 package com.example.ott.controller;
 
-import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,23 +27,27 @@ public class ReplyController {
     private final ReplyService replyService;
     private final UserService userService;
 
-    @GetMapping("/movie/{mid}")
-    public List<ReplyDTO> getMovieReplies(@PathVariable String mid) {
-        return replyService.movieReplies(mid);
-    }
-
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
         return replyService.updateReply(dto);
     }
 
     @PostMapping("/new")
-    public void postMovie(@RequestBody ReplyDTO dto) {
+    public ResponseEntity<Map<String, String>> postMovie(@RequestBody ReplyDTO dto) {
+        log.info("댓글 추가 요청: {}", dto);
         User user = userService.getUser(dto.getReplyer());
-        dto.setReplyerNickname(user.getNickname());
-        replyService.insert(dto);
-
-        return;
+        dto.setReplyerNickname(user.getNickname()); // nickname 설정
+        int result = replyService.insert(dto);
+        switch (result) {
+            case 0:
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "입력되었습니다."));
+            case 1:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "컨텐츠를 찾을 수 없습니다."));
+            case 2:
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "이미 리뷰를 작성했습니다."));
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "오류"));
+        }
     }
 
     @DeleteMapping("/{id}")

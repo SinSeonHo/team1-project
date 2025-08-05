@@ -1,58 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-  
-<th:block layout:fragment="css">
-
-    <style>
-      /* 강제 덮어쓰기 */
-      .anime__details__widget ul li span {
-        width: auto !important;
-        display: inline !important;
-        color: inherit !important;
-      }
-      .anime__details__widget li {
-        list-style: none;
-        font-size: 16px;
-        line-height: 32px;
-        color: #ffffff;
-        font-weight: 400;
-      }
-
-      .anime__details__widget li span:first-child {
-        color: #b7b7b7; /* 라벨(왼쪽) 색상 */
-        font-weight: 600;
-        margin-right: 10px;
-        display: inline-block;
-        min-width: 100px; /* 라벨 길이 통일 */
-      }
-
-      .anime__details__widget li span:last-child {
-        color: #ffffff; /* 값(오른쪽) 색상 */
-        font-weight: 400;
-      }
-
-      .synopsis {
-        display: block; /* span은 인라인 요소이므로 block으로 전환 */
-        white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
-        word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
-        line-height: 1.5;
-        color: #ffffff !important; /* 글자색 흰색 */
-        font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
-      }
-
-      .synopsis_t {
-        font-weight: 600;
-      }
-
-      
-    </style>
-<!-- <link rel="stylesheet" th:href="@{/css/abc.css}"> -->
-    </th:block>
-  
   <body>
     <div layout:fragment="content">
+      <!-- 자식 템플릿 전용 스타일 (head 밖, content 내부 최상단에 둠) -->
+      <style>
+        /* 강제 덮어쓰기 */
+        .anime__details__widget ul li span {
+          width: auto !important;
+          display: inline !important;
+          color: inherit !important;
+        }
+        .anime__details__widget li {
+          list-style: none;
+          font-size: 16px;
+          line-height: 32px;
+          color: #ffffff;
+          font-weight: 400;
+        }
+
+        .anime__details__widget li span:first-child {
+          color: #b7b7b7; /* 라벨(왼쪽) 색상 */
+          font-weight: 600;
+          margin-right: 10px;
+          display: inline-block;
+          min-width: 100px; /* 라벨 길이 통일 */
+        }
+
+        .anime__details__widget li span:last-child {
+          color: #ffffff; /* 값(오른쪽) 색상 */
+          font-weight: 400;
+        }
+      </style>
+
       <div class="gradient-bg">
-        <!-- Breadcrumb Begin -->
+        <!-- 영화상세페이지 -->
         <div class="breadcrumb-option">
           <div class="container">
             <div class="col-lg-12">
@@ -60,12 +41,12 @@
               <a href="#">></a>
               <a th:href="@{/api/movies/list}">MovieList</a>
               <a href="#">></a>
-              <a href="#">MovieInfo</a>
+              <a href="#">content</a>
             </div>
           </div>
         </div>
-        <!-- Anime Section Begin -->
 
+        <!-- 상세정보 -->
         <section class="anime-details spad">
           <div class="container">
             <div class="anime__details__content">
@@ -78,9 +59,6 @@
                     loading="lazy"
                     class="anime__details__pic"
                   />
-                    <!-- <div class="comment"><i class="fa fa-comments"></i> 11</div>
-                    <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
-          
                 </div>
                 <div class="col-lg-9">
                   <div class="anime__details__text">
@@ -89,161 +67,79 @@
                       <span th:text="'감독 : ' + ${movieInfo.director}"></span>
                       <span th:text="'배우 : ' + ${movieInfo.actors}"></span>
                       <br />
-                      <h4 th:text="시놉시스" class="synopsis_t"></h4>
+                      <h4 text="시놉시스" class="synopsis_t"></h4>
                       <span th:text="${movieInfo.synopsis}" class="synopsis"></span>
                     </div>
-                    <!-- 별점 추후 적용 -->
-                    <!-- <div class="anime__details__rating">
-                      <div class="rating">
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star"></i></a>
-                        <a href="#"><i class="fa fa-star-half-o"></i></a>
-                      </div>
-                      <span>1.029 Votes</span>
-                    </div> -->
-                    <!-- <p>
-                      Every human inhabiting the world of Alcia is branded by a “Count” or a number written on their body.
-                      For Hina’s mother, her total drops to 0 and she’s pulled into the Abyss, never to be seen again. But
-                      her mother’s last words send Hina on a quest to find a legendary hero from the Waste War - the
-                      fabled Ace!
-                    </p> -->
+
                     <div class="anime__details__widget">
                       <div class="row">
                         <div class="col-lg-6 col-md-6">
                           <ul>
-                            <!-- <li><span>감독</span> <span th:text="${movieInfo.director}"></span></li>
-                            <li><span>배우 및 성우</span> <span th:text="${movieInfo.actors}"></span></li> -->
                             <li><span>개봉일</span> <span th:text="${movieInfo.openDate}"></span></li>
                             <li><span>장르</span><span th:text="${movieInfo.genres}"></span></li>
-                            <li><span>상영시간</span><span th:text="${showTm}"></span></li>
+                            <li><span>상영시간</span><span th:text="${movieInfo.showTm}"></span></li>
                             <li><span>적정관람등급</span><span th:text="${movieInfo.gradeNm}"></span></li>
                             <li><span>개봉국가</span><span th:text="${movieInfo.nationNm}"></span></li>
                           </ul>
                         </div>
-                        <!-- <div class="col-lg-6 col-md-6">
-                          <ul>
-                            <li><span>Scores:</span> 7.31 / 1,515</li>
-                            <li><span>Rating:</span> 8.5 / 161 times</li>
-                            <li><span>Duration:</span> 24 min/ep</li>
-                            <li><span>Quality:</span> HD</li>
-                            <li><span>Views:</span> 131,541</li>
-                          </ul>
-                        </div> -->
                       </div>
                     </div>
+
                     <div class="anime__details__btn" th:if="${#authentication.name !='anonymousUser'}">
-                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌
-                        로그인한 상태에서만 보여짐 -->
-                      <!-- <button class="follow-btn follow" th:data-mid="${movieInfo.mid}" onclick="toggleFavorite(this)">Follow</button> -->
                       <button
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
                         th:data-mid="${movieInfo.mid}"
-                        th:text="${isFollowed} ? 'Followed' : 'Follow'">
-                      </button>
-                      <!-- <a href="#" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a> -->
+                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
+                      ></button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="center-line"></div>
-            <!-- <div class="row">
-              <div class="col-lg-8 col-md-8">
-                <div class="anime__details__review">
-                  <div class="section-title">
-                    <h5>Reviews</h5>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-1.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-2.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                      <p>Finally it came out ages ago</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-3.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                      <p>Where is the episode 15 ? Slow update! Tch</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-4.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                      <p>whachikan Just noticed that someone categorized this as belonging to the genre "demons" LOL</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-5.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                      <p>Finally it came out ages ago</p>
-                    </div>
-                  </div>
-                  <div class="anime__review__item">
-                    <div class="anime__review__item__pic">
-                      <img src="img/anime/review-6.jpg" alt="" />
-                    </div>
-                    <div class="anime__review__item__text">
-                      <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                      <p>Where is the episode 15 ? Slow update! Tch</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="anime__details__form">
-                  <div class="section-title">
-                    <h5>Your Comment</h5>
-                  </div>
-                  <form action="#">
-                    <textarea placeholder="Your Comment"></textarea>
-                    <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
-                  </form>
-                </div>
+
+            <!-- 스크린샷 이미지 리스트 -->
+            <div class="slider-container" id="sliderContainer">
+              <div class="slider" id="slider">
+                <img
+                  th:each="url : ${screenshotUrls}"
+                  th:src="${url}"
+                  alt="스크린샷 이미지"
+                  style="border-radius: 10px"
+                />
               </div>
-            </div> -->
+            </div>
+
+            <!-- 모달창 -->
+            <div id="modal" class="modal" style="display: none">
+              <span id="modalClose" class="modal-close">&times;</span>
+              <button id="prevBtn" class="nav-btn prev-btn">&#10094;</button>
+              <img id="modalImg" src="" alt="확대 이미지" />
+              <button id="nextBtn" class="nav-btn next-btn">&#10095;</button>
+            </div>
+
+            <div class="center-line"></div>
           </div>
+          <!-- .container -->
         </section>
 
+        <!-- 댓글 영역 -->
         <div class="col-lg-6 mx-auto">
           <div class="anime__details__review">
             <div class="section-title">
               <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
             </div>
-            <div class="p-4"></div>
             <!-- 댓글 시작 -->
             <div th:each="reply : ${replies}" class="anime__review__item">
-              <div class="anime__review__item__pic" th:classappend="${reply.ref != null} ? 're-reply'">
-                <!-- 로그인: 프로필 이미지 프로필 이미지가 없을 경우, 기본 이미지출력 -->
-            
-              <img
-                th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' :'/images/view/' + ${reply.thumbnailPath}"
-                alt="프로필"
-                class="rounded-circle border border-primary shadow-sm"
-                style="width: 40px; height: 40px; object-fit: cover; background: #eee"
-              />
-       
-
+              <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
+              <div class="anime__review__item__pic">
+                <!-- 로그인: 프로필 이미지 / 없을 경우 기본 이미지 -->
+                <img
+                  th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' : '/images/view/' + ${reply.thumbnailPath}"
+                  alt="프로필"
+                  class="rounded-circle border border-primary shadow-sm"
+                  style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                />
               </div>
               <div
                 class="anime__review__item__text reply"
@@ -251,24 +147,51 @@
                 th:data-replyer="${reply.replyer}"
                 th:data-replyerNickname="${reply.replyerNickname}"
                 th:data-text="${reply.text}"
-                th:data-id="${reply.mid}"
+                th:data-mid="${reply.id}"
                 th:data-mention="${reply.mention}"
                 th:data-ref="${reply.ref}"
+                th:data-rate="${reply.rate}"
               >
                 <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
                 <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
-                <span class="text-secondary" th:text="${reply.createdDate}"> 작성자 - 1 Hour ago</span>
-                <button type="button" class="delete-btn btn btn-secondary btn-sm" th:if="${#authentication.name == reply.replyer}" th:data-rno="${reply.rno}">x</button>
-                <button type="button" class="update-btn btn btn-secondary btn-sm" th:if="${#authentication.name == reply.replyer}" th:data-rno="${reply.rno}">
+                <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
+                <button
+                  type="button"
+                  class="delete-btn btn btn-secondary btn-sm"
+                  th:if="${#authentication.name == reply.replyer}"
+                  th:data-rno="${reply.rno}"
+                >
+                  x
+                </button>
+                <button
+                  type="button"
+                  class="update-btn btn btn-secondary btn-sm"
+                  th:if="${#authentication.name == reply.replyer}"
+                  th:data-rno="${reply.rno}"
+                >
                   수정
                 </button>
-                <button type="button" class="mention-btn btn btn-secondary btn-sm" th:if="${#authentication.name != 'anonymousUser'}" th:data-rno="${reply.rno}">
+                <button
+                  type="button"
+                  class="mention-btn btn btn-secondary btn-sm"
+                  th:if="${#authentication.name != 'anonymousUser'}"
+                  th:data-rno="${reply.rno}"
+                >
                   대댓글
                 </button>
+                <!-- 리뷰는 별점 표시 -->
+                <span>
+                  <i
+                    th:if="${reply.ref == null}"
+                    th:each="idx : ${#numbers.sequence(0, 4)}"
+                    class="fa-star"
+                    th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
+                  ></i>
+                </span>
                 <p th:text="${reply.text}">댓글 텍스트</p>
               </div>
             </div>
-            <!-- 댓글 리스트 끝-->
+            <!-- 댓글 리스트 끝 -->
           </div>
 
           <!-- 댓글 작성 폼 -->
@@ -276,29 +199,52 @@
             <div class="section-title">
               <h5>댓글 작성</h5>
             </div>
-            <span class="mention text-light"></span>
+            <span class="mention badge badge-secondary"></span>
             <form id="replyForm" method="post">
-              <input type="hidden" name="mid" th:value="${movieInfo.mid}" />
+              <!-- 별점 -->
+              <div class="anime__details__rating">
+                <input type="hidden" name="rate" />
+                <span class="rating" name="rate">
+                  <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
+                </span>
+                <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
+              </div>
+
+              <input type="hidden" name="id" th:value="${movieInfo.mid}" />
               <input type="hidden" name="rno" />
               <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
-              <textarea name="text" placeholder="Your Comment"></textarea>
-              <button class="btn btn-insert" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+              <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
+              <span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자
+
+              <div th:if="${#authentication.name != 'anonymousUser'}">
+                <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
+                <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+              </div>
+
+              <div th:if="${#authentication.name == 'anonymousUser'}">
+                <button class="btn btn-sm">로그인</button>
+              </div>
             </form>
           </div>
           <!-- 댓글 작성 폼 끝 -->
         </div>
+        <!-- col-lg-6 mx-auto -->
 
-      <script>
-        const mid = "[[${movieInfo.mid}]]";
-        const csrf = "[[${_csrf.token}]]";
-      </script>
-      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      <script th:src="@{/js/reply.js}"></script>
-      <script th:src="@{/js/followbtn.js}"></script>
+        <!-- 스크립트 -->
+        <script th:src="@{/js/reply.js}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+          const id = "[[${movieInfo.mid}]]";
+          const csrf = "[[${_csrf.token}]]";
+        </script>
+        <script th:src="@{/js/followbtn.js}"></script>
+        <script th:src="@{/js/imgSlider.js}"></script>
+        <script th:src="@{/js/imgModal.js}"></script>
+      </div>
+      <!-- gradient-bg -->
     </div>
-    <!-- layout:fragment="content" 닫기 -->
+    <!-- layout:fragment -->
   </body>
 </html>

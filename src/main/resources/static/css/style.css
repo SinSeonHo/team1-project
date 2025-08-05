@@ -749,7 +749,7 @@ ol {
   background-position: center;
   background-repeat: no-repeat;
 
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .product__item__image {
@@ -777,12 +777,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 10px;
-  bottom: 1px;
+  left: 0%;
+  bottom: -23px;
 }
 
 /* 게임 팔로우 수 */
@@ -791,12 +792,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 10px;
-  bottom: 1px;
+  left: 0%;
+  bottom: -23px;
 }
 
 /* 영화댓글 수 */
@@ -805,12 +807,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 175px;
-  bottom: 1px;
+  right: 0%;
+  bottom: -23px;
 }
 
 /* 게임댓글 수 */
@@ -819,12 +822,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 80%;
-  bottom: 1px;
+  right: 0%;
+  bottom: -23px;
 }
 
 .product__item__text {
@@ -2535,4 +2539,89 @@ ol {
 
 .header__right {
   white-space: nowrap;
+}
+
+/* 0801 추가 영화 시놉시스, 공통 슬라이더, 공통 모달 */
+.synopsis {
+  display: block; /* span은 인라인 요소이므로 block으로 전환 */
+  white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
+  word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
+  line-height: 1.5;
+  color: #ffffff !important; /* 글자색 흰색 */
+  font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
+}
+
+.synopsis_t {
+  font-weight: 600;
+}
+
+/* 0730 슬라이더 임시테스트 */
+.slider-container {
+  width: 100%;
+  overflow-x: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.slider {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.slider img {
+  width: 300px;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+}
+/* 모달추가 0730 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+}
+
+.prev-btn {
+  left: 20px;
+}
+
+.next-btn {
+  right: 20px;
 }
