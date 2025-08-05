@@ -126,21 +126,8 @@ public class GameService {
     public void importGames() {
         String apiUrl1 = "https://steamspy.com/api.php?request=top100owned";
 
-        // double krwToUsdRate = 1300.0; // 초기값 (예비용)
-
         try {
             RestTemplate restTemplate = new RestTemplate();
-
-            // 1. 환율 API 호출 (KRW -> USD)
-            // String rateApiUrl =
-            // "https://api.exchangerate.host/latest?base=KRW&symbols=USD";
-            // ResponseEntity<String> rateResponse = restTemplate.getForEntity(rateApiUrl,
-            // String.class);
-            // if (rateResponse.getStatusCode().is2xxSuccessful()) {
-            // ObjectMapper mapper = new ObjectMapper();
-            // JsonNode rateRoot = mapper.readTree(rateResponse.getBody());
-            // krwToUsdRate = rateRoot.path("rates").path("USD").asDouble(krwToUsdRate);
-            // }
 
             // 2. SteamSpy API 호출
             ResponseEntity<String> response = restTemplate.getForEntity(apiUrl1, String.class);
