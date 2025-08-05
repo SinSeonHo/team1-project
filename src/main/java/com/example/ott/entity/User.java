@@ -8,8 +8,8 @@ import org.springframework.data.annotation.CreatedDate;
 
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
@@ -17,6 +17,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,10 +26,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@ToString
+@ToString(exclude = { "replies", "image" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -41,11 +41,12 @@ public class User {
     @Id
     private String id;
 
-    private String name; // 실명
+    @Setter
+    private String name;
 
     @Setter
     @Column(unique = true)
-    private String nickname; // 별명
+    private String nickname;
 
     @Setter
     @Column(unique = true)
@@ -78,17 +79,16 @@ public class User {
     @Setter
     private String grade;
 
-    // private Grade grade? : 마일리지 등급에 따라 레벨 같은 거 꾸며주기(뱃지)
-
     @Setter
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Image image;
 
-    // @OneToOne(mappedBy = "user")
-    // private Favorites favorites;
+    @OneToMany(mappedBy = "replyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Reply> replies;
 
     public void changeAccountInfo(String id, String password) {
         this.id = id;
         this.password = password;
     }
+
 }

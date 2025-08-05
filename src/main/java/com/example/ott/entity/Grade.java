@@ -9,13 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = { "movie", "member", "webtoon", "game" })
+
 @Getter
 public class Grade {
 
@@ -27,11 +26,4 @@ public class Grade {
     @Column(nullable = false)
     private int rating;
 
-    // @JoinColumn(name = "novel_id")
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Novel novel;
-
-    // @JoinColumn(name = "member_id")
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // private Member member;
 }

@@ -12,13 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 @Builder
 public class SecurityUserDTO {
 
@@ -41,6 +40,4 @@ public class SecurityUserDTO {
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
-
-    // private Struct struct;
 }

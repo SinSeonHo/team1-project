@@ -2,67 +2,110 @@ package com.example.ott.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@ToString(exclude = { "images", "replies" })
+@ToString(exclude = { "image", "replies" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Builder
 public class Game extends BaseEntity {
 
     @Id
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String gid; // 게임코드 ex: g_1 / g_2
+
+    private String gid;
 
     @Column(nullable = false)
-    private String appid; // steam 고유 코드
+    private String appid;
     @Column(nullable = false)
-    private String title; // 게임명
-    private String developer; // 개발사
+    private String title;
+    private String developer;
 
-    private int ccu; // 동시접속자 수
+    private int ccu;
 
-    private String platform; // 플랫폼
+    private String platform;
 
-    private int price; // 가격
-    private int rank; // 순위
+    private int rank;
 
-    private String genres; // 장르
+    private String genres;
 
-    @OneToOne
-    @JoinColumn(name = "image_id")
+    private String originalPrice; // 할인 전 가격
+    private String price; // 할인 적용된 현재 가격
+    private int discountRate; // 할인율 (예: 20 -> 20%)
+    private String publisher; // 배급사
+    private String ageRating; // 이용연령등급
+
+    private int positive;
+    private int negative;
+    @Column(length = 10000)
+    private String synopsis;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
+    private List<Reply> replies = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "image_id", nullable = true)
     private Image image;
-    // @Builder.Default
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    // private List<Reply> replies = new ArrayList<>(); // 댓글
 
-    // @Builder.Default
-    // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
-    // private List<Image> images = new ArrayList<>(); // 이미지 리스트로 관리필요 추후 이미지 작성 후
-    // 연동예정
+    @Builder.Default
+    private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "content_id")
+    private Content content;
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
 
-    public void setPrice(int price) {
+    public void setFollowcnt(int followcnt) {
+        this.followcnt = followcnt;
+    }
+
+    public void setPrice(String price) {
         this.price = price;
+    }
+
+    public void setOriginalPrice(String originalPrice) {
+        this.originalPrice = originalPrice;
+    }
+
+    public void setDiscountRate(int discountRate) {
+        this.discountRate = discountRate;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setAgeRating(String ageRating) {
+        this.ageRating = ageRating;
+    }
+
+    public void setPositive(int positive) {
+        this.positive = positive;
+    }
+
+    public void setNegative(int negative) {
+        this.negative = negative;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
     }
 
     public void setRank(int rank) {
@@ -81,4 +124,8 @@ public class Game extends BaseEntity {
         this.genres = genres;
     }
 
+    public void setImage(Image image) {
+        this.image = image;
+
+    }
 }

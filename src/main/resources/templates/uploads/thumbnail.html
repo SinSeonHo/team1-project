@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <title>프로필 업로드</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>프로필 업로드</h1>
-    <form method="post" th:action="@{/thumbnail/upload}" enctype="multipart/form-data">
-        <label for="file">프로필 이미지 파일 업로드:</label>
-        <input type="file" name="file" id="file" accept="image/*" required />
-        <button type="submit">프로필 업로드</button>
+    <form method="post" th:action="@{/thumbnail/image}" enctype="multipart/form-data">
+      <label for="file">프로필 이미지 파일 업로드:</label>
+      <input type="file" name="file" id="file" accept="image/*" required />
+      <button type="submit">프로필 업로드</button>
     </form>
 
     <div th:if="${message}">
-        <p style="color: green;" th:text="${message}"></p>
+      <p style="color: green" th:text="${message}"></p>
     </div>
 
     <div th:if="${error}">
-        <p style="color: red;" th:text="${error}"></p>
+      <p style="color: red" th:text="${error}"></p>
     </div>
 
-    <div th:if="${uploadedFilename}"
-        th:with="fileName=${uploadedFilename.substring(uploadedFilename.lastIndexOf('/') + 1)}">
-        <h3>업로드한 이미지 미리보기</h3>
-        <img th:src="@{/thumbnail/view/{filename}(filename=${fileName})}" alt="Uploaded Thumbnail"
-            style="max-width: 300px; max-height: 300px;" />
+    <div
+      th:if="${uploadedFilename}"
+      th:with="fileName=${uploadedFilename.substring(uploadedFilename.lastIndexOf('/') + 1)}"
+    >
+      <h3>업로드한 이미지 미리보기</h3>
+      <img
+        th:src="@{/thumbnail/view/{filename}(filename=${fileName})}"
+        alt="Uploaded Thumbnail"
+        style="max-width: 300px; max-height: 300px"
+      />
     </div>
-</body>
-
+  </body>
 </html>

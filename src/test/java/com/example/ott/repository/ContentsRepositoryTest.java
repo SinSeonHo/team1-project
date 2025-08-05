@@ -7,8 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.ott.dto.ContentsDTO;
+import com.example.ott.dto.ContentRecommendation;
+import com.example.ott.entity.ContentsGenre;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.service.ContentsService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +27,15 @@ public class ContentsRepositoryTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private ContentsRepository contentsRepository;
+
+    @Autowired
+    private ContentsService contentsService;
+
+    @Autowired
+    private UserGenrePreferenceRepository userGenrePreferenceRepository;
 
     // 영화 1개 mid로 조회하기
     @Transactional
@@ -55,4 +69,46 @@ public class ContentsRepositoryTest {
         }
     }
 
+    @Test
+    public void addContentsTest() {
+        // 영화 -> 콘텐츠 테이블에 추가
+        List<Movie> movies = movieRepository.findAll();
+        for (Movie movie : movies) {
+            ContentsDTO contentsDTO = ContentsDTO.builder()
+                    .contentsId(movie.getMid())
+                    .title(movie.getTitle())
+                    .contentsType(ContentsType.MOVIE)
+                    .genres(movie.getGenres())
+                    .build();
+            contentsService.insertContents(contentsDTO);
+        }
+
+        // 게임 -> 콘텐츠 테이블에 추가
+        List<Game> games = gameRepository.findAll();
+        games.forEach(game -> {
+            ContentsDTO contentsDTO = ContentsDTO.builder()
+                    .contentsId(game.getGid())
+                    .title(game.getTitle())
+                    .contentsType(ContentsType.GAME)
+                    .genres(game.getGenres())
+                    .build();
+            contentsService.insertContents(contentsDTO);
+
+        });
+
+    }
+
+    @Test
+    public void recommendTest() {
+        List<ContentRecommendation> recommendedContents = userGenrePreferenceRepository
+                .recommendByUserPreference("admin");
+        recommendedContents.forEach(recommendedContent -> {
+
+            if (recommendedContent.getScore() > 1) {
+                log.info("추천 콘텐츠 아이디 : {} \t 해당 콘텐츠의 점수 : {} \n",
+                        recommendedContent.getContentsId(), recommendedContent.getScore());
+            }
+        });
+
+    }
 }

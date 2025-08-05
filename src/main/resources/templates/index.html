@@ -1,142 +1,93 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
-<main layout:fragment="content">
-  <section class="hero">
-    <div class="container">
-      <div class="hero__slider owl-carousel">
-        <div class="hero__items set-bg" data-setbg="img/hero/hero-1.jpg">
-          <div class="row">
-            <div class="col-lg-6">
-              <div class="hero__text">
-                <div class="label">Adventure</div>
-                <h2>Fate / Stay Night: Unlimited Blade Works</h2>
-                <p>After 30 days of travel across the world...</p>
-                <a href="#"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- Hero Section End -->
+  <th:block layout:fragment="css">
+    <style>
+      /* 필요하면 스타일 추가 가능 */
+    </style>
+  </th:block>
+  <body layout:fragment="content">
+    <!-- Hero Section (주석 처리된 상태) -->
+    <!--
+    <section class="hero">
+      <div class="container"></div>
+    </section>
+    -->
+    <!-- Hero Section End -->
 
-  <!-- Product Section Begin -->
-  <section class="product spad">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8">
+    <!-- Product Section Begin -->
+    <section class="product spad">
+      <div class="container">
+        <div class="row">
           <div class="trending__product">
-            <div class="row">
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <div class="section-title">
-                  <h4>영화 인기순위</h4>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="btn__all">
-                  <a href="./ssh_contents/movieList.html" class="primary-btn">영화 인기순위 TOP100 <span class=""></span></a>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-4 col-md-6 col-sm-6">
-                <div class="product__item">
-                  <div class="view"></div>
-                </div>
-                <div class="product__item__text">
-                  <h5>
-                    <a href="#">영화1</a>
-                  </h5>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <div class="section-title">
-                  <h4>게임 인기순위</h4>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="btn__all">
-                  <a href="./ssh_contents/gameList.html" class="primary-btn">게임 인기순위 TOP100 <span class=""></span></a>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-4 col-md-6 col-sm-6">
-                <div class="product__item">
-                  <div class="view"></div>
-                </div>
-                <div class="product__item__text">
-                  <h5>
-                    <a href="#">게임1</a>
-                  </h5>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-8 col-md-8 col-sm-8">
-                <div class="section-title">
-                  <h4>웹툰 인기순위</h4>
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4">
-                <div class="btn__all">
-                  <a href="#" class="primary-btn">웹툰 인기순위 TOP100 <span class=""></span></a>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-4 col-md-6 col-sm-6">
-                <div class="product__item">
-                  <div class="view"></div>
-                </div>
-                <div class="product__item__text">
-                  <h5>
-                    <a href="#">웹툰1</a>
-                  </h5>
-                </div>
-              </div>
-            </div>
+            <div class="row"></div>
           </div>
-        </div>
-        <div class="col-lg-4 col-md-6 col-sm-8 top_right">
-          <div class="product__sidebar">
-            <div class="product__sidebar__view">
-              <div class="section-title">
-                <h5>인기순위</h5>
+
+          <div class="center-line"></div>
+
+          <div class="popular__product">
+            <div class="row">
+              <div class="col-lg-8 col-md-8 col-sm-8">
+                <div class="section-title">
+                  <h4>추천영화</h4>
+                </div>
               </div>
-              <ul class="filter__controls">
-                <li data-filter="*" class="active">일일</li>
-                <li data-filter=".week">주간</li>
-                <li data-filter=".month">월간</li>
-              </ul>
-            </div>
-            <div class="product__sidebar__comment">
-              <div class="section-title">
-                <h5>새로 나온 영화</h5>
-                <ul>
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                </ul>
+
+              <!-- 영화 슬라이더: sliderContainerMovie / sliderMovie 로 클래스명 구분 -->
+              <div class="sliderContainerMovie" style="overflow-x: hidden; white-space: nowrap">
+                <div class="sliderMovie" style="display: inline-block">
+                  <div th:each="movie : ${movies}" style="display: inline-block; margin-right: 10px">
+                    <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                      <img
+                        th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
+                        onerror="this.onerror=null; this.src='/images/sample.png';"
+                        alt="영화 이미지"
+                        loading="lazy"
+                        style="width: 280px; height: 400px; object-fit: cover; display: block; border-radius: 10px"
+                      />
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="product__sidebar__comment">
-              <div class="section-title">
-                <h5>신작 게임</h5>
-                <ul>
-                  <li></li>
-                  <li></li>
-                  <li></li>
-                </ul>
+
+            <br /><br /><br /><br /><br /><br />
+
+            <div class="center-line"></div>
+
+            <div class="popular__product">
+              <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-8">
+                  <div class="section-title">
+                    <h4>추천게임</h4>
+                  </div>
+                </div>
+
+                <!-- 게임 슬라이더: sliderContainerGame / sliderGame 로 클래스명 구분 -->
+                <div class="sliderContainerGame" style="overflow-x: hidden; white-space: nowrap; margin-top: 20px">
+                  <div class="sliderGame" style="display: inline-block">
+                    <div th:each="game : ${games}" style="display: inline-block; margin-right: 10px">
+                      <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
+                        <img
+                          th:src="@{'/images/gameimages/' + ${game.imgUrl}}"
+                          onerror="this.onerror=null; this.src='/images/sample.png';"
+                          alt="게임 이미지"
+                          loading="lazy"
+                          style="width: 500px; height: 300px; object-fit: cover; display: block; border-radius: 10px"
+                        />
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-  </section>
-</main>
+    </section>
 
+    <th:block layout:fragment="script">
+      <!-- 개별 페이지 스크립트 -->
+      <script th:src="@{/js/imgSlider.js}"></script>
+    </th:block>
+  </body>
 </html>

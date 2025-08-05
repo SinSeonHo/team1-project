@@ -1,7 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="title"><title>이미 가입된 소셜 계정</title></th:block>
+  <th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/error.css}">
+  </th:block>
   <main layout:fragment="content">
-    <h1>에러가 났어요~</h1>
-    <a th:href="@{/}">돌아가기</a>
+    <div class="card error-card text-center p-4">
+      <div class="error-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <h3 class="mb-3">이미 등록된 소셜 계정입니다</h3>
+      <p class="mb-4 text-white">
+        이미 존재하는 소셜 계정입니다..<br />
+        <span class="fw-bold">로그인</span> 또는 다른 소셜 계정을 이용해 주세요.
+      </p>
+      <a th:href="@{/}" class="btn btn-primary mt-2">홈 화면으로 돌아가기</a>
+    </div>
   </main>
+  
 </html>

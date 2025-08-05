@@ -1,18 +1,13 @@
 package com.example.ott.dto;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.example.ott.entity.Image;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,20 +23,20 @@ public class MovieDTO {
     private String openDate; // 개봉일
     private int rank; // 순위
     private String genres; // 장르
-    private int showTm; // 상영시간
+    private String showTm; // 상영시간
     private String nationNm; // 제작국가
     private String gradeNm; // 이용등급
     private String synopsis; // 줄거리
 
-    private String imgUrl;
+    private int followcnt;
+    private boolean follow;
 
-    // @Builder.Default
-    // private List<Image> movieImages = new ArrayList<>();
+    private String imgUrl; // 이미지경로
+
+    private int replycnt;
+    private List<ReplyDTO> Replies; // 댓글
 
     // @Builder.Default
     // private List<Image> movieGenres = new ArrayList<>();
-
-    // @Builder.Default
-    // private List<Image> movieReplies = new ArrayList<>();
 
 }
