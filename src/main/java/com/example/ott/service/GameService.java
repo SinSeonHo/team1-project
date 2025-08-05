@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +25,10 @@ import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
-import com.example.ott.entity.Game;<<<<<<<HEAD
+import com.example.ott.entity.Game;
 
-=======
 import com.example.ott.entity.Image;
-import com.example.ott.entity.Movie;>>>>>>>4e3 a084fbf419eae9759492b2609d08c624d5da8
+import com.example.ott.entity.Movie;
 import com.example.ott.repository.GameRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;

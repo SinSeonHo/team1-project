@@ -88,8 +88,6 @@ public class GameController {
         model.addAttribute("rating", rating);
         model.addAttribute("screenshotUrls", screenshots);
 
-        log.info("로그확인 {}", model);
-
         return "ott_contents/gameInfo";
     }
 

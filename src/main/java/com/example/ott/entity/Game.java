@@ -5,11 +5,7 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-<<<<<<< HEAD
-
-=======
 import jakarta.persistence.FetchType;
->>>>>>> 4e3a084fbf419eae9759492b2609d08c624d5da8
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -18,17 +14,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-<<<<<<< HEAD
-
-@Entity
-
-=======
 import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @ToString(exclude = { "image", "replies" })
->>>>>>> 4e3a084fbf419eae9759492b2609d08c624d5da8
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -54,19 +44,11 @@ public class Game extends BaseEntity {
 
     private String genres;
 
-<<<<<<< HEAD
-    private int originalPrice;
-    private int price;
-    private int discountRate;
-    private String publisher;
-    private String ageRating;
-=======
     private String originalPrice; // 할인 전 가격
     private String price; // 할인 적용된 현재 가격
     private int discountRate; // 할인율 (예: 20 -> 20%)
     private String publisher; // 배급사
     private String ageRating; // 이용연령등급
->>>>>>> 4e3a084fbf419eae9759492b2609d08c624d5da8
 
     private int positive;
     private int negative;
@@ -81,9 +63,6 @@ public class Game extends BaseEntity {
     private Image image;
 
     @Builder.Default
-<<<<<<< HEAD
-    private int followcnt = 0;
-=======
     private int followcnt = 0; // 해당 컨텐츠에대한 팔로워 수
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -92,7 +71,6 @@ public class Game extends BaseEntity {
     // @Builder.Default
     // @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     // private List<Genre> genres = new ArrayList<>(); // 컨텐츠별 장르
->>>>>>> 4e3a084fbf419eae9759492b2609d08c624d5da8
 
     public void setFollowcnt(int followcnt) {
         this.followcnt = followcnt;

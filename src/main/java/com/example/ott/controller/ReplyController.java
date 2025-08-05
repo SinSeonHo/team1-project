@@ -34,7 +34,7 @@ public class ReplyController {
 
     @PostMapping("/new")
     public ResponseEntity<Map<String, String>> postMovie(@RequestBody ReplyDTO dto) {
-        log.info("댓글 추가 요청: {}", dto);
+
         User user = userService.getUser(dto.getReplyer());
         dto.setReplyerNickname(user.getNickname()); // nickname 설정
         int result = replyService.insert(dto);
