@@ -34,7 +34,8 @@ public class SecurityConfig {
                 // localhost:8080/auth 를 제외한 모든 경로 인증 확인
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**")
+                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
+                                                                "/user/admin")
                                                 .permitAll()
                                                 .anyRequest().permitAll());
 
@@ -46,6 +47,14 @@ public class SecurityConfig {
                                                 .defaultSuccessUrl("/")
                                                 .failureUrl("/user/login?error=true")
                                                 .permitAll())
+
+                                // admin 로그인
+                                .formLogin(login -> login
+                                                .loginPage("/user/login")
+                                                .defaultSuccessUrl("/")
+                                                .failureUrl("/user/login?error=true")
+                                                .permitAll())
+
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
