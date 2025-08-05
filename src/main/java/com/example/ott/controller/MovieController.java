@@ -97,13 +97,4 @@ public class MovieController {
         return "ott_contents/movieInfo";
     }
 
-    // db상에 int형태로 저장된 상영시간을 n시간 n분형태로 변환하여 반환
-    private String convertShowTm(Integer minutes) {
-        if (minutes == null || minutes == 0)
-            return "상영시간없음";
-        int hrs = minutes / 60;
-        int mins = minutes % 60;
-        return hrs + "시간 " + mins + "분";
-    }
-
 }

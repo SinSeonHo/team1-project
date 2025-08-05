@@ -49,7 +49,7 @@ public class MovieService {
         importMovies();
     }
 
-    @Scheduled(cron = "00 39 11 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 05 10 * * *") // 매일 오전10:05에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
