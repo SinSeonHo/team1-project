@@ -2,13 +2,7 @@ package com.example.ott.service;
 
 import java.util.NoSuchElementException;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.SecurityUserDTO;
@@ -20,7 +14,6 @@ import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -73,10 +66,11 @@ public class UserService {
         user.setNickname(userProfileDTO.getNickname());
         user.setName(userProfileDTO.getName());
 
-        // user.setGenres(userProfileDTO.getGenres());
         userRepository.save(user);
     }
 
+    // TODO reply 먼저
+    // 지워야돼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
@@ -99,13 +93,23 @@ public class UserService {
         return "변경되었습니다";
     }
 
-    public User getUser(String id) {
+    public User getUserById(String id) {
         User user = null;
         try {
             user = userRepository.findById(id).get();
-            log.info("검색한 user 내용 : {}", user);
         } catch (NoSuchElementException e) {
-            log.info("user 정보를 찾을 수 없음");
+            log.error("user 정보를 찾을 수 없음");
+        }
+        return user;
+    }
+
+    public User getUserByNickname(String nickname) {
+        User user = null;
+        try {
+            user = userRepository.findByNickname(nickname);
+
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("해당 유저는 존재하지 않는 유저입니다.");
         }
         return user;
     }
@@ -131,7 +135,6 @@ public class UserService {
         }
         user.setImage(profileImage);
         userRepository.save(user);
-        // 기존 사진 삭제
     }
 
     public void upgradeToAdmin(String userId) {

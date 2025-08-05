@@ -1,9 +1,7 @@
 package com.example.ott.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,13 +21,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.GameDTO;
-import com.example.ott.dto.MovieDTO;
+
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
+
 import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.GameRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,7 +49,7 @@ public class GameService {
     private final GameRepository gameRepository;
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
-    private final ImageService imageService;
+    private final ContentsRepository contentsRepository;
 
     @Scheduled(cron = "0 10 10 * * *") // 매일 오전10:10시에 실행
     @Transactional
@@ -77,7 +79,7 @@ public class GameService {
             System.out.println("게임 이미지 크롤러 종료. Exit code: " + exitCodeImage);
 
         } catch (Exception e) {
-            System.err.println("파이썬 실행 실패: " + e.getMessage());
+            log.error("파이썬 실행 실패: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -117,6 +119,10 @@ public class GameService {
                 .build();
 
         gameRepository.save(game);
+
+        // contents 등록
+        Contents contents = Contents.builder().contentsId(gid).contentsType(ContentsType.GAME).game(game).build();
+        contentsRepository.save(contents);
 
         return game.getGid();
     }
@@ -395,7 +401,6 @@ public class GameService {
         gameRepository.deleteById(gid);
     }
 
-    // 게임 수정 MANAGER, ADMIN만 수정 가능하도록 할 예정
     public Game updateGame(Game game) {
         return gameRepository.save(game); // ID가 있으면 update
     }

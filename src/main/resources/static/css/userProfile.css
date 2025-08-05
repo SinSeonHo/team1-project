@@ -76,6 +76,7 @@ body {
 
 /* ========== 프로필 버튼 영역 ========== */
 .profile-btn {
+  display: block;
   width: 100%;
   padding: 10px 0;
   border: none;
@@ -123,6 +124,8 @@ body {
 }
 .user-gallery-grid {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
   gap: 28px;
   flex-wrap: wrap;
 }
@@ -162,6 +165,30 @@ a {
 .profile-btn {
   min-width: 120px;
 }
+
+/* 구분선 */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2em 0; /* 위아래 여백 조절 */
+}
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 0 0 37.5%; /* 양쪽 선이 같은 길이 */
+  border-bottom: 1px solid #ccc;
+}
+.divider::before {
+  margin-right: 0.75em; /* 텍스트와 선 사이 간격 */
+}
+.divider::after {
+  margin-left: 0.5em;
+}
+.divider span {
+  white-space: nowrap; /* 줄 바꿈 방지 */
+}
+
 @media (max-width: 991px) {
   .profile-side {
     min-height: unset;

@@ -19,10 +19,8 @@ import com.example.ott.service.ReplyService;
 import com.example.ott.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @RestController
-@Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/replies")
 public class ReplyController {
@@ -31,15 +29,12 @@ public class ReplyController {
 
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
-        log.info("댓글 내용 수정 요청: {}", dto);
-
         return replyService.updateReply(dto);
     }
 
     @PostMapping("/new")
     public ResponseEntity<Map<String, String>> postMovie(@RequestBody ReplyDTO dto) {
-        log.info("댓글 추가 요청: {}", dto);
-        User user = userService.getUser(dto.getReplyer());
+        User user = userService.getUserById(dto.getReplyer());
         dto.setReplyerNickname(user.getNickname()); // nickname 설정
         int result = replyService.insert(dto);
         switch (result) {

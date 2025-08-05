@@ -3,7 +3,6 @@ package com.example.ott.dto;
 import java.time.LocalDateTime;
 
 import com.example.ott.customValidation.UniqueId;
-import com.example.ott.entity.Image;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.UserRole;
 
@@ -13,13 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+
 @Builder
 public class SecurityUserDTO {
 

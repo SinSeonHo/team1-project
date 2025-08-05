@@ -17,23 +17,26 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Game;
+
+import com.example.ott.service.FollowedContentsService;
+
 import com.example.ott.entity.Image;
-import com.example.ott.service.FavoriteService;
+
 import com.example.ott.service.GameService;
 import com.example.ott.service.ImageService;
 import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Controller
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
-@Log4j2
 public class GameController {
 
     private final GameService gameService;
-    private final FavoriteService favoriteService;
+
+    private final FollowedContentsService followedContentsService;
+
     private final ImageService imageService;
     private final ReplyService replyService;
 
@@ -49,14 +52,13 @@ public class GameController {
         // DB에 저장된 전체 게임 목록 조회
         List<Game> gameList = gameService.getGameAll();
         model.addAttribute("games", gameList);
-        return "ott_contents/importGameResult"; // templates/importResult.html 로 포워딩
+        return "ott_contents/importGameResult";
     }
 
     // game 전체 리스트
     @GetMapping("/list")
     public String getGameList(Model model, PageRequestDTO pageRequestDTO) {
-        log.info("gameList 요청 {}", pageRequestDTO);
-        // List<Game> list = gameService.getGameAll();
+
         PageResultDTO<GameDTO> result = gameService.getSearch(pageRequestDTO);
         model.addAttribute("games", result.getDtoList());
         return "ott_contents/gameList";
@@ -69,6 +71,8 @@ public class GameController {
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
 
+        isFollowed = followedContentsService.isFollowed(userDetails, gid);
+
         // 이미지 및 스크린샷 처리
         Image image = game.getImage(); // Image 객체 얻기
         List<String> screenshots = new ArrayList<>();
@@ -77,7 +81,7 @@ public class GameController {
         }
 
         // 즐겨찾기 여부
-        isFollowed = favoriteService.isFollowed(userDetails, gid);
+        isFollowed = followedContentsService.isFollowed(userDetails, gid);
         // 별점 정보
         List<ReplyDTO> replies = (List<ReplyDTO>) data.get("replies");
 
@@ -85,13 +89,12 @@ public class GameController {
         double rating = replyService.rating(replies);
 
         // 모델에 데이터 추가
+
         model.addAttribute("gameInfo", game);
         model.addAttribute("replies", replies);
         model.addAttribute("isFollowed", isFollowed);
         model.addAttribute("rating", rating);
         model.addAttribute("screenshotUrls", screenshots);
-
-        log.info("로그확인 {}", model);
 
         return "ott_contents/gameInfo";
     }
