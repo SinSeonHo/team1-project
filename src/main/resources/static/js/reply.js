@@ -37,7 +37,7 @@ replyForm.addEventListener("submit", (e) => {
   } else {
     // 댓글 추가
     if (data.replyer.value === "anonymousUser") {
-      alert("로그인해 주세요");
+      alert("로그인 페이지로 이동합니다");
       location.href = "/user/login";
     } else {
       axios
@@ -136,10 +136,13 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
     const rno = data.rno;
     const reviewer = data.replyernickname;
 
+    // document.querySelector(".__rating").classList.add("hide"); // 별점 숨기기
+
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
     const mention = document.querySelector(".mention");
-    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>X</button>";
+    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
+    // 멘션 제거버튼 기능 추가
     mention.querySelector(".btn").addEventListener("click", (e) => {
       replyForm.mention.value = null;
       replyForm.ref.value = null;
@@ -153,11 +156,18 @@ replyForm.addEventListener("click", (e) => {
   const btn = e.target;
   if (btn.classList.contains("btn-cancel")) {
     replyForm.rno.value = null;
-    replyForm.mention.value = null;
     replyForm.ref.value = null;
     replyForm.text.value = null;
+    // 멘션 제거
     document.querySelector(".mention").innerHTML = "";
+    replyForm.mention.value = null;
+
+    replyForm.rate.value = null;
+    starsContainer.dataset.rating = 0;
     currentCharCount.textContent = 0;
+
+    // 별점 초기화
+    document.querySelector(".__rating").classList.remove("hide"); // 별점 보이기
     highlightStars(0);
   }
 });
@@ -165,37 +175,33 @@ replyForm.addEventListener("click", (e) => {
 // 별점 기능
 const starsContainer = document.querySelector(".rating");
 const allStars = document.querySelectorAll(".rating .fa-star");
-// const selectedRatingText = document.querySelector(".current-rating");
-
 let currentRating = parseInt(starsContainer.dataset.rating); // 현재 선택된 별점 (초기값)
 
 // 초기 별점 설정 (페이지 로드 시)
 highlightStars(currentRating);
+
 // 클릭 이벤트 (별점 선택)
 starsContainer.addEventListener("click", (event) => {
   if (event.target.classList.contains("fa-star")) {
-    const clickedValue = parseInt(event.target.dataset.value);
-    currentRating = clickedValue; // 현재 선택된 별점 업데이트
+    currentRating = parseInt(event.target.dataset.value); // 현재 선택된 별점 업데이트
     starsContainer.dataset.rating = currentRating; // data-rating 속성 업데이트
     highlightStars(currentRating); // 별점 UI 업데이트
-    // selectedRatingText.textContent = currentRating; // 텍스트 업데이트
-
-    // 여기서 서버로 별점 데이터를 전송하는 로직을 추가할 수 있습니다.
-    console.log(`별점 ${currentRating}점이 선택되었습니다.`);
     replyForm.rate.value = currentRating;
   }
 });
+
 // 마우스 오버 이벤트 (미리 보기)
 starsContainer.addEventListener("mouseover", (event) => {
   if (event.target.classList.contains("fa-star")) {
-    const hoverValue = parseInt(event.target.dataset.value);
-    highlightStars(hoverValue);
+    highlightStars(parseInt(event.target.dataset.value)); // 선택된 별의 점수
   }
 });
+
 // 마우스 아웃 이벤트 (원래 별점으로 되돌리기)
 starsContainer.addEventListener("mouseout", () => {
   highlightStars(currentRating); // 원래 선택된 별점으로 돌아가기
 });
+
 // 별들을 하이라이트하는 함수 (마우스 오버 및 클릭 시 사용)
 function highlightStars(value) {
   allStars.forEach((star) => {

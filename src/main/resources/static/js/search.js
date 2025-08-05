@@ -16,9 +16,11 @@ const action = {
 };
 
 function updateCityOptions() {
-  const content = document.getElementById("content").value;
   const typeSelect = document.getElementById("type");
-  typeSelect.textContent = "제목";
+  const content = document.getElementById("content").value;
+
+  typeSelect.innerHTML = ""; // 키워드 제거
+
   // 컨텐츠에 해당하는 키워드 목록 추가
   if (content && contentOptions[content]) {
     contentOptions[content].forEach((city) => {
@@ -30,3 +32,28 @@ function updateCityOptions() {
     document.querySelector(".search-box").action = action[content];
   }
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+  const content = document.getElementById("content"); // 선택 콘텐츠 타입
+  const path = window.location.pathname.toLowerCase(); // 경로 가져오기
+  const searchQuery = window.location.search; // ?content=g&type=t&keyword=fall
+
+  if (path.includes("movies")) {
+    content.value = "m";
+  } else if (path.includes("games")) {
+    content.value = "g";
+  }
+  updateCityOptions();
+
+  // type 가져오기
+  if (searchQuery.includes("type=")) {
+    const type = searchQuery.split("type=");
+    document.getElementById("type").value = type[1].split("&")[0];
+  }
+
+  // keyword 가져오기
+  if (searchQuery.includes("keyword=")) {
+    const type = searchQuery.split("keyword=");
+    document.getElementById("search").value = type[1].split("&")[0];
+  }
+});

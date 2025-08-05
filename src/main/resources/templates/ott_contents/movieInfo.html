@@ -121,6 +121,8 @@
       <div class="section-title">
         <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
       </div>
+      <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
+
       <!-- 댓글 시작 -->
       <div th:each="reply : ${replies}" class="anime__review__item">
         <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
@@ -147,13 +149,17 @@
           <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
           <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
           <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}"> 작성자 - 1 Hour ago</span>
+          <!-- 리뷰는 별점 표시 -->
+          <span>
+            <i th:if="${reply.ref == null}" th:each="idx : ${#numbers.sequence(0, 4)}" class="fa-star" th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"></i>
+          </span>
           <button
             type="button"
             class="delete-btn btn btn-secondary btn-sm"
             th:if="${#authentication.name == reply.replyer}"
             th:data-rno="${reply.rno}"
           >
-            x
+            ✖
           </button>
           <button
             type="button"
@@ -171,10 +177,7 @@
           >
             대댓글
           </button>
-          <!-- 리뷰는 별점 표시 -->
-          <span>
-            <i th:if="${reply.ref == null}" th:each="idx : ${#numbers.sequence(0, 4)}" class="fa-star" th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"></i>
-          </span>
+          
           <p th:text="${reply.text}">댓글 텍스트</p>
         </div>
       </div>
@@ -185,15 +188,14 @@
       <div class="section-title">
         <h5>댓글 작성</h5>
       </div>
-      <span class="mention badge badge-secondary"></span>
       <form id="replyForm" method="post">
+        <span class="mention badge badge-secondary"></span>
       <!-- 별점 -->
-                    <div class="anime__details__rating">
+                    <div class="anime-details--rating">
                       <input type="hidden" name="rate">
                       <span class="rating" name="rate">
                         <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
                       </span>
-                      <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
                     </div>
         <input type="hidden" name="id" th:value="${movieInfo.mid}" />
         <input type="hidden" name="rno" />
