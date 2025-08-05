@@ -22,8 +22,8 @@ import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 
 import com.example.ott.entity.Reply;
-import com.example.ott.service.FollowedContentsService;
 
+import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
 
 import com.example.ott.service.MovieService;
@@ -77,8 +77,6 @@ public class MovieController {
         Map<String, Object> data = movieService.getMovie(mid);
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
-        // 상영시간 분 -> n시간 n분형태 변환메소드 호출
-        // String showTm = convertShowTm(movie.getShowTm());
 
         // 즐겨찾기 여부
         isFollowed = followedContentsService.isFollowed(userDetails, mid);
