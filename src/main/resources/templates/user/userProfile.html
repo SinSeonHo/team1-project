@@ -94,23 +94,47 @@
       </h3>
       <div class="row w-100 justify-content-center">
         <!-- 갤러리 -->
-        <section
-          class="user-gallery-section mt-4"
-          th:object="${followedContentsList}"
-          th:unless="${followedContentsList.size == 0}"
-        >
-          <div class="user-gallery-grid">
-            <img
-              th:each="followedContents, iterStat : ${followedContentsList}"
-              th:if="${iterStat.index < 4}"
-              th:src="@{|/${
-        followedContents.contents.movie != null
-          ? followedContents.contents.movie.image.path
-          : followedContents.contents.game.image.path
-      }|}"
-              alt="gallery-img"
-              class="gallery-img col p-0"
-            />
+        <section class="user-gallery-section mt-4" th:if="${followedContentsList.content.size() > 0}">
+          <div class="user-gallery-grid container">
+            <div class="row">
+              <div class="col-4 p-2" th:each="followedContent : ${followedContentsList.content}">
+                <a
+                  th:href="@{${followedContent.contentsType.name() == 'MOVIE'} ?
+               '/api/movies/read/' + ${followedContent.contentsId} :
+               '/api/games/read/' + ${followedContent.contentsId}}"
+                >
+                  <img
+                    th:src="@{'/' + ${followedContent.imageUrl}}"
+                    alt="콘텐츠 이미지"
+                    class="gallery-img img-fluid"
+                  />
+                </a>
+              </div>
+            </div>
+
+            <!-- "더보기" 버튼 -->
+            <div class="text-center mt-3" th:if="${hasMore}">
+              <a
+                th:href="@{/user/userProfile(id=${userProfileDTO.id}, size=${currentSize + 6})}"
+                class="btn btn-outline-primary rounded-circle"
+                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center"
+                aria-label="더보기"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  class="bi bi-chevron-down"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+                  />
+                </svg>
+              </a>
+            </div>
           </div>
         </section>
       </div>

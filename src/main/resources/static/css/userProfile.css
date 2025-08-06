@@ -1,4 +1,4 @@
-body {
+main {
   background: #14153b;
 }
 
@@ -126,19 +126,20 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 28px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 .gallery-img {
-  width: 160px;
-  height: 240px;
-  object-fit: cover;
-  border-radius: 14px;
+  width: 250px;
+  height: 250px;
   background: #232452;
   box-shadow: 0 2px 10px #0001;
   transition: transform 0.15s;
   cursor: pointer;
+  border-radius: 10px;
+  object-fit: fill;
 }
+
 .gallery-img:hover {
   transform: scale(1.04);
 }

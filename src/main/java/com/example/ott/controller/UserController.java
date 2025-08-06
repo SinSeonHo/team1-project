@@ -3,6 +3,9 @@ package com.example.ott.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.ott.dto.FollowedContentsDTO;
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.FollowedContents;
@@ -68,18 +72,24 @@ public class UserController {
 
     // 프로필 조회
     @GetMapping("/userProfile")
-    public String getUserProfile(String id, Model model) {
+    public String getUserProfile(String id, Model model, @RequestParam(defaultValue = "6") int size) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
         log.info("유저 닉네임 : {}", userProfileDTO.getNickname());
-
+        Pageable pageable = PageRequest.of(0, size);
         // 해당 user가 follow한 contents List 조회
-        List<FollowedContents> followedContentsList = followedContentsService
-                .getFollowedContentsList(userProfileDTO.getNickname());
+        Page<FollowedContentsDTO> followedContentsList = followedContentsService.getFollowedContentsList(id, pageable);
 
         log.info("이미지 확인");
 
         model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("followedContentsList", followedContentsList);
+        model.addAttribute("currentSize", size);
+        model.addAttribute("hasMore", followedContentsList.getTotalElements() > size);
+        log.info("User Profile ID: {}", userProfileDTO.getId());
+        log.info("User Nickname: {}", userProfileDTO.getNickname());
+        log.info("Followed Contents Total Elements: {}", followedContentsList.getTotalElements()); // 0
+        log.info("Followed Contents Page Size (currentSize): {}", size);
+        log.info("Has More: {}", followedContentsList.getTotalElements() > size);
 
         return "/user/userProfile";
     }
