@@ -26,9 +26,8 @@ public class SecurityConfig {
 
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                // 정적 리소스
                                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
-                                                                "/social/**")
+                                                                "/user/admin")
                                                 .permitAll()
 
                                                 // 에러페이지/홈/회원가입/인증 관련
@@ -67,6 +66,14 @@ public class SecurityConfig {
                                                 .defaultSuccessUrl("/", true)
                                                 .failureUrl("/user/login?error=true")
                                                 .permitAll())
+
+                                // admin 로그인
+                                .formLogin(login -> login
+                                                .loginPage("/user/login")
+                                                .defaultSuccessUrl("/")
+                                                .failureUrl("/user/login?error=true")
+                                                .permitAll())
+
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")

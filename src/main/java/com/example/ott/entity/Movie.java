@@ -58,10 +58,10 @@ public class Movie extends BaseEntity {
     @JoinColumn(name = "image_id", nullable = true)
     private Image image;
 
-    @Builder.Default
-    private int followcnt = 0;
+    // @Builder.Default
+    // private int followcnt = 0;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id")
-    private Content content;
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "content_id")
+    // private Content content;
 }

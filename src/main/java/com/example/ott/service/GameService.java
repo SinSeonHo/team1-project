@@ -51,14 +51,14 @@ public class GameService {
     private final ModelMapper modelMapper;
     private final ContentsRepository contentsRepository;
 
-    @Scheduled(cron = "0 02 10 * * *") // 매일 오전10시에 실행
+    @Scheduled(cron = "0 10 10 * * *") // 매일 오전10:10시에 실행
     @Transactional
     public void scheduledGameImport() {
         log.info("자동 게임 데이터 수집 시작");
         importGames(); // 기존 메서드 호출
     }
 
-    @Scheduled(cron = "10 46 11 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 15 10 * * *") // 매일 오전10:15에 실행
     @Transactional
     public void scheduledGameImageImport() {
         log.info("자동 게임 포스터 반영");
@@ -423,7 +423,7 @@ public class GameService {
                 .rank(game.getRank())
                 .replycnt(game.getReplies().size())
                 .synopsis(game.getSynopsis())
-                .followcnt(game.getFollowcnt())
+                // .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
                 .imgUrl((game.getImage() == null) ? null : game.getImage().getImgName())
                 .build();

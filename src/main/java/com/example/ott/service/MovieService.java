@@ -53,7 +53,7 @@ public class MovieService {
         importMovies();
     }
 
-    @Scheduled(cron = "00 39 11 * * *") // 매일 오전10:01에 실행
+    @Scheduled(cron = "00 03 10 * * *") // 매일 오전10:03에 실행
     @Transactional
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
@@ -75,6 +75,7 @@ public class MovieService {
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
+                System.out.println("Python 영화 포스터 크롤링 시작");
                 ProcessBuilder pbImage = new ProcessBuilder("python",
                         "C:/SOURCE/team1-project/python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
@@ -366,7 +367,7 @@ public class MovieService {
                 .synopsis(movie.getSynopsis())
                 .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
                 .replycnt(movie.getReplies().size())
-                .followcnt(movie.getFollowcnt())
+                // .followcnt(movie.getFollowcnt())
                 .build();
 
         if (movie.getImage() == null) {
