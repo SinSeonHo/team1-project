@@ -37,6 +37,10 @@ public class SecurityConfig {
                                                                 "/user/upgrade")
                                                 .permitAll()
 
+                                                // 어드민 페이지 관련
+                                                .requestMatchers("/admin/**")
+                                                .hasRole("ADMIN")
+
                                                 // 영화 관련
                                                 // .requestMatchers("/api/movies/import").hasRole("ADMIN")
                                                 .requestMatchers("/api/movies/**").permitAll()
