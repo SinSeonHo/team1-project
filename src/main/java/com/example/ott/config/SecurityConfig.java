@@ -27,7 +27,7 @@ public class SecurityConfig {
                 http
                                 .authorizeHttpRequests(authorize -> authorize
                                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
-                                                                "/user/admin")
+                                                                "/user/admin", "/social/**")
                                                 .permitAll()
 
                                                 // 에러페이지/홈/회원가입/인증 관련
