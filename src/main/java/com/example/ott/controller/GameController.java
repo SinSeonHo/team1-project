@@ -27,8 +27,10 @@ import com.example.ott.service.ImageService;
 import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Controller
+@Log4j2
 @RequestMapping("/api/games")
 @RequiredArgsConstructor
 public class GameController {
@@ -70,7 +72,6 @@ public class GameController {
         Map<String, Object> data = gameService.getGame(gid);
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
-
         isFollowed = followedContentsService.isFollowed(userDetails, gid);
 
         // 이미지 및 스크린샷 처리

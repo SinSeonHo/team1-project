@@ -30,6 +30,8 @@ public class SecurityConfig {
                                                                 "/user/admin", "/social/**")
                                                 .permitAll()
 
+                                                .requestMatchers("/report", "/WEBB-INF/**").hasRole("ADMIN")
+
                                                 // 에러페이지/홈/회원가입/인증 관련
                                                 .requestMatchers("/", "/user/register", "/error/**",
                                                                 "/user/upgrade")
