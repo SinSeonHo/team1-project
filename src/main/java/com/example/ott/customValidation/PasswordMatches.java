@@ -1,15 +1,14 @@
 package com.example.ott.customValidation;
 
-import java.lang.annotation.*;
-
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import java.lang.annotation.*;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UniqueNicknameValidator.class)
-public @interface UniqueNickname {
-    String message() default "이미 등록된 닉네임입니다.";
+@Constraint(validatedBy = PasswordMatchesValidator.class)
+public @interface PasswordMatches {
+    String message() default "비밀번호가 일치하지 않습니다.";
 
     Class<?>[] groups() default {};
 

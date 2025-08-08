@@ -12,20 +12,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.ott.customValidation.ValidationOrder;
 import com.example.ott.dto.FollowedContentsDTO;
 import com.example.ott.dto.SecurityUserDTO;
+import com.example.ott.dto.TempSocialSignupDTO;
+import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
+import com.example.ott.handler.AuthSuccessHandler;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
 import com.example.ott.service.UserService;
@@ -48,26 +54,43 @@ public class UserController {
     private final ImageService imageService;
     private final FollowedContentsService followedContentsService;
 
-    @PostMapping("/register")
-    public String postRegister(
-            @ModelAttribute @Valid SecurityUserDTO securityUserDTO,
-            BindingResult bindingResult,
-            HttpServletRequest request,
-            RedirectAttributes rttr) {
-        if (bindingResult.hasErrors()) {
-            return "/user/login";
-        } else {
+    @GetMapping("/register")
+    public String getRegister(Model model,
+            @SessionAttribute(name = AuthSuccessHandler.REGISTER_SESSION_KEY, required = false) TempSocialSignupDTO temp) {
 
-            String id = userService.registerAndLogin(securityUserDTO, request);
-            try {
-                request.login(securityUserDTO.getId(), securityUserDTO.getPassword()); // 로그인 요청
-            } catch (ServletException e) {
-                e.printStackTrace();
+        if (!model.containsAttribute("totalUserDTO")) {
+            TotalUserDTO dto = new TotalUserDTO();
+
+            if (temp != null) {
+
+                dto.setName(temp.getName());
+                dto.setNickname(temp.getNickname());
             }
 
-            rttr.addAttribute("id", id);
+            model.addAttribute("totalUserDTO", dto);
         }
-        return "redirect:/user/modifyUserProfile";
+
+        return "user/register";
+    }
+
+    @PostMapping("/register")
+    public String postRegister(@Validated(ValidationOrder.class) TotalUserDTO totalUserDTO, BindingResult result,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            // 에러 메시지나 입력값을 FlashAttribute로 임시 저장
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.totalUserDTO", result);
+            redirectAttributes.addFlashAttribute("totalUserDTO", totalUserDTO);
+            return "/user/register";
+        }
+        String id = userService.registerAndLogin(totalUserDTO, request);
+        try {
+            request.login(totalUserDTO.getId(), totalUserDTO.getPassword()); // 로그인 요청
+        } catch (ServletException e) {
+            e.printStackTrace();
+        }
+
+        return "/index";
     }
 
     // 프로필 조회
@@ -163,6 +186,16 @@ public class UserController {
         rttr.addFlashAttribute("msg", "관리자 권한이 부여되었습니다!");
 
         return "redirect:/user/userProfile?id=" + userDetails.getUsername();
+    }
+
+    @GetMapping("/userConsent")
+    public void getUserConsent() {
+
+    }
+
+    @GetMapping("/loginTest")
+    public void getMethodName() {
+
     }
 
 }

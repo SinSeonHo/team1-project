@@ -2010,7 +2010,7 @@ ol {
 }
 
 .login__social__links {
-  text-align: center;
+  text-align: left;
 }
 
 .login__social__links span {
@@ -2033,9 +2033,9 @@ ol {
 }
 
 .login__social__links ul li a {
-  color: #ffffff;
+  color: #000000;
   display: block;
-  font-size: 13px;
+
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -2043,18 +2043,6 @@ ol {
   padding: 14px 0;
   position: relative;
   margin: 0 auto;
-}
-
-.login__social__links ul li a.facebook {
-  background: #4267b2;
-}
-
-.login__social__links ul li a.google {
-  background: #ff4343;
-}
-
-.login__social__links ul li a.twitter {
-  background: #1da1f2;
 }
 
 .login__social__links ul li a i {

@@ -9,7 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.example.ott.handler.CustomRegisterSuccessHandler;
+import com.example.ott.handler.AuthSuccessHandler;
+
 import com.example.ott.security.CustomOAuth2DetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,15 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(authorize -> authorize
                                                 // 정적 리소스
                                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
-                                                                "/social/**")
+                                                                "/social/**", "/auth/**")
                                                 .permitAll()
 
                                                 // 에러페이지/홈/회원가입/인증 관련
-                                                .requestMatchers("/", "/user/register", "/error/**",
-                                                                "/user/upgrade")
+                                                .requestMatchers("/", "/error/**",
+                                                                "/user/upgrade", "/user/userConsent")
                                                 .permitAll()
+
+                                                .requestMatchers("/user/register").permitAll()
 
                                                 // 영화 관련
                                                 // .requestMatchers("/api/movies/import").hasRole("ADMIN")
@@ -70,7 +73,7 @@ public class SecurityConfig {
                                 // 소셜 로그인
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
-                                                .successHandler(new CustomRegisterSuccessHandler())
+                                                .successHandler(new AuthSuccessHandler())
                                                 .failureHandler((request, response, exception) -> {
                                                         response.sendRedirect("/error/emailAlreadyExists");
                                                 })
