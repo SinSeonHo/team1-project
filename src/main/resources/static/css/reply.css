@@ -7,10 +7,14 @@
   border-right: 0;
 }
 
-.rating span {
+.rating i {
   font-size: 20px;
   color: #e89f12;
   display: inline-block;
+  margin-bottom: 10px;
+}
+.rating-form {
+  margin-top: 12px;
 }
 
 .replyForm textarea {
@@ -23,4 +27,29 @@
   border-radius: 5px;
   resize: none;
   margin-bottom: 24px;
+}
+
+form textarea {
+  width: 100%;
+  font-size: 15px;
+  color: #9e2f2f;
+  padding-left: 20px;
+  padding-top: 12px;
+  height: 110px;
+  border: none;
+  border-radius: 5px;
+  resize: none;
+  margin-bottom: 24px;
+}
+
+form button {
+  font-size: 11px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: #e53637;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 2px;
 }

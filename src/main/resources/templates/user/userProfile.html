@@ -100,13 +100,14 @@
           th:unless="${followedContentsList.size == 0}"
         >
           <div class="user-gallery-grid">
+            <!-- 이미지 없으면 기본 이미지 불러오게 수정 -->
             <img
               th:each="followedContents, iterStat : ${followedContentsList}"
               th:if="${iterStat.index < 4}"
               th:src="@{|/${
         followedContents.contents.movie != null
-          ? followedContents.contents.movie.image.path
-          : followedContents.contents.game.image.path
+          ? (followedContents.contents.movie.image != null ? followedContents.contents.movie.image.path : '/images/sample.jpg' )
+          : ( followedContents.contents.game.image != null ? followedContents.contents.game.image.path : '/images/sample.jpg' )
       }|}"
               alt="gallery-img"
               class="gallery-img col p-0"

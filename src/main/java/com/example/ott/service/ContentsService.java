@@ -1,8 +1,14 @@
 package com.example.ott.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ContentsDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
@@ -60,4 +66,23 @@ public class ContentsService {
 
     }
 
+    public PageResultDTO<ContentsDTO> search(PageRequestDTO pageRequestDTO) {
+        Page<Contents> result = contentsRepository.search(pageRequestDTO);
+
+        List<ContentsDTO> dtoList = result.stream().map(content -> entityToDto(content)).collect(Collectors.toList());
+
+        return PageResultDTO.<ContentsDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
+    private ContentsDTO entityToDto(Contents content) {
+        return ContentsDTO.builder()
+                .contentsId(content.getContentsId())
+                .contentsType(content.getContentsType())
+                .title(content.getTitle())
+                .build();
+    }
 }

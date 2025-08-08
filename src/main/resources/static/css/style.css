@@ -704,25 +704,28 @@ ol {
 .search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0px;
   background-color: #1a2238; /* 진한 남색 배경 */
-  padding: 12px 16px;
+  padding: 6px 6px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(10, 10, 30, 0.6);
-  max-width: 450px;
+  max-width: 350px;
   margin: 0 auto;
 }
 
 .search-box select,
 .search-box input[type="text"] {
   background-color: #0f1626; /* 더 어두운 남색 */
-  border: 1px solid #394867;
+  border: 0px solid #394867;
   color: #dbeafe; /* 밝은 파랑 글씨 */
   padding: 8px 10px;
-  border-radius: 4px;
+  border-radius: 0px;
   font-size: 14px;
 }
 
+.search-box select {
+  border-radius: 4px 0 0 4px;
+}
 .search-box input[type="text"]::placeholder {
   color: #aab4cf;
 }
@@ -731,8 +734,8 @@ ol {
   background-color: #394867; /* 중간톤 남색 */
   color: #ffffff;
   border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
+  padding: 8px 8px;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }

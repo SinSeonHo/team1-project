@@ -55,8 +55,11 @@ replyForm.addEventListener("submit", (e) => {
           }
         })
         .catch((err) => {
-          console.error(err);
-          alert("댓글 등록 실패");
+          if (err.status == 403) {
+            alert("우선 이메일 인증을 해주세요");
+          } else {
+            alert("댓글 등록 오류");
+          }
         });
     }
   }
@@ -87,7 +90,7 @@ document.querySelectorAll(".update-btn").forEach((e) => {
 document.querySelectorAll(".delete-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const rno = btn.getAttribute("data-rno");
-    if (!confirm("정말 삭제하시겠습니까? 댓글까지 삭제됩니다.")) return;
+    if (!confirm("정말 삭제하시겠습니까? 댓글도 삭제됩니다.")) return;
 
     axios
       .delete(`/replies/${rno}`, {
@@ -129,17 +132,17 @@ replyText.addEventListener("input", () => {
 // 페이지 로드 시 초기 글자 수 표시 (만약 미리 텍스트가 있다면)
 currentCharCount.textContent = replyText.value.length;
 
-// 리뷰 멘션 추가
+// 리뷰에 댓글 추가
 document.querySelectorAll(".mention-btn").forEach((re) => {
   re.addEventListener("click", (e) => {
+    // 데이터 가져와서 폼에 추가
     const data = e.target.closest(".anime__review__item__text").dataset;
     const rno = data.rno;
     const reviewer = data.replyernickname;
 
-    // document.querySelector(".__rating").classList.add("hide"); // 별점 숨기기
-
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
+
     const mention = document.querySelector(".mention");
     mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
     // 멘션 제거버튼 기능 추가
@@ -148,6 +151,19 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
       replyForm.ref.value = null;
       mention.innerHTML = "";
     });
+    // 댓글 폼 추가
+    // const templateHTML = document.getElementById("reply-form").innerHTML;
+    // const review = e.target.closest(".anime__review__item");
+    // const mention = document.querySelector(`.mention-reply[data-rno="${rno}"]`);
+    // console.log("찾은 mention-reply:", mention);
+    // console.log("찾은 review:", review);
+    // if (mention) {
+    //   mention.style.display = mention.style.display === "none" || mention.style.display === "" ? "block" : "none";
+    // }
+    //     // 댓글 취소 기능 추가
+    // document.querySelector(".reply-cancel").addEventListener("click", () => {
+    //   mention.innerHTML = "";
+    // });
   });
 });
 
@@ -173,8 +189,9 @@ replyForm.addEventListener("click", (e) => {
 });
 
 // 별점 기능
-const starsContainer = document.querySelector(".rating");
-const allStars = document.querySelectorAll(".rating .fa-star");
+const starsContainer = document.querySelector(".rating-form");
+const allStars = document.querySelectorAll(".rating-form .fa-star");
+const rateStars = document.querySelectorAll(".rating-rate .fa-star");
 let currentRating = parseInt(starsContainer.dataset.rating); // 현재 선택된 별점 (초기값)
 
 // 초기 별점 설정 (페이지 로드 시)
@@ -205,6 +222,17 @@ starsContainer.addEventListener("mouseout", () => {
 // 별들을 하이라이트하는 함수 (마우스 오버 및 클릭 시 사용)
 function highlightStars(value) {
   allStars.forEach((star) => {
+    const starValue = parseInt(star.dataset.value);
+    if (starValue <= value) {
+      star.classList.add("fa");
+    } else {
+      star.classList.remove("fa");
+    }
+  });
+}
+// 평점 별들을 하이라이트하는 함수 (페이지 로드 시 사용)
+function highlightRateStars(value) {
+  rateStars.forEach((star) => {
     const starValue = parseInt(star.dataset.value);
     if (starValue <= value) {
       star.classList.add("fa");
