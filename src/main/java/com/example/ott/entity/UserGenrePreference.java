@@ -34,6 +34,8 @@ public class UserGenrePreference {
     @JoinColumn(name = "genre_id", unique = true)
     private Genre genre;
 
+    private String genreName;
+
     @Builder.Default
     private int count = 1;
 

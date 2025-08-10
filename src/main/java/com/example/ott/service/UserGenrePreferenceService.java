@@ -44,6 +44,7 @@ public class UserGenrePreferenceService {
                 UserGenrePreference userGenrePreference = UserGenrePreference.builder()
                         .user(user)
                         .genre(genre)
+                        .genreName(genre.getGenreName())
                         .build();
                 try {
 
