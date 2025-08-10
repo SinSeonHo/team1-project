@@ -2,6 +2,7 @@ package com.example.ott.security;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
 
 import com.example.ott.repository.UserRepository;
+import com.example.ott.type.Gender;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,48 +40,70 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         // google / kakao / naver
         String registrationId = userRequest.getClientRegistration().getRegistrationId().toLowerCase();
 
+        // 소셜 로그인에 데이터 요청
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
+        // 소셜 로그인으로 받을 정보들
+        String name = "";
+        String picture = "";
+        String email = "";
+        String nickname = "";
+        Gender gender = null;
         Socials social = Socials.NONE;
         Map<String, Object> customAttributes = new HashMap<String, Object>();
 
+        // 소셜 종류마다 다른 정보를 받아옴
         switch (registrationId) {
             case "google":
-                customAttributes.put("name", oAuth2User.getAttribute("name"));
-                customAttributes.put("picture", oAuth2User.getAttribute("picture"));
-                customAttributes.put("email", oAuth2User.getAttribute("email"));
+                name = Objects.toString(oAuth2User.getAttribute("name"), "");
+                picture = Objects.toString(oAuth2User.getAttribute("picture"), "");
+                email = Objects.toString(oAuth2User.getAttribute("email"), "");
                 social = Socials.GOOGLE;
+
+                customAttributes.put("name", name);
+                customAttributes.put("picture", picture);
+                customAttributes.put("email", email);
+
                 break;
 
             case "kakao":
-                Map<String, Object> attributes = oAuth2User.getAttributes();
+                Map<String, Object> properties = (Map<String, Object>) oAuth2User.getAttribute("properties");
+                Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttribute("kakao_account");
 
-                Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-                Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+                nickname = (String) properties.get("nickname");
+                picture = (String) properties.get("profile_image");
+                email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
 
-                customAttributes.put("nickname", properties.get("nickname"));
-                customAttributes.put("picture", properties.get("profile_image"));
-                customAttributes.put("email", kakaoAccount.get("email"));
+                customAttributes.put("nickname", nickname);
+                customAttributes.put("picture", picture);
+                customAttributes.put("email", email);
                 social = Socials.KAKAO;
                 break;
 
             case "naver":
                 Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttribute("response");
+                name = Objects.toString(response.get("name"), "");
+                nickname = Objects.toString(response.get("nickname"), "");
+                String genderStr = Objects.toString(response.get("gender"), "");
+                gender = Gender.fromString(genderStr);
 
-                customAttributes.put("name", response.get("name"));
-                customAttributes.put("email", response.get("email"));
-                customAttributes.put("nickname", response.get("nickname"));
-                customAttributes.put("picture", response.get("profile_image"));
-                customAttributes.put("gender", response.get("gender"));
+                email = Objects.toString(response.get("email"), "");
+                picture = Objects.toString(response.get("profile_image"), "");
+                customAttributes.put("name", name);
+                customAttributes.put("nickname", nickname);
+                customAttributes.put("gender", gender);
+                customAttributes.put("email", email);
+                customAttributes.put("picture", picture);
                 social = Socials.NAVER;
                 break;
 
             default:
                 throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인입니다: " + registrationId);
         }
+
         customAttributes.put("social", social);
 
-        String email = (String) customAttributes.get("email");
+        // 이메일을 받아오지 못했을 경우 처리
         if (email == null || email.isBlank()) {
             throw new OAuth2AuthenticationException("이메일 정보를 제공하지 않는 소셜 계정입니다. 이메일 제공에 동의해주세요.");
         }

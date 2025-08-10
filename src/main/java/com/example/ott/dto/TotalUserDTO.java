@@ -60,4 +60,6 @@ public class TotalUserDTO {
     @NotNull(message = "성별은 필수 선택값입니다.", groups = BlankChecks.class)
     private Gender gender;
 
+    private String email;
+
 }

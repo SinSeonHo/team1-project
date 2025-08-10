@@ -3,7 +3,8 @@ package com.example.ott.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -21,6 +22,13 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
         private final CustomOAuth2DetailsService customOAuth2DetailsService;
+
+        private final AuthenticationConfiguration authenticationConfiguration;
+
+        @Bean
+        public AuthenticationManager authenticationManager() throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

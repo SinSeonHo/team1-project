@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -21,13 +22,13 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
     private SecurityUserDTO securityUserDTO;
 
+    private final TempSocialSignupDTO temp;
+
+    private Map<String, Object> attributes;
+    
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
-
-    private Map<String, Object> attributes;
-
-    private final TempSocialSignupDTO temp;
 
     // 일반 유저 생성자
     public CustomUserDetails(User user) {
@@ -69,18 +70,18 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         this.temp = null;
     }
 
-    // 소셜 회원가입 유저 생성자 (아직 DB 저장 안 된 상태)
+    // 소셜 회원가입 유저 생성자
     public CustomUserDetails(TempSocialSignupDTO tempDTO, Map<String, Object> attributes) {
         this.securityUserDTO = SecurityUserDTO.builder()
-                .id(tempDTO.getEmail()) // 이메일을 ID로 임시 설정
-                .email(tempDTO.getEmail())
-                .name(tempDTO.getName() != null ? tempDTO.getName() : "")
-                .nickname(tempDTO.getNickname())
+                .id(Objects.toString(tempDTO.getEmail(), ""))
+                .email(Objects.toString(tempDTO.getEmail(), ""))
+                .name(Objects.toString(tempDTO.getName(), ""))
+                .nickname(Objects.toString(tempDTO.getNickname(), ""))
                 .socials(tempDTO.getSocial())
-                .userRole(UserRole.USER) // 기본 권한 부여
+                .userRole(UserRole.PENDING)
                 .build();
 
-        this.attributes = attributes;
+        this.attributes = Map.of();
         this.createdDate = null; // 아직 저장 전이라 날짜 없음
         this.updatedDate = null; // 아직 저장 전이라 날짜 없음
         this.temp = tempDTO;

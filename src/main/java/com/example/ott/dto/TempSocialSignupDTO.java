@@ -3,6 +3,8 @@ package com.example.ott.dto;
 import java.util.Map;
 
 import com.example.ott.entity.Socials;
+import com.example.ott.entity.UserRole;
+import com.example.ott.type.Gender;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +17,8 @@ public class TempSocialSignupDTO {
     private String nickname; // 소셜에서 가져온 닉네임
     private String picture; // 프로필 이미지 URL
     private Socials social; // GOOGLE, KAKAO, NAVER 등
+    private UserRole userRole;
+    private Gender gender;
 
     public static TempSocialSignupDTO from(Map<String, Object> attrs) {
         return TempSocialSignupDTO.builder()
@@ -23,6 +27,7 @@ public class TempSocialSignupDTO {
                 .nickname((String) attrs.getOrDefault("nickname", null))
                 .picture((String) attrs.getOrDefault("picture", null))
                 .social((Socials) attrs.get("social"))
+                .gender((Gender) attrs.getOrDefault("gender", null))
                 .build();
     }
 }

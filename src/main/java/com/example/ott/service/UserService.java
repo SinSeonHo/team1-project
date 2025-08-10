@@ -2,6 +2,9 @@ package com.example.ott.service;
 
 import java.util.NoSuchElementException;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +12,12 @@ import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
+import com.example.ott.security.CustomUserDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,24 +32,39 @@ public class UserService {
     private final ImageRepository imageRepository;
 
     // 계정 생성 + 자동 로그인
-    public String registerAndLogin(TotalUserDTO totalUserDTO, HttpServletRequest request) {
+    public String registerAndLogin(TotalUserDTO totalUserDTO) {
 
         String nickname = (totalUserDTO.getNickname() == null)
                 ? makeUniqueNickname(userRepository)
                 : totalUserDTO.getNickname();
+
+        Socials social = Socials.NONE;
+        UserRole userRole = UserRole.GUEST;
+        if (!totalUserDTO.getEmail().isEmpty()) {
+            // 소셜 회원가입 일경우 user등급 및 social 종류 추가
+                SecurityContext context = SecurityContextHolder.getContext();
+                Authentication auth = context.getAuthentication();
+                CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
+                 social = cud.getTemp().getSocial();
+
+            userRole = UserRole.USER;
+            
+        }
 
         User user = User.builder()
                 .name(totalUserDTO.getName())
                 .id(totalUserDTO.getId())
                 .nickname(nickname)
                 .password(passwordEncoder.encode(totalUserDTO.getPassword()))
-                .userRole(UserRole.GUEST)
+                .userRole(userRole)
                 .age(totalUserDTO.getAge())
                 .gender(totalUserDTO.getGender())
+                .email(totalUserDTO.getEmail())
+                .social(social)
                 .build();
 
         return userRepository.save(user).getId();
-
+        // social 대기
     }
 
     // 프로필 조회
