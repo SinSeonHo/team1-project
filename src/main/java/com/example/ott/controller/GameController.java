@@ -43,7 +43,7 @@ public class GameController {
     private final ReplyService replyService;
 
     @GetMapping("/import")
-    public String importGame(Model model) {
+    public String importGames(Model model) {
         try {
             gameService.importGames();
             model.addAttribute("message", "게임 데이터 저장 완료!");

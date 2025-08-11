@@ -27,7 +27,6 @@ import lombok.ToString;
 public class Game extends BaseEntity {
 
     @Id
-
     private String gid;
 
     @Column(nullable = false)
@@ -55,6 +54,7 @@ public class Game extends BaseEntity {
     @Column(length = 10000)
     private String synopsis;
 
+    @Builder.Default
     @OneToMany(mappedBy = "game", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>();
 

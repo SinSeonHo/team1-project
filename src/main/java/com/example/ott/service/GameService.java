@@ -1,5 +1,8 @@
 package com.example.ott.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -16,10 +19,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.GameDTO;
 
 import com.example.ott.dto.PageRequestDTO;
@@ -49,19 +54,23 @@ public class GameService {
     private final GameRepository gameRepository;
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
-    private final ContentsRepository contentsRepository;
+    private final ContentsService contentsService;
 
     @Scheduled(cron = "0 10 10 * * *") // 매일 오전10:10시에 실행
-    @Transactional
     public void scheduledGameImport() {
         log.info("자동 게임 데이터 수집 시작");
         importGames(); // 기존 메서드 호출
     }
 
     @Scheduled(cron = "00 15 10 * * *") // 매일 오전10:15에 실행
-    @Transactional
     public void scheduledGameImageImport() {
         log.info("자동 게임 포스터 반영");
+        runPythonGameCrawlerAsync(); // @Async 붙은 메서드 호출
+    }
+
+    @Async
+    @Transactional
+    public void runPythonGameCrawlerAsync() {
         runPythonGameCrawler();
     }
 
@@ -69,28 +78,53 @@ public class GameService {
         try {
             System.out.println("Python 게임 크롤러 실행 시작");
 
-            // 파이썬 스크립트 실행 (게임 이미지 크롤러)
             ProcessBuilder pbImage = new ProcessBuilder("python",
                     "C:/SOURCE/team1-project/python/gameImageCrwal.py");
             Map<String, String> envImage = pbImage.environment();
             envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+
             Process processImage = pbImage.start();
+
+            // 표준 출력 읽기 (stdout)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processImage.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println("[PYTHON STDOUT] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            // 에러 출력 읽기 (stderr)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processImage.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.err.println("[PYTHON STDERR] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
             int exitCodeImage = processImage.waitFor();
             System.out.println("게임 이미지 크롤러 종료. Exit code: " + exitCodeImage);
 
         } catch (Exception e) {
-            log.error("파이썬 실행 실패: " + e.getMessage());
             e.printStackTrace();
         }
-
-        // 이미지 서비스 호출
     }
 
     // 게임 등록
+    @Transactional
     public String insertGame(GameDTO dto) {
-        log.info("db에 게임 저장");
+        log.info("게임 저장 시작");
 
-        // 현재 가장 마지막 gid 확인
+        // 현재 가장 마지막 id확인
         String lastId = gameRepository.findLastGameId();
         int nextIdNum = 1;
 
@@ -102,6 +136,7 @@ public class GameService {
 
         Game game = Game.builder()
                 .gid(gid)
+                .appid(dto.getAppid())
                 .title(dto.getTitle())
                 .developer(dto.getDeveloper())
                 .ccu(dto.getCcu())
@@ -119,10 +154,19 @@ public class GameService {
                 .build();
 
         gameRepository.save(game);
+        log.info("게임 저장 완료: {}", gid);
 
-        // contents 등록
-        Contents contents = Contents.builder().contentsId(gid).contentsType(ContentsType.GAME).game(game).build();
-        contentsRepository.save(contents);
+        // contents 테이블에 등록
+        ContentsDTO contentsDTO = ContentsDTO.builder()
+                .contentsId(game.getGid())
+                .title(game.getTitle())
+                .contentsType(ContentsType.GAME)
+                .genres(game.getGenres())
+                .build();
+
+        log.info("콘텐츠 저장 시도: {}", contentsDTO);
+        contentsService.insertContents(contentsDTO);
+        log.info("콘텐츠 저장 완료");
 
         return game.getGid();
     }
@@ -266,7 +310,6 @@ public class GameService {
                         existing.setAgeRating(ageRating);
                         existing.setPositive(positive);
                         existing.setNegative(negative);
-
                         gameRepository.save(existing);
                     } else {
                         String lastId = gameRepository.findLastGameId();
@@ -294,9 +337,10 @@ public class GameService {
                                 .negative(negative)
                                 .build();
 
-                        gameRepository.save(game);
-                    }
+                        GameDTO dto = entityToDto(game);
+                        insertGame(dto);
 
+                    }
                     rank++;
                 }
             }
@@ -421,7 +465,7 @@ public class GameService {
                 .price(game.getPrice())
                 .publisher(game.getPublisher())
                 .rank(game.getRank())
-                .replycnt(game.getReplies().size())
+                .replycnt(game.getReplies() != null ? game.getReplies().size() : 0)
                 .synopsis(game.getSynopsis())
                 // .followcnt(game.getFollowcnt())
                 .title(game.getTitle())
