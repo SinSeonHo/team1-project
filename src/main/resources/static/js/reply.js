@@ -80,6 +80,10 @@ document.querySelectorAll(".update-btn").forEach((e) => {
     // 리뷰 정보
     replyForm.mention.value = data.mention;
     replyForm.ref.value = data.ref;
+
+    const reviewer = data.replyernickname;
+    const mention = document.querySelector(".mention");
+    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
     // 별점
     replyForm.rate.value = data.rate;
     highlightStars(data.rate);
@@ -142,28 +146,18 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
 
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
+    // textarea 멘션 추가
+    replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+    replyForm.text.value = `@${reviewer} ` + (replyForm.text.value == undefined ? " " : replyForm.text.value);
 
     const mention = document.querySelector(".mention");
     mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
     // 멘션 제거버튼 기능 추가
     mention.querySelector(".btn").addEventListener("click", (e) => {
-      replyForm.mention.value = null;
-      replyForm.ref.value = null;
-      mention.innerHTML = "";
+      removeMention();
     });
-    // 댓글 폼 추가
-    // const templateHTML = document.getElementById("reply-form").innerHTML;
-    // const review = e.target.closest(".anime__review__item");
-    // const mention = document.querySelector(`.mention-reply[data-rno="${rno}"]`);
-    // console.log("찾은 mention-reply:", mention);
-    // console.log("찾은 review:", review);
-    // if (mention) {
-    //   mention.style.display = mention.style.display === "none" || mention.style.display === "" ? "block" : "none";
-    // }
-    //     // 댓글 취소 기능 추가
-    // document.querySelector(".reply-cancel").addEventListener("click", () => {
-    //   mention.innerHTML = "";
-    // });
+
+    starsContainer.classList.add("hide");
   });
 });
 
@@ -171,14 +165,10 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
 replyForm.addEventListener("click", (e) => {
   const btn = e.target;
   if (btn.classList.contains("btn-cancel")) {
-    replyForm.rno.value = null;
-    replyForm.ref.value = null;
-    replyForm.text.value = null;
     // 멘션 제거
-    document.querySelector(".mention").innerHTML = "";
-    replyForm.mention.value = null;
-
-    replyForm.rate.value = null;
+    removeMention();
+    replyForm.rno.value = null;
+    replyForm.text.value = null;
     starsContainer.dataset.rating = 0;
     currentCharCount.textContent = 0;
 
@@ -187,6 +177,19 @@ replyForm.addEventListener("click", (e) => {
     highlightStars(0);
   }
 });
+
+function removeMention() {
+  const mention = document.querySelector(".mention");
+  mention.innerHTML = "";
+  replyForm.mention.value = null;
+  replyForm.ref.value = null;
+  replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+  // 별점 초기화
+  starsContainer.classList.remove("hide"); // 별점 보이기
+  starsContainer.dataset.rating = 0; // data-rating 속성 업데이트
+  replyForm.rate.value = 0;
+  highlightStars(0);
+}
 
 // 별점 기능
 const starsContainer = document.querySelector(".rating-form");
@@ -222,17 +225,6 @@ starsContainer.addEventListener("mouseout", () => {
 // 별들을 하이라이트하는 함수 (마우스 오버 및 클릭 시 사용)
 function highlightStars(value) {
   allStars.forEach((star) => {
-    const starValue = parseInt(star.dataset.value);
-    if (starValue <= value) {
-      star.classList.add("fa");
-    } else {
-      star.classList.remove("fa");
-    }
-  });
-}
-// 평점 별들을 하이라이트하는 함수 (페이지 로드 시 사용)
-function highlightRateStars(value) {
-  rateStars.forEach((star) => {
     const starValue = parseInt(star.dataset.value);
     if (starValue <= value) {
       star.classList.add("fa");

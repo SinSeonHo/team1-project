@@ -53,7 +53,7 @@
               <div class="row">
                 <div class="col-lg-3">
                   <img
-                    th:src="@{${movieInfo.image != null} ? '/images/movieimages/' + ${movieInfo.image.imgName} : '/images/sample.png'}"
+                    th:src="@{${movieInfo.image != null} ? '/images/movieimages/' + ${movieInfo.image.imgName} : '/images/sample.jpg'}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="영화 이미지"
                     loading="lazy"
@@ -158,7 +158,7 @@
                   th:data-rate="${reply.rate}"
                 >
                   <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
-                  <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
+                  <!-- <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span> -->
                   <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
                   <button
                     type="button"
@@ -166,7 +166,7 @@
                     th:if="${#authentication.name == reply.replyer}"
                     th:data-rno="${reply.rno}"
                   >
-                    x
+                    ✖
                   </button>
                   <button
                     type="button"
@@ -229,14 +229,15 @@
               <!-- 별점 -->
               <div class="rating-form">
                 <input type="hidden" name="rate" />
-                <span class="rating" name="rate">
+                <span class="rating" name="rate"
+                  >평가:
                   <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
                 </span>
               </div>
               <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
               <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
               <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">지우기</button>
             </form>
 
             <div th:if="${#authentication.name == 'anonymousUser'}">

@@ -122,10 +122,14 @@ public class ReplyService {
         Movie movie = null;
         Game game = null;
         // 별점 제한
-        if (dto.getRate() < 0) {
+        if (dto.getRef() == null) {
+            if (dto.getRate() < 0) {
+                dto.setRate(0);
+            } else if (dto.getRate() > 5) {
+                dto.setRate(5);
+            }
+        } else {
             dto.setRate(0);
-        } else if (dto.getRate() > 5) {
-            dto.setRate(5);
         }
 
         if (dto.getId() != null) {

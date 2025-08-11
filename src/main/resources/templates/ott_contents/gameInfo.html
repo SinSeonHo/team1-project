@@ -36,7 +36,7 @@
               <div class="row">
                 <div class="col-lg-5">
                   <img
-                    th:src="@{${gameInfo.image != null} ? '/images/gameimages/' + ${gameInfo.image.imgName} : '/images/sample.png'}"
+                    th:src="@{${gameInfo.image != null} ? '/images/gameimages/' + ${gameInfo.image.imgName} : '/images/sample.jpg'}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="게임 이미지"
                     loading="lazy"
@@ -187,7 +187,7 @@
                   th:data-ref="${reply.ref}"
                 >
                   <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
-                  <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
+                  <!-- <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span> -->
                   <span class="text-secondary" th:text="' - ' +${reply.updatedDate}"> 작성자 - 1 Hour ago</span>
                   <button
                     type="button"
@@ -195,7 +195,7 @@
                     th:data-rno="${reply.rno}"
                     th:if="${#authentication.name == reply.replyer}"
                   >
-                    x
+                    ✖
                   </button>
                   <button
                     type="button"
@@ -254,7 +254,7 @@
               <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
             </form>
             <div th:if="${#authentication.name == 'anonymousUser'}">
-              <button class="btn btn-sm" style="color: #eee">로그인</button>
+              <a href="/user/login" class="btn site-btn" style="color: #eee">로그인</a>
             </div>
             <div class="p-4"></div>
           </div>

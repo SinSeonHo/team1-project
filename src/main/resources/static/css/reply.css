@@ -1,3 +1,6 @@
+.hide {
+  display: none;
+}
 .re-reply-tag {
   float: left;
   padding: 10px 5px;
@@ -17,25 +20,12 @@
   margin-top: 12px;
 }
 
-.replyForm textarea {
+#replyForm textarea {
   width: 100%;
   font-size: 15px;
-  color: #b7b7b7;
+  color: #000000 !important;
   padding-left: 20px;
   padding-top: 12px;
-  border: none;
-  border-radius: 5px;
-  resize: none;
-  margin-bottom: 24px;
-}
-
-form textarea {
-  width: 100%;
-  font-size: 15px;
-  color: #9e2f2f;
-  padding-left: 20px;
-  padding-top: 12px;
-  height: 110px;
   border: none;
   border-radius: 5px;
   resize: none;
