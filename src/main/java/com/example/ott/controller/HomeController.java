@@ -12,13 +12,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.security.CustomUserDetails;
+import com.example.ott.service.ContentsService;
 import com.example.ott.service.GameService;
 import com.example.ott.service.MovieService;
+import com.example.ott.type.ContentType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +42,13 @@ public class HomeController {
                 model.addAttribute("games", gamelist);
 
                 return "index";
+        }
+
+        @GetMapping("/contents")
+        public String contents(Model model, PageRequestDTO requestDTO) {
+                PageResultDTO<ContentsDTO> result = contentsService.search(requestDTO);
+                model.addAttribute("contents", result.getDtoList());
+                return "ott_contents/contentList";
         }
 
         @ResponseBody

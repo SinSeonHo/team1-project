@@ -14,6 +14,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +63,8 @@ public class MovieService {
         runPythonMovieCrawlerAsync();
     }
 
+    // 영화 추가/수정 시 캐시 무효화
+    @CacheEvict(value = "movies", key = "'allMovies'")
     @Async
     @Transactional
     public void runPythonMovieCrawlerAsync() {
@@ -355,26 +360,16 @@ public class MovieService {
     }
 
     // 전체 영화 목록 조회
+    // 최초 호출 시 DB에서 조회 후 캐시에 저장
+    @Cacheable(value = "movies", key = "'allMovies'")
     public List<Movie> getMovieAll() {
         log.info("영화 전체목록 조회");
         return movieRepository.findAll();
     }
 
-    // 영화 목록 조회
-    public List<Movie> getMovieRank(int num) {
-        List<Movie> result;
-        List<Movie> list = movieRepository.findAll(Sort.by("rank"));
-        if (list.size() > num) {
-            result = new ArrayList<>(list.subList(0, num));
-        } else {
-            result = new ArrayList<>(list);
-        }
-        return result;
-    }
-
     public List<MovieDTO> getRandom(int num) {
         List<MovieDTO> result = new ArrayList<>();
-        List<Movie> list = movieRepository.findAll(); // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        List<Movie> list = getMovieAll(); // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
         if (list.isEmpty()) {
             return null;
         }

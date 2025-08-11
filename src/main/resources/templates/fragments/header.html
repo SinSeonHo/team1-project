@@ -12,7 +12,7 @@
           <div class="header__nav">
             <nav class="header__menu mobile-menu">
               <ul>
-                <li><a th:href="@{/}">Home</a></li>
+                <li><a th:href="@{/}">Sol</a></li>
                 <li>
                   <!-- <a th:href="@{/api/movies/list}">Movie List<span class="arrow_carrot-down"></span></a> -->
                   <a th:href="@{/api/movies/list}">Movie List</a>
@@ -53,7 +53,7 @@
             <div class="primary-btn d-flex">
               <!-- 검색창 -->
               <form
-                action="/api/movies/list"
+                action="/contents"
                 method="get"
                 class="search-box"
                 style="display: flex; gap: 5px; align-items: center"
@@ -126,5 +126,12 @@
       </div>
       <div id="mobile-menu-wrap"></div>
     </div>
+    <style>
+      @media (max-width: 768px) {
+        .section-title {
+          margin-top: 30px;
+        }
+      }
+    </style>
   </header>
 </html>

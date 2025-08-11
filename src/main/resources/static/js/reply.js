@@ -111,7 +111,7 @@ document.querySelectorAll(".delete-btn").forEach((btn) => {
   });
 });
 
-const replyText = document.querySelector("#replytext");
+const replyText = document.getElementById("replytext");
 const currentCharCount = document.getElementById("currentCharCount");
 const maxLength = 200; // 최대 글자 수
 document.querySelector("#maxChar").textContent = maxLength;
@@ -119,6 +119,7 @@ document.querySelector("#maxChar").textContent = maxLength;
 // 입력 필드에 'input' 이벤트 리스너 추가
 replyText.addEventListener("input", () => {
   let currentLength = replyText.value.length;
+  console.log(replyText.value);
 
   // 글자 수가 제한을 초과하는 경우
   if (currentLength > maxLength) {
@@ -173,7 +174,7 @@ replyForm.addEventListener("click", (e) => {
     currentCharCount.textContent = 0;
 
     // 별점 초기화
-    document.querySelector(".__rating").classList.remove("hide"); // 별점 보이기
+    document.querySelector(".rating-form").classList.remove("hide"); // 별점 보이기
     highlightStars(0);
   }
 });

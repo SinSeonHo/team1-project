@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +71,7 @@ public class GameService {
         runPythonGameCrawlerAsync(); // @Async 붙은 메서드 호출
     }
 
+    @CacheEvict(value = "games", key = "'allGames'")
     @Async
     @Transactional
     public void runPythonGameCrawlerAsync() {
@@ -369,37 +373,13 @@ public class GameService {
         return result;
     }
 
-    // 인기 게임 목록 조회
-    public List<Game> getGameRank(int num) {
-        List<Game> list = gameRepository.findAll(Sort.by("rank"));
-        List<Game> result;
-        // originalList에 10개 이상 있으면 0~9까지 자르고, 아니면 전부 복사
-        if (list.size() > num) {
-            result = new ArrayList<>(list.subList(0, num));
-        } else {
-            result = new ArrayList<>(list);
-        }
-        return result;
-    }
-
     // 전체 게임 목록 조회
+    // 최초 호출 시 DB에서 조회 후 캐시에 저장
+    @Cacheable(value = "games", key = "'allGames'")
     public List<Game> getGameAll() {
+        System.out.println("전체 game 조회 ");
         return gameRepository.findAll();
     }
-    // 주석처리 6/25
-    // public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
-    // Page<Game> result = gameRepository.search(requestDTO);
-
-    // List<GameDTO> dtoList = result.stream()
-    // .map(game -> entityToDto(game))
-    // .collect(Collectors.toList());
-
-    // return PageResultDTO.<GameDTO>withAll()
-    // .dtoList(dtoList)
-    // .pageRequestDTO(requestDTO)
-    // .totalCount(result.getTotalElements())
-    // .build();
-    // }
 
     public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
         Page<Game> result = gameRepository.search(requestDTO);
