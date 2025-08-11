@@ -68,6 +68,11 @@ public class FollowedContentsService {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
             userGenrePreferenceService.removeUserPreference(user, contents);
+
+            // 팔로우 카운트 감소
+            contents.minusFollowCnt();
+            contentsRepository.save(contents);
+
             followedContentsRepository.delete(followedContents);
 
         } else {
@@ -76,6 +81,10 @@ public class FollowedContentsService {
                     .contents(contents)
                     .user(user)
                     .build();
+
+            // 팔로우 카운트 증가
+            contents.addFollowCnt();
+            contentsRepository.save(contents);
 
             followedContentsRepository.save(followedContents);
 
@@ -154,4 +163,5 @@ public class FollowedContentsService {
 
         return followedContentsDTOs;
     }
+
 }

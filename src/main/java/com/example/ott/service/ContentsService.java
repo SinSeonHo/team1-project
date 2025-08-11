@@ -1,5 +1,7 @@
 package com.example.ott.service;
 
+import java.util.NoSuchElementException;
+
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ContentsDTO;
@@ -58,6 +60,13 @@ public class ContentsService {
             contentsGenreService.insertContentsGenre(contents.getContentsId(), contentsDTO.getGenreNames());
         }
 
+    }
+
+    public int getFollowCnt(String id) {
+        Contents contents = contentsRepository.findByContentsId(id)
+                .orElseThrow(() -> new NoSuchElementException("요청하신 콘텐츠는 존재하지 않는 콘텐츠입니다."));
+
+        return contents.getFollowCnt();
     }
 
 }
