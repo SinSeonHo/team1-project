@@ -3,17 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <title>관리자 페이지</title>
-    <link rel="stylesheet" th:href="@{./admin.css}" />
+    <link rel="stylesheet" th:href="@{/admin/admin.css}" />
+
+    <!-- CSRF 메타태그 추가 -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <!-- JS 분리 후 외부 파일로 불러오기 -->
+    <script th:src="@{/js/admin.js}"></script>
   </head>
 
   <body layout:fragment="content">
     <h1 class="text-center">관리자 크롤링 페이지</h1>
 
     <div class="button-container">
-      <button class="btn btn-primary">영화 API 불러오기</button>
-      <button class="btn btn-primary">게임 API 불러오기</button>
-      <button class="btn btn-primary">영화 이미지 불러오기</button>
-      <button class="btn btn-primary">게임 이미지 불러오기</button>
+      <!-- 영화 API 불러오기 -->
+      <button class="btn btn-primary" onclick="sendAsyncRequest('/admin/import/movies', '영화 API 요청 완료')">
+        영화 API 불러오기
+      </button>
+
+      <!-- 게임 API 불러오기 -->
+      <button class="btn btn-primary" onclick="sendAsyncRequest('/admin/import/games', '게임 API 요청 완료')">
+        게임 API 불러오기
+      </button>
+
+      <!-- 영화 이미지 크롤링 -->
+      <button class="btn btn-primary" onclick="sendAsyncRequest('/admin/crawl/movie', '영화 이미지 크롤링 시작됨')">
+        영화 이미지 불러오기
+      </button>
+
+      <!-- 게임 이미지 크롤링 -->
+      <button class="btn btn-primary" onclick="sendAsyncRequest('/admin/crawl/game', '게임 이미지 크롤링 시작됨')">
+        게임 이미지 불러오기
+      </button>
     </div>
   </body>
 </html>

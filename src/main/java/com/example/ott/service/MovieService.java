@@ -1,9 +1,11 @@
 package com.example.ott.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,14 +14,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
@@ -43,20 +46,23 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
-    private final ModelMapper modelMapper;
-    private final ContentsRepository contentsRepository;
+    private final ContentsService contentsService;
 
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
-    @Transactional
     public void scheduledMovieImport() {
         log.info("자동 영화 데이터 수집 시작");
         importMovies();
     }
 
-    @Scheduled(cron = "00 39 11 * * *") // 매일 오전10:01에 실행
-    @Transactional
+    @Scheduled(cron = "00 03 10 * * *") // 매일 오전10:03에 실행
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
+        runPythonMovieCrawlerAsync();
+    }
+
+    @Async
+    @Transactional
+    public void runPythonMovieCrawlerAsync() {
         runPythonMovieCrawler();
     }
 
@@ -70,16 +76,71 @@ public class MovieService {
             Map<String, String> env = pbSynopsis.environment();
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
+
+            // 표준 출력 읽기 (stdout)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processSynopsis.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println("[PYTHON SYNOPSIS STDOUT] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            // 에러 출력 읽기 (stderr)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processSynopsis.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.err.println("[PYTHON SYNOPSIS STDERR] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
             int exitCodeSynopsis = processSynopsis.waitFor();
             System.out.println("영화 줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
+                System.out.println("Python 영화 포스터 크롤링 시작");
                 ProcessBuilder pbImage = new ProcessBuilder("python",
                         "C:/SOURCE/team1-project/python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();
+
+                // 표준 출력 읽기 (stdout)
+                new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(processImage.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            System.out.println("[PYTHON IMAGE STDOUT] " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
+                // 에러 출력 읽기 (stderr)
+                new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(processImage.getErrorStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            System.err.println("[PYTHON IMAGE STDERR] " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
                 int exitCodeImage = processImage.waitFor();
                 System.out.println("영화 이미지 크롤러 종료. Exit code: " + exitCodeImage);
             } else {
@@ -124,8 +185,13 @@ public class MovieService {
         movieRepository.save(movie);
 
         // contents 테이블에 등록
-        Contents contents = Contents.builder().contentsId(mid).movie(movie).contentsType(ContentsType.MOVIE).build();
-        contentsRepository.save(contents);
+        ContentsDTO contentsDTO = ContentsDTO.builder()
+                .contentsId(movie.getMid())
+                .title(movie.getTitle())
+                .contentsType(ContentsType.MOVIE)
+                .genres(movie.getGenres())
+                .build();
+        contentsService.insertContents(contentsDTO);
 
         return movie.getMid();
     }
@@ -250,10 +316,11 @@ public class MovieService {
 
                         insertMovie(dto);
                     }
+                    rank++;
                 }
             }
         } catch (Exception e) {
-            log.error("영화 데이터 수집 실패", e);
+            e.printStackTrace();
         }
     }
 
@@ -365,8 +432,8 @@ public class MovieService {
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
                 .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
-                .replycnt(movie.getReplies().size())
-                .followcnt(movie.getFollowcnt())
+                .replycnt(movie.getReplies() != null ? movie.getReplies().size() : 0)
+                // .followcnt(movie.getFollowcnt())
                 .build();
 
         if (movie.getImage() == null) {

@@ -42,4 +42,18 @@ public class Contents {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gid", unique = true)
     private Game game;
+
+    @Builder.Default
+    private int followCnt = 0;
+
+    public void addFollowCnt() {
+        this.followCnt += 1;
+    }
+
+    public void minusFollowCnt() {
+        if (this.followCnt == 0) {
+            return;
+        }
+        this.followCnt -= 1;
+    }
 }

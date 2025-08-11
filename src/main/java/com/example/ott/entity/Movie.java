@@ -51,14 +51,12 @@ public class Movie extends BaseEntity {
     @Column(length = 10000)
     private String synopsis;
 
+    @Builder.Default
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "image_id", nullable = true)
     private Image image;
-
-    @Builder.Default
-    private int followcnt = 0;
 
 }

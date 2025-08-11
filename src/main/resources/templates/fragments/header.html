@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <header class="header" th:fragment="header">
+    <script th:src="@{/js/chart-menu.js}"></script>
     <div class="container">
       <div class="row">
         <div>
@@ -17,7 +18,32 @@
                   <a th:href="@{/api/movies/list}">Movie List</a>
                 </li>
                 <li><a th:href="@{/api/games/list}">Game List</a></li>
-                <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{./admin/home}">관리자</a></li>
+                <li>
+                  <a th:href="@{/chart}">통계</a>
+                  <ul class="dropdown">
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REP00CFA52B028345FCAAEB504271E20234"
+                        >장르 종류별 분포</a
+                      >
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REP0963E2B240B440BD8DF86808345C0AAA">회원 현황</a>
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REPE9E4D442110F4D7987411918C52AB69F"
+                        >연령별 선호 장르</a
+                      >
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REPBC8878CD59FB43A6864642264263CABD"
+                        >남여 선호 장르</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+
+                <!-- <li><a href="http://localhost:8080/report?rCode=REP00CFA52B028345FCAAEB504271E20234">Chart</a></li> -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/admin/home}">관리자</a></li>
               </ul>
             </nav>
           </div>
@@ -30,7 +56,7 @@
                 action="/api/movies/list"
                 method="get"
                 class="search-box"
-                style="display: flex; gap: 10px; align-items: center"
+                style="display: flex; gap: 5px; align-items: center"
               >
                 <select name="content" id="content" onchange="updateCityOptions()">
                   <option value="m">영화</option>

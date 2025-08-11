@@ -33,7 +33,7 @@
               </div>
 
               <!-- 영화 슬라이더: sliderContainerMovie / sliderMovie 로 클래스명 구분 -->
-              <div class="sliderContainerMovie" style="overflow-x: hidden; white-space: nowrap">
+              <div class="sliderContainerMovie" style="overflow-x: hidden; white-space: nowrap; margin-top: 20px">
                 <div class="sliderMovie" style="display: inline-block">
                   <div th:each="movie : ${movies}" style="display: inline-block; margin-right: 10px">
                     <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
@@ -42,7 +42,7 @@
                         onerror="this.onerror=null; this.src='/images/sample.png';"
                         alt="영화 이미지"
                         loading="lazy"
-                        style="width: 280px; height: 400px; object-fit: cover; display: block; border-radius: 10px"
+                        style="width: 250px; height: 370px; object-fit: contain; display: block; border-radius: 2.5%"
                       />
                     </a>
                   </div>

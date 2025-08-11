@@ -3,11 +3,13 @@ package com.example.ott.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+<<<<<<< HEAD
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+=======
+>>>>>>> dev
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.example.ott.handler.AuthSuccessHandler;
@@ -35,19 +37,25 @@ public class SecurityConfig {
 
                 http
                                 .authorizeHttpRequests(authorize -> authorize
-                                                // 정적 리소스
+                                                // 정적 리소스 접근 허용
                                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
+
                                                                 "/social/**", "/auth/**")
+
                                                 .permitAll()
 
+                                                // 신고 페이지 (ADMIN만 허용)
+                                                .requestMatchers("/report", "/WEB-INF/**").hasRole("ADMIN")
+
                                                 // 에러페이지/홈/회원가입/인증 관련
+
                                                 .requestMatchers("/", "/error/**",
                                                                 "/user/upgrade", "/user/userConsent", "/user/register")
+
                                                 .permitAll()
 
                                                 // 어드민 페이지 관련
-                                                .requestMatchers("/admin/**")
-                                                .hasRole("ADMIN")
+                                                .requestMatchers("/admin/**").hasRole("ADMIN")
 
                                                 // 영화 관련
                                                 // .requestMatchers("/api/movies/import").hasRole("ADMIN")
@@ -59,7 +67,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/games/**").permitAll()
                                                 .requestMatchers("/games/**").permitAll()
 
-                                                // 유저 관련
+                                                // 댓글 관련
                                                 .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/replies/**")
                                                 .hasAnyRole("USER", "MANAGER", "ADMIN")
@@ -73,14 +81,31 @@ public class SecurityConfig {
 
                                                 // 기타 모든 경로는 인증 필요
                                                 .anyRequest().authenticated());
+
+                // [추가] iframe 허용 설정 (report.jsp iframe 삽입을 위해 sameOrigin 허용)
                 http
-                                // 일반 로그인
+                                .headers(headers -> headers
+                                                .frameOptions(frameOptions -> frameOptions
+                                                                .sameOrigin()));
+
+                // 일반 로그인
+                http
                                 .formLogin(login -> login
                                                 .loginPage("/user/login")
                                                 .defaultSuccessUrl("/", true)
                                                 .failureUrl("/user/login?error=true")
-                                                .permitAll())
-                                // 소셜 로그인
+                                                .permitAll());
+
+                // admin 로그인
+                http
+                                .formLogin(login -> login
+                                                .loginPage("/user/login")
+                                                .defaultSuccessUrl("/")
+                                                .failureUrl("/user/login?error=true")
+                                                .permitAll());
+
+                // 소셜 로그인
+                http
                                 .oauth2Login(login -> login
                                                 .loginPage("/user/login")
                                                 .successHandler(new AuthSuccessHandler())
@@ -90,6 +115,7 @@ public class SecurityConfig {
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2DetailsService)));
 
+                // 로그아웃 설정
                 http
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
