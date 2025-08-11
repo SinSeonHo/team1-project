@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout}">
+  <head>
+    <meta charset="UTF-8" />
+    <title>관리자 페이지</title>
+    <link rel="stylesheet" th:href="@{./admin.css}" />
+  </head>
+
+  <body layout:fragment="content">
+    <h1 class="text-center">관리자 크롤링 페이지</h1>
+
+    <div class="button-container">
+      <button class="btn btn-primary">영화 API 불러오기</button>
+      <button class="btn btn-primary">게임 API 불러오기</button>
+      <button class="btn btn-primary">영화 이미지 불러오기</button>
+      <button class="btn btn-primary">게임 이미지 불러오기</button>
+    </div>
+  </body>
+</html>

@@ -61,7 +61,4 @@ public class Movie extends BaseEntity {
     @Builder.Default
     private int followcnt = 0;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id")
-    private Content content;
 }

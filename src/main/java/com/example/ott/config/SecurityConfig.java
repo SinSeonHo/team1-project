@@ -42,10 +42,12 @@ public class SecurityConfig {
 
                                                 // 에러페이지/홈/회원가입/인증 관련
                                                 .requestMatchers("/", "/error/**",
-                                                                "/user/upgrade", "/user/userConsent")
+                                                                "/user/upgrade", "/user/userConsent", "/user/register")
                                                 .permitAll()
 
-                                                .requestMatchers("/user/register").permitAll()
+                                                // 어드민 페이지 관련
+                                                .requestMatchers("/admin/**")
+                                                .hasRole("ADMIN")
 
                                                 // 영화 관련
                                                 // .requestMatchers("/api/movies/import").hasRole("ADMIN")
