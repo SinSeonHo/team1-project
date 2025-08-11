@@ -26,9 +26,6 @@ public class FollowController {
     public void toggleFavorite(@AuthenticationPrincipal UserDetails userDetails, String contentsId) {
         User user = userService.getUserById(userDetails.getUsername());
         followedContentsService.follow(user, contentsId);
-        
-
     }
-    
 
 }
