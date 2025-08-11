@@ -1,5 +1,7 @@
 package com.example.ott.service;
 
+import java.util.NoSuchElementException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,23 +68,11 @@ public class ContentsService {
 
     }
 
-    public PageResultDTO<ContentsDTO> search(PageRequestDTO pageRequestDTO) {
-        Page<Contents> result = contentsRepository.search(pageRequestDTO);
+    public int getFollowCnt(String id) {
+        Contents contents = contentsRepository.findByContentsId(id)
+                .orElseThrow(() -> new NoSuchElementException("요청하신 콘텐츠는 존재하지 않는 콘텐츠입니다."));
 
-        List<ContentsDTO> dtoList = result.stream().map(content -> entityToDto(content)).collect(Collectors.toList());
-
-        return PageResultDTO.<ContentsDTO>withAll()
-                .dtoList(dtoList)
-                .pageRequestDTO(pageRequestDTO)
-                .totalCount(result.getTotalElements())
-                .build();
+        return contents.getFollowCnt();
     }
 
-    private ContentsDTO entityToDto(Contents content) {
-        return ContentsDTO.builder()
-                .contentsId(content.getContentsId())
-                .contentsType(content.getContentsType())
-                .title(content.getTitle())
-                .build();
-    }
 }

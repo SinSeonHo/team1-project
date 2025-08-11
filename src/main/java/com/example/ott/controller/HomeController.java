@@ -1,6 +1,13 @@
 package com.example.ott.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
-import com.example.ott.service.ContentsService;
+import com.example.ott.security.CustomUserDetails;
 import com.example.ott.service.GameService;
 import com.example.ott.service.MovieService;
 
@@ -31,4 +38,14 @@ public class HomeController {
 
                 return "index";
         }
+
+        @ResponseBody
+        @GetMapping("/auth")
+        public Authentication gAuthentication() {
+                SecurityContext context = SecurityContextHolder.getContext();
+                Authentication authentication = context.getAuthentication();
+
+                return authentication;
+        }
+
 }

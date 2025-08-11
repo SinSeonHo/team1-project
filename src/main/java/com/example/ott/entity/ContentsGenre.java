@@ -31,6 +31,8 @@ public class ContentsGenre {
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
+    private String genreName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contents_id")
     private Contents contents;

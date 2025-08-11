@@ -25,6 +25,8 @@ public class GlobalControllerAdvice {
     public void currentUser(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails != null) {
             User user = userService.getUserById(userDetails.getUsername());
+            if (user == null)
+                return;
             String id = user.getId();
             if (user.getImage() != null) {
                 model.addAttribute("profileImageUrl", user.getImage().getThumbnailPath());

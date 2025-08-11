@@ -20,6 +20,7 @@ import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = { "replies", "image" })
 @Getter
 @Setter
 @Builder
@@ -51,6 +52,7 @@ public class Movie extends BaseEntity {
     @Column(length = 10000)
     private String synopsis;
 
+    @Builder.Default
     @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<Reply> replies = new ArrayList<>();
 
@@ -58,10 +60,4 @@ public class Movie extends BaseEntity {
     @JoinColumn(name = "image_id", nullable = true)
     private Image image;
 
-    // @Builder.Default
-    // private int followcnt = 0;
-
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "content_id")
-    // private Content content;
 }

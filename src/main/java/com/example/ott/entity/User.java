@@ -9,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.example.ott.type.Gender;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,13 +34,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 @EntityListeners(value = AuditingEntityListener.class)
 @Table(name = "user_table")
 @Entity
 public class User {
 
     @Id
+    @Setter
     private String id;
 
     @Setter
@@ -63,11 +65,16 @@ public class User {
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Socials socials = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
+    private Socials social = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
 
-    @Builder.Default
-    @Setter
-    private Long mileage = 0L;
+    @Column(nullable = false)
+    private Integer age;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
+
+    private boolean firstLogin;
 
     @CreatedDate
     @Column(updatable = false)

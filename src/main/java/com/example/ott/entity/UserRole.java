@@ -11,7 +11,8 @@ public enum UserRole {
     GUEST("GUEST"),
     USER("USER"),
     MANAGER("USER,MANAGER"),
-    ADMIN("USER,MANAGER,ADMIN");
+    ADMIN("USER,MANAGER,ADMIN"),
+    PENDING("PENDING");
 
     private final String roles;
 
@@ -24,5 +25,9 @@ public enum UserRole {
         return Arrays.stream(roles.split(","))
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
+    }
+
+    public boolean isPending() {
+        return this == PENDING;
     }
 }

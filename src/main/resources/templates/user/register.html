@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="css">
+    <style>
+      .input-item {
+        position: relative;
+        margin-bottom: 1rem;
+      }
+
+      .input-item input,
+      .input-item select {
+        padding-left: 2.5rem;
+        height: 45px;
+      }
+
+      .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 0.75rem;
+        transform: translateY(-50%);
+        color: #6c757d;
+        pointer-events: none;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 0.75rem;
+        transform: translateY(-50%);
+        color: #6c757d;
+        cursor: pointer;
+      }
+
+      .false-icon {
+        color: red;
+      }
+
+      .reverse {
+        background-color: #1976d2;
+      }
+
+      .text-red {
+        color: #e53637;
+      }
+
+      /* 기본 placeholder 스타일 */
+      ::placeholder {
+        color: #6c757d;
+        opacity: 1;
+      }
+
+      .input-error {
+        border-color: red;
+      }
+
+      /* 에러 클래스가 붙은 경우 placeholder 색상 변경 */
+      .input-error::placeholder {
+        color: red;
+        opacity: 1;
+      }
+
+      /* select의 placeholder 역할(첫 번째 option) 빨간색 */
+      .input-error option:first-child {
+        color: red;
+      }
+    </style>
+  </th:block>
+
+  <main layout:fragment="content" th:object="${totalUserDTO}">
+    <div class="container">
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <h2 class="mb-2">회원정보 입력</h2>
+        <form th:action="@{/user/register}" th:object="${totalUserDTO}" method="post" class="registerForm w-50 my-2">
+          <!-- 이름 -->
+          <div class="input-item" th:with="err=${#fields.hasErrors('name')}">
+            <input
+              type="text"
+              class="form-control w-100"
+              name="name"
+              th:value="${err} ? null : ${totalUserDTO.name}"
+              th:placeholder="${err} ? ${#fields.errors('name')[0]} : '이름'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
+            <span class="fas fa-user input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+          </div>
+
+          <!-- 닉네임 -->
+          <div class="input-item" th:with="err=${#fields.hasErrors('nickname')}">
+            <input
+              type="text"
+              class="form-control w-100"
+              name="nickname"
+              th:value="${err} ? null : ${totalUserDTO.nickname}"
+              th:placeholder="${err} ? ${#fields.errors('nickname')[0]} : '별명'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
+            <span class="fas fa-solid fa-circle-user input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+          </div>
+
+          <!-- 아이디 -->
+          <div class="input-item" th:with="err=${#fields.hasErrors('id')}">
+            <input
+              type="text"
+              class="form-control"
+              name="id"
+              th:value="${err} ? null : ${totalUserDTO.id}"
+              th:placeholder="${err} ? ${#fields.errors('id')[0]} : '아이디'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
+            <span class="fas fa-id-badge input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+          </div>
+
+          <!-- 비밀번호 -->
+          <div class="input-item" style="position: relative" th:with="err=${#fields.hasErrors('password')}">
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              th:placeholder="${err} ? ${#fields.errors('password')[0]} : '비밀번호'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
+            <span class="fas fa-lock input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+            <span class="fas fa-eye toggle-password"></span>
+          </div>
+
+          <!-- 비밀번호 확인 -->
+          <div class="input-item" style="position: relative" th:with="err=${#fields.hasErrors('checkPassword')}">
+            <input
+              type="password"
+              class="form-control"
+              name="checkPassword"
+              th:value="${err} ? null : ${totalUserDTO.checkPassword}"
+              th:placeholder="${err} ? ${#fields.errors('checkPassword')[0]} : '비밀번호 확인'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
+            <span class="fas fa-lock input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+            <span class="fas fa-eye toggle-password"></span>
+          </div>
+
+          <!-- 나이 -->
+          <div class="input-item" th:with="err=${#fields.hasErrors('age')}">
+            <input
+              type="number"
+              class="form-control"
+              name="age"
+              th:value="${err} ? null : ${totalUserDTO.age}"
+              th:placeholder="${err} ? ${#fields.errors('age')[0]} : '나이'"
+              min="0"
+              max="100"
+              th:classappend="${err} ? 'input-error' : ''"
+              autocomplete="off"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+            />
+            <span class="fas fa-calendar input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+          </div>
+
+          <!-- 성별 -->
+          <div class="input-item" th:with="err=${#fields.hasErrors('gender')}">
+            <select class="form-control" name="gender" th:classappend="${err} ? 'input-error' : ''">
+              <option value="" disabled th:selected="${totalUserDTO.gender == null}">성별 선택</option>
+              <option value="MAN" th:selected="${totalUserDTO.gender == 'MAN'}">남자</option>
+              <option value="WOMAN" th:selected="${totalUserDTO.gender == 'WOMAN'}">여자</option>
+            </select>
+            <span class="fas fa-venus-mars input-icon"></span>
+          </div>
+          <input type="hidden" name="email" th:value="${totalUserDTO.email}">
+        </form>
+
+        <div class="input-item">
+          <button type="button" class="site-btn mx-1 ok">결정</button>
+          <button type="button" class="site-btn reverse mx-1">취소</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <th:block layout:fragment="script">
+    <script>
+      const registerForm = document.querySelector(".registerForm");
+      const submitBtn = document.querySelector(".ok");
+
+      submitBtn.addEventListener("click", () => {
+        event.preventDefault();
+        // const formData = new FormData(registerForm);
+
+        // // 모든 값 확인
+        // for (let [name, value] of formData.entries()) {
+        //   console.log(name, value);
+        // }
+        registerForm.submit();
+      });
+
+      document.querySelectorAll(".toggle-password").forEach((eyeIcon) => {
+        eyeIcon.addEventListener("click", () => {
+          const input = eyeIcon.parentElement.querySelector("input");
+          if (input.type === "password") {
+            input.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+          } else {
+            input.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+          }
+        });
+      });
+    </script>
+  </th:block>
+</html>

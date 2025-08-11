@@ -36,6 +36,7 @@ public class ContentsGenreService {
             ContentsGenre contentsGenre = ContentsGenre.builder()
                     .contents(contents)
                     .genre(genre)
+                    .genreName(genre.getGenreName())
                     .build();
 
             contentsGenreRepository.save(contentsGenre);

@@ -2,16 +2,22 @@ package com.example.ott.service;
 
 import java.util.NoSuchElementException;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.SecurityUserDTO;
+import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
+import com.example.ott.security.CustomUserDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,17 +32,39 @@ public class UserService {
     private final ImageRepository imageRepository;
 
     // 계정 생성 + 자동 로그인
-    public String registerAndLogin(SecurityUserDTO securityUserDTO, HttpServletRequest request) {
+    public String registerAndLogin(TotalUserDTO totalUserDTO) {
+
+        String nickname = (totalUserDTO.getNickname() == null)
+                ? makeUniqueNickname(userRepository)
+                : totalUserDTO.getNickname();
+
+        Socials social = Socials.NONE;
+        UserRole userRole = UserRole.GUEST;
+        if (!totalUserDTO.getEmail().isEmpty()) {
+            // 소셜 회원가입 일경우 user등급 및 social 종류 추가
+                SecurityContext context = SecurityContextHolder.getContext();
+                Authentication auth = context.getAuthentication();
+                CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
+                 social = cud.getTemp().getSocial();
+
+            userRole = UserRole.USER;
+            
+        }
+
         User user = User.builder()
-                .name(securityUserDTO.getName())
-                .id(securityUserDTO.getId())
-                .nickname(makeUniqueNickname(userRepository))
-                .password(passwordEncoder.encode(securityUserDTO.getPassword()))
-                .userRole(UserRole.GUEST)
+                .name(totalUserDTO.getName())
+                .id(totalUserDTO.getId())
+                .nickname(nickname)
+                .password(passwordEncoder.encode(totalUserDTO.getPassword()))
+                .userRole(userRole)
+                .age(totalUserDTO.getAge())
+                .gender(totalUserDTO.getGender())
+                .email(totalUserDTO.getEmail())
+                .social(social)
                 .build();
 
         return userRepository.save(user).getId();
-
+        // social 대기
     }
 
     // 프로필 조회
@@ -51,9 +79,8 @@ public class UserService {
                 .email(user.getEmail())
                 .name(user.getName())
                 .nickname(user.getNickname())
-                .mileage(user.getMileage())
                 .profileImageUrl(userProfileUrl)
-                .socials(user.getSocials())
+                .socials(user.getSocial())
                 .grade(user.getUserRole().name())
                 .build();
     }
@@ -75,23 +102,25 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // 아이디, 비밀번호 변경 (예시)
-    public String changeAccountInfo(SecurityUserDTO securityUserDTO) {
-        // 암호화된 비밀번호로 체크하려면 matches 사용!
-        User user = userRepository.findById(securityUserDTO.getId())
-                .orElse(null);
+    // // 아이디, 비밀번호 변경 (예시)
+    // public String changeAccountInfo(SecurityUserDTO securityUserDTO) {
+    // // 암호화된 비밀번호로 체크하려면 matches 사용!
+    // User user = userRepository.findById(securityUserDTO.getId())
+    // .orElse(null);
 
-        if (user == null || !passwordEncoder.matches(securityUserDTO.getPassword(), user.getPassword())) {
-            return "입력하신 정보가 일치하지 않습니다.";
-        }
-        // 이미 사용중인 ID 체크
-        if (userRepository.existsById(securityUserDTO.getId())) {
-            return "이미 존재하는 Id입니다.";
-        }
-        user.changeAccountInfo(securityUserDTO.getId(), passwordEncoder.encode(securityUserDTO.getPassword()));
-        userRepository.save(user);
-        return "변경되었습니다";
-    }
+    // if (user == null || !passwordEncoder.matches(securityUserDTO.getPassword(),
+    // user.getPassword())) {
+    // return "입력하신 정보가 일치하지 않습니다.";
+    // }
+    // // 이미 사용중인 ID 체크
+    // if (userRepository.existsById(securityUserDTO.getId())) {
+    // return "이미 존재하는 Id입니다.";
+    // }
+    // user.changeAccountInfo(securityUserDTO.getId(),
+    // passwordEncoder.encode(securityUserDTO.getPassword()));
+    // userRepository.save(user);
+    // return "변경되었습니다";
+    // }
 
     public User getUserById(String id) {
         User user = null;
