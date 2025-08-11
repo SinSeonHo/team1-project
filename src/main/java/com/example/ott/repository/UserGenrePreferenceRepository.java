@@ -8,13 +8,17 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.ott.dto.ContentRecommendation;
 import com.example.ott.entity.Genre;
+import com.example.ott.entity.User;
 import com.example.ott.entity.UserGenrePreference;
+
+import jakarta.transaction.Transactional;
 
 public interface UserGenrePreferenceRepository extends JpaRepository<UserGenrePreference, Long> {
 
-  boolean existsByGenre(Genre genre);
+  boolean existsByGenreAndUser(Genre genre, User user);
 
-  UserGenrePreference findByGenre(Genre genre);
+  @Transactional
+  UserGenrePreference findByGenreAndUser(Genre genre, User user);
 
   // 사용자의 장르 취향의 count가 0이하인 것을 제거하기 위한 조회
   @Query("select ugp from UserGenrePreference ugp where ugp.count <= 0 ")

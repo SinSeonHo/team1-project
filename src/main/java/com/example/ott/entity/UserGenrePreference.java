@@ -31,7 +31,7 @@ public class UserGenrePreference {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genre_id", unique = true)
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
     private String genreName;

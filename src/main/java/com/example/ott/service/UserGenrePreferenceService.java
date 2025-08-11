@@ -31,14 +31,18 @@ public class UserGenrePreferenceService {
 
     // 팔로우한 콘텐츠를 받아 그 콘텐츠들의 장르를 유저 취향에 추가
     public void addUserPreference(User user, Contents contents) {
-        // follow한 콘텐츠의 장르 추출
+        // follow한 콘텐츠의 장르 추출 그 유저가 팔로우한!
         List<ContentsGenre> contentsGenres = contentsGenreRepository.findByContents(contents);
 
         contentsGenres.forEach(contentsGenre -> {
+
             Genre genre = contentsGenre.getGenre();
-            if (userGenrePreferenceRepository.existsByGenre(genre)) {
+            if (userGenrePreferenceRepository.existsByGenreAndUser(genre, user)) {
+
                 // 유저 취향에 장르가 이미 있을경우 count + 1
-                userGenrePreferenceRepository.save(userGenrePreferenceRepository.findByGenre(genre).addCount());
+                UserGenrePreference userGenrePreference = userGenrePreferenceRepository.findByGenreAndUser(genre, user);
+                userGenrePreference.addCount();
+                userGenrePreferenceRepository.save(userGenrePreference);
             } else {
                 // 유저 취향에 장르가 존재하지 않을 경우 새로 생성
                 UserGenrePreference userGenrePreference = UserGenrePreference.builder()
@@ -64,9 +68,10 @@ public class UserGenrePreferenceService {
 
         contentsGenres.forEach(contentsGenre -> {
             Genre genre = contentsGenre.getGenre();
-            if (userGenrePreferenceRepository.existsByGenre(genre)) {
+            if (userGenrePreferenceRepository.existsByGenreAndUser(genre, user)) {
                 // 유저 취향에 장르가 이미 있을경우 count - 1
-                userGenrePreferenceRepository.save(userGenrePreferenceRepository.findByGenre(genre).minusCount());
+                userGenrePreferenceRepository
+                        .save(userGenrePreferenceRepository.findByGenreAndUser(genre, user).minusCount());
             }
             // 유저 취향의 count가 0 이하인 항목들은 삭제
             userGenrePreferenceRepository.findZeroOrNegativePreferences()

@@ -20,6 +20,7 @@ import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = { "replies", "image" })
 @Getter
 @Setter
 @Builder

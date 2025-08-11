@@ -99,7 +99,7 @@ public class UserController {
     public String postRegister(@Validated(ValidationOrder.class) TotalUserDTO totalUserDTO, BindingResult result,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes,
-            HttpSession session) {
+            HttpSession session, Model model) {
 
         if (result.hasErrors()) {
             // 에러 메시지나 입력값을 FlashAttribute로 임시 저장
@@ -110,7 +110,6 @@ public class UserController {
 
         // DB에 회원정보 저장
         userService.registerAndLogin(totalUserDTO);
-        
 
         // 2) 소셜(PENDING) 가입인지 여부 판단
         boolean isSocialFlow = (session != null && session.getAttribute(SessionKeys.TEMP_SOCIAL) != null);
@@ -130,7 +129,7 @@ public class UserController {
             }
 
         } else {
-            
+
             // 일반 회원가입 AuthenticationManager로 인증
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(totalUserDTO.getId(), totalUserDTO.getPassword()));
@@ -139,6 +138,7 @@ public class UserController {
                     HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                     SecurityContextHolder.getContext());
         }
+        model.addAttribute("userId", totalUserDTO.getId());
 
         return "redirect:/";
     }
@@ -158,11 +158,6 @@ public class UserController {
         model.addAttribute("followedContentsList", followedContentsList);
         model.addAttribute("currentSize", size);
         model.addAttribute("hasMore", followedContentsList.getTotalElements() > size);
-        log.info("User Profile ID: {}", userProfileDTO.getId());
-        log.info("User Nickname: {}", userProfileDTO.getNickname());
-        log.info("Followed Contents Total Elements: {}", followedContentsList.getTotalElements()); // 0
-        log.info("Followed Contents Page Size (currentSize): {}", size);
-        log.info("Has More: {}", followedContentsList.getTotalElements() > size);
 
         return "/user/userProfile";
     }

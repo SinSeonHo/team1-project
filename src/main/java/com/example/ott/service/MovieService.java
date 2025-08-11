@@ -418,6 +418,7 @@ public class MovieService {
     }
 
     public MovieDTO entityToDto(Movie movie) {
+
         MovieDTO dto = MovieDTO.builder()
                 .mid(movie.getMid())
                 .movieCd(movie.getMovieCd())
@@ -433,7 +434,7 @@ public class MovieService {
                 .synopsis(movie.getSynopsis())
                 .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
                 .replycnt(movie.getReplies() != null ? movie.getReplies().size() : 0)
-                // .followcnt(movie.getFollowcnt())
+                .followcnt(contentsService.getFollowCnt(movie.getMid()))
                 .build();
 
         if (movie.getImage() == null) {

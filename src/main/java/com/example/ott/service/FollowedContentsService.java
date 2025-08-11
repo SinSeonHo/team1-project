@@ -63,11 +63,16 @@ public class FollowedContentsService {
         // 팔로우 여부 확인
         boolean isFollowed = isFollowed(user, contentsId);
         Contents contents = contentsRepository.findById(contentsId).get();
-
+        log.info("팔로우 여부 확인 {}", isFollowed);
         if (isFollowed) {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
             userGenrePreferenceService.removeUserPreference(user, contents);
+
+            // 팔로우 카운트 감소
+            contents.minusFollowCnt();
+            contentsRepository.save(contents);
+
             followedContentsRepository.delete(followedContents);
 
         } else {
@@ -77,9 +82,14 @@ public class FollowedContentsService {
                     .user(user)
                     .build();
 
+            // 팔로우 카운트 증가
+            contents.addFollowCnt();
+            contentsRepository.save(contents);
+
             followedContentsRepository.save(followedContents);
 
             try {
+
                 userGenrePreferenceService.addUserPreference(user, contents);
 
             } catch (Exception e) {
@@ -154,4 +164,5 @@ public class FollowedContentsService {
 
         return followedContentsDTOs;
     }
+
 }
