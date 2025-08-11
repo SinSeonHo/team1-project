@@ -5,7 +5,7 @@
   </th:block>
   <main layout:fragment="content">
     <div class="container py-5" style="max-width: 900px">
-      <div class="row justify-content-center align-items-stretch gx-4 gy-3">
+      <div class="row justify-content-center align-items-stretch gx-4 gy-3" th:object="${userProfileDTO}">
         <h2 class="mb-5 text-center fw-bold w-100" style="color: #fff; letter-spacing: 2px">프로필 정보 설정</h2>
         <!-- 왼쪽: 프로필 이미지/버튼 -->
         <div class="col-md-4 col-12 d-flex flex-column align-items-center mb-4 mb-md-0 gap-2">
@@ -25,12 +25,10 @@
         </div>
         <!-- 오른쪽: 정보 입력 폼 -->
         <div class="col-md-8 col-12">
-          <form
-            th:action="@{/user/modifyUserProfile}"
-            th:object="${userProfileDTO}"
-            method="post"
-            enctype="multipart/form-data"
-          >
+          <form th:action="@{/user/modifyUserProfile}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="email" th:value="${userProfileDTO.email}" />
+            <input type="hidden" name="grade" th:value="${userProfileDTO.grade}" />
+            <input type="hidden" name="profileImageUrl" th:value="${userProfileDTO.profileImageUrl}" />
             <div class="form-side bg-opacity-50 shadow p-4 rounded-4 mb-4">
               <div class="user-info-list mb-4">
                 <div class="user-info-item mb-3">
@@ -52,9 +50,8 @@
                     type="text"
                     class="form-control user-info-value"
                     id="nickname"
-                    name="nickname"
                     th:field="*{nickname}"
-                    maxlength="20"
+                    title="닉네임은 2~12자의 한글/영문/숫자만 가능합니다."
                     autocomplete="off"
                   />
                   <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="text-danger"></div>
@@ -72,11 +69,11 @@
                 </div>
                 <div class="user-info-item mb-3" th:if="*{email} != null">
                   <label for="email" class="user-info-label">이메일</label>
-                  <span id="email" class="form-control user-info-value">[[*{email} ?: '인증 필요']]</span>
+                  <span id="email" class="form-control user-info-value">[[*{email} ?: '인증']]</span>
                 </div>
                 <div class="user-info-item mb-3" th:if="*{email} == null">
-                  <div class="mb-2" style="font-weight: 500; color: #fff">이메일 인증</div>
-                  <div class="d-flex flex-row gap-3 mb-2 justify-content-start">
+                  <div class="mb-2" style="font-weight: 500; color: #fff">인증</div>
+                  <p class="d-flex flex-row gap-3 mx-1 mb-2 justify-content-center">
                     <a
                       href="/oauth2/authorization/google"
                       class="d-flex align-items-center justify-content-center shadow"
@@ -98,8 +95,8 @@
                     >
                       <img th:src="@{/social/naverSquare.png}" alt="네이버" style="width: 28px; height: 28px" />
                     </a>
-                  </div>
-                  <p class="text-white small ml-3">원하는 계정 아이콘을 눌러 이메일 인증을 진행하세요.</p>
+                  </p>
+                  <p class="text-white small ml-3 ml-1">소셜 인증을 통해 이메일 인증을 진행하세요.</p>
                 </div>
                 <div class="user-info-item mb-3">
                   <label class="user-info-label">유저 권한</label>

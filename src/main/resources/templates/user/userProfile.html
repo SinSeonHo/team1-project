@@ -97,7 +97,7 @@
         <section class="user-gallery-section mt-4" th:if="${followedContentsList.content.size() > 0}">
           <div class="user-gallery-grid container">
             <div class="row">
-              <div class="col-4 p-2" th:each="followedContent : ${followedContentsList.content}">
+              <div class="user-gallery-grid p-2" th:each="followedContent : ${followedContentsList.content}">
                 <a
                   th:href="@{${followedContent.contentsType.name() == 'MOVIE'} ?
                '/api/movies/read/' + ${followedContent.contentsId} :

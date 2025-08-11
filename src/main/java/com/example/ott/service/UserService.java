@@ -42,13 +42,13 @@ public class UserService {
         UserRole userRole = UserRole.GUEST;
         if (!totalUserDTO.getEmail().isEmpty()) {
             // 소셜 회원가입 일경우 user등급 및 social 종류 추가
-                SecurityContext context = SecurityContextHolder.getContext();
-                Authentication auth = context.getAuthentication();
-                CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
-                 social = cud.getTemp().getSocial();
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication auth = context.getAuthentication();
+            CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
+            social = cud.getTemp().getSocial();
 
             userRole = UserRole.USER;
-            
+
         }
 
         User user = User.builder()

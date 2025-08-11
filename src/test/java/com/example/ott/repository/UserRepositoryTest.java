@@ -56,7 +56,7 @@ public class UserRepositoryTest {
         ThreadLocalRandom rnd = ThreadLocalRandom.current();
         List<User> createdUsers = new ArrayList<>();
 
-        // 유저 추가
+        // 유저 추가햐
         for (int i = 0; i < makeUserCnt; i++) { // 오프바이원 수정
             int ageGroup = AGE_GROUPS[rnd.nextInt(AGE_GROUPS.length)];
             int age = ageGroup + rnd.nextInt(10);

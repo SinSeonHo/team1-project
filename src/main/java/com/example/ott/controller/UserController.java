@@ -1,16 +1,13 @@
 package com.example.ott.controller;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,10 +32,8 @@ import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TempSocialSignupDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
-import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.UserRole;
-import com.example.ott.handler.AuthSuccessHandler;
 import com.example.ott.security.CustomUserDetails;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
@@ -147,7 +141,7 @@ public class UserController {
     @GetMapping("/userProfile")
     public String getUserProfile(String id, Model model, @RequestParam(defaultValue = "6") int size) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        log.info("유저 닉네임 : {}", userProfileDTO.getNickname());
+
         Pageable pageable = PageRequest.of(0, size);
         // 해당 user가 follow한 contents List 조회
         Page<FollowedContentsDTO> followedContentsList = followedContentsService.getFollowedContentsList(id, pageable);
@@ -163,22 +157,27 @@ public class UserController {
     }
 
     @GetMapping("/modifyUserProfile")
-    public String getModifyUserProfile(String id, Model model) {
+    public String getModifyUserProfile(UserProfileDTO userProfileDTO, Model model) {
 
-        UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-
+        log.info("userProfileDTO 정보 {}", userProfileDTO);
+        userProfileDTO = userService.getUserProfile(userProfileDTO.getId());
         model.addAttribute("userProfileDTO", userProfileDTO);
+        // log.info("userProfile DTO 정보 : {}", model.asMap().get("userProfileDTO"));
         return "/user/modifyUserProfile";
     }
 
     // 프로필 수정
     @PostMapping("/modifyUserProfile")
-    public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
+    public String postUserProfile(
+            @Valid @ModelAttribute("userProfileDTO") UserProfileDTO userProfileDTO,
+            BindingResult bindingResult,
             RedirectAttributes rttr, Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("userProfileDTO", userProfileDTO);
-            return "/user/modifyUserProfile";
+
+            rttr.addFlashAttribute("userProfileDTO", userProfileDTO);
+            // rttr.addAttribute("id", userProfileDTO.getId());
+            return "user/modifyUserProfile";
         } else {
             userService.updateUserProfile(userProfileDTO);
 

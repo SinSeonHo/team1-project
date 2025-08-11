@@ -165,12 +165,12 @@
             </select>
             <span class="fas fa-venus-mars input-icon"></span>
           </div>
-          <input type="hidden" name="email" th:value="${totalUserDTO.email}">
+          <input type="hidden" name="email" th:value="${totalUserDTO.email}" />
         </form>
 
         <div class="input-item">
           <button type="button" class="site-btn mx-1 ok">결정</button>
-          <button type="button" class="site-btn reverse mx-1">취소</button>
+          <button type="button" class="site-btn reverse mx-1 go-home">취소</button>
         </div>
       </div>
     </div>
@@ -205,6 +205,8 @@
           }
         });
       });
+
+      document.querySelector(".go-home").addEventListener("click", () => window.location.assign("/"));
     </script>
   </th:block>
 </html>

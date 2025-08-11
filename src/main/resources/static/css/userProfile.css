@@ -29,8 +29,10 @@ main {
 .user-info-item.focused::before {
   background: #ff4a4a;
   height: 40px;
-  box-shadow: 0 0 8px #e5363780;
+  outline: none !important;
+  box-shadow: none !important;
 }
+
 .user-info-label {
   min-width: 90px;
   color: #fff;
