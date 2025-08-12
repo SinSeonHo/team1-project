@@ -17,7 +17,7 @@
                   <a th:href="@{/api/movies/list}">Movie List</a>
                 </li>
                 <li><a th:href="@{/api/games/list}">Game List</a></li>
-                <li><a href="#">Chart</a></li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{./admin/home}">관리자</a></li>
               </ul>
             </nav>
           </div>
