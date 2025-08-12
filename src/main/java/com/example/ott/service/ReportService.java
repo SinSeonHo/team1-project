@@ -1,157 +1,141 @@
-// package com.example.ott.service;
+package com.example.ott.service;
 
-// import java.time.LocalDateTime;
-// import java.util.List;
-// import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.stereotype.Service;
-// import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import com.example.ott.entity.Report;
-// import com.example.ott.dto.ReportDTO;
-// import com.example.ott.entity.Reply;
-// import com.example.ott.entity.User;
-// import com.example.ott.repository.ReportRepository;
-// import com.example.ott.type.Reason;
+import com.example.ott.dto.ReportDTO;
+import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
+import com.example.ott.entity.User;
+import com.example.ott.repository.ReplyRepository;
+import com.example.ott.repository.ReportRepository;
+import com.example.ott.repository.UserRepository;
+import com.example.ott.type.Reason;
+import com.example.ott.type.Status;
 
-// import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
-// /**
-// * 신고(Report) 관련 비즈니스 로직 처리 서비스 클래스
-// */
-// @Service
-// @RequiredArgsConstructor
-// @Transactional
-// public class ReportService {
+/**
+ * 신고(Report) 관련 비즈니스 로직 처리 서비스 클래스
+ */
+@Log4j2
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class ReportService {
 
-// private final ReportRepository reportRepository;
+    private final ReportRepository reportRepository;
+    private final ReplyRepository replyRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-// /**
-// * 전체 신고 목록 조회 (페이징 없이 전체 조회)
-// *
-// * @return 전체 신고 리스트
-// */
-// @Transactional(readOnly = true)
-// public List<Report> getAllReports() {
-// return reportRepository.findAll();
-// }
+    /** 전체 조회 */
+    @Transactional(readOnly = true)
+    public Page<Report> getReports(Pageable pageable) {
+        return reportRepository.findAll(pageable);
+    }
 
-// /**
-// * 신고 등록 처리
-// *
-// * @param reporter 신고자 User 엔티티
-// * @param reply 신고 대상 Reply 엔티티
-// * @param reason 신고 사유
-// * @param detail 상세 설명 (선택적)
-// * @param evidenceUrl 증거 URL (선택적)
-// * @return 저장된 Report 엔티티
-// */
-// public Report createReport(ReportDTO dto) {
-// Report report = Report.builder()
-// .reporter(reporter)
-// .reply(reply)
-// .reason(Reason.SPOILER)
-// // .detail(detail)
-// // .evidenceUrl(evidenceUrl)
-// // .reportDate(LocalDateTime.now())
-// .status("PENDING") // 기본 상태는 '대기'
-// .build();
-// return reportRepository.save(report);
-// }
+    @Transactional(readOnly = true)
+    public Page<ReportDTO> getReports(Collection<Reason> reasons,
+            Collection<Status> statuses,
+            Pageable pageable) {
+        var R = sanitize(reasons);
+        var S = sanitize(statuses);
 
-// /**
-// * 신고 ID로 단건 조회
-// *
-// * @param id 신고 ID
-// * @return Optional로 감싼 Report 엔티티
-// */
-// @Transactional(readOnly = true)
-// public Optional<Report> getReportById(Long id) {
-// return reportRepository.findById(id);
-// }
+        Page<Report> page;
+        if (R == null && S == null)
+            page = reportRepository.findAll(pageable);
+        else if (R != null && S == null)
+            page = reportRepository.findByReasonIn(R, pageable);
+        else if (R == null && S != null)
+            page = reportRepository.findByStatusIn(S, pageable);
+        else
+            page = reportRepository.findAllByFilters(R, S, pageable);
 
-// /**
-// * 특정 신고자별 신고 목록 조회
-// *
-// * @param reporter 신고자 User 엔티티
-// * @return 신고 리스트
-// */
-// @Transactional(readOnly = true)
-// public List<Report> getReportsByReporter(User reporter) {
-// return reportRepository.findByReporter(reporter);
-// }
+        return page.map(this::entityToDto); // 최종 변환
+    }
 
-// /**
-// * 특정 댓글별 신고 목록 조회
-// *
-// * @param reply 신고 대상 Reply 엔티티
-// * @return 신고 리스트
-// */
-// @Transactional(readOnly = true)
-// public List<Report> getReportsByReply(Reply reply) {
-// return reportRepository.findByReply(reply);
-// }
+    /** 컬렉션에서 null 제거 → 비면 null 반환 */
+    private static <T> Collection<T> sanitize(Collection<T> input) {
+        if (input == null)
+            return null;
+        Collection<T> filtered = input.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new)); // 중복 제거 + 순서 유지
+        return filtered.isEmpty() ? null : filtered;
+    }
 
-// /**
-// * 상태별 신고 목록 조회
-// *
-// * @param status 상태 문자열 (예: "PENDING", "DONE")
-// * @return 신고 리스트
-// */
-// @Transactional(readOnly = true)
-// public List<Report> getReportsByStatus(String status) {
-// return reportRepository.findByStatus(status);
-// }
+    /** 신고 상태 업데이트 (조회→수정) + 경고카운트 적용 */
+    public void updateReportStatus(ReportDTO dto) {
+        Report report = reportRepository.findById(dto.getId())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 신고정보 입니다."));
 
-// /**
-// * 신고 상태 및 처리자 정보 업데이트
-// *
-// * @param reportId 신고 ID
-// * @param newStatus 새로운 상태 (예: PENDING, IN_PROGRESS, DONE, REJECTED)
-// * @param handlerName 처리자 이름 (관리자명)
-// */
-// public void updateReportStatus(Long reportId, String newStatus, String
-// handlerName) {
-// Optional<Report> optReport = reportRepository.findById(reportId);
-// if (optReport.isPresent()) {
-// Report report = optReport.get();
-// report.setStatus(newStatus);
-// report.setHandlerName(handlerName);
-// report.setHandleDate(LocalDateTime.now());
-// reportRepository.save(report);
-// } else {
-// throw new IllegalArgumentException("신고 내역을 찾을 수 없습니다. ID: " + reportId);
-// }
-// }
+        // 상태/사유 갱신
+        report.setStatus(dto.getStatus());
+        // report.setReason(dto.getReason());
+        report.setChecked(true); // 필요 시
 
-// /**
-// * 페이징 및 검색(상태 + 키워드) 조회
-// *
-// * @param status 상태 필터 (null 또는 빈 문자열이면 상태 무시)
-// * @param keyword 검색어 (신고자 ID, 닉네임, 사유 등 포함)
-// * @param pageable 페이징 정보
-// * @return 페이징된 신고 검색 결과
-// */
-// @Transactional(readOnly = true)
-// public Page<Report> searchReports(String status, String keyword, Pageable
-// pageable) {
-// boolean noStatus = (status == null || status.isEmpty());
-// boolean noKeyword = (keyword == null || keyword.isEmpty());
+        // 신고 대상 유저는 엔티티 경로로 신뢰성 있게 획득
+        User target = report.getReply().getReplyer();
 
-// if (noStatus && noKeyword) {
-// // 상태, 키워드 모두 없음 -> 전체 조회 페이징
-// return reportRepository.findAll(pageable);
-// } else if (noStatus) {
-// // 상태 없음, 키워드만 있음
-// return reportRepository.findByKeyword(keyword, pageable);
-// } else if (noKeyword) {
-// // 키워드 없음, 상태만 있음
-// return reportRepository.findByStatus(status, pageable);
-// } else {
-// // 상태 + 키워드 모두 있음
-// return reportRepository.findByStatusAndKeyword(status, keyword, pageable);
-// }
-// }
-// }
+        // 처리 결과에 따른 경고 카운트
+        userService.addWarningCount(target.getId(), dto.getStatus());
+        // save() 불필요 — dirty checking
+    }
+
+    /** 신고 생성 */
+    public Report createReport(ReportDTO dto) {
+        Report report = dtoToEntity(dto);
+        if (report.getStatus() == null) {
+            report.setStatus(Status.RECEIVED);
+        }
+        log.info("report 정보 : {}", report);
+        return reportRepository.save(report);
+    }
+
+    /** 엔티티 → DTO (불필요한 추가 조회 제거) */
+    @Transactional(readOnly = true)
+    public ReportDTO entityToDto(Report report) {
+        Reply reply = report.getReply();
+        User reporter = report.getReporter();
+        User reportTarget = reply.getReplyer();
+
+        ReportDTO reportDTO = ReportDTO.builder()
+                .id(report.getId())
+                .reporterId(reporter.getId())
+                .replyId(reply.getRno())
+                .replyNickName(reportTarget.getNickname())
+                .reason(report.getReason())
+                .reportDate(report.getCreatedDate())
+                .handleDate(report.getUpdatedDate())
+                .status(report.getStatus())
+                .build();
+
+        return reportDTO;
+
+    }
+
+    /** DTO → 엔티티 (생성/업데이트 공용, 업데이트 시 dto.id 필수) */
+    public Report dtoToEntity(ReportDTO dto) {
+        // 프록시로 참조만 잡아도 OK (불필요 쿼리 방지)
+        Reply replyRef = replyRepository.getReferenceById(dto.getReplyId());
+        User reporterRef = userRepository.getReferenceById(dto.getReporterId());
+
+        return Report.builder()
+                .id(dto.getId()) // 업데이트라면 필수
+                .reporter(reporterRef)
+                .reply(replyRef)
+                .reason(dto.getReason())
+                .status(dto.getStatus())
+                .build();
+    }
+}

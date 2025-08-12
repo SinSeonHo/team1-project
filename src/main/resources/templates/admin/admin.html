@@ -3,11 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <title>관리자 페이지</title>
-    <link rel="stylesheet" th:href="@{/admin/admin.css}" />
+    <link rel="stylesheet" th:href="@{./admin.css}" />
 
     <!-- CSRF 메타태그 추가 -->
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <th:block layout:fragment="metadata">
+      <!-- 없으면 렌더링 안 함 -->
+      <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+      <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+    </th:block>
 
     <!-- JS 분리 후 외부 파일로 불러오기 -->
     <script th:src="@{/js/admin.js}"></script>
@@ -51,7 +54,7 @@
       </button>
 
       <!-- 관리자 신고 리스트 페이지 -->
-      <a th:href="@{/admin/report/list}" class="btn">관리자 신고 리스트 페이지</a>
+      <a th:href="@{/report/list}" class="btn">관리자 신고 리스트 페이지</a>
     </div>
   </body>
 </html>

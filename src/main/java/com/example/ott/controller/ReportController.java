@@ -1,117 +1,95 @@
-// package com.example.ott.controller;
+package com.example.ott.controller;
 
-// import java.security.Principal;
-// import java.util.List;
-// import java.util.Optional;
+import com.example.ott.dto.ReportDTO;
+import com.example.ott.entity.Report;
+import com.example.ott.service.ReportService;
+import com.example.ott.type.Reason;
+import com.example.ott.type.Status;
 
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.stereotype.Controller;
-// import org.springframework.ui.Model;
-// import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
-// import com.example.ott.entity.Report;
-// import com.example.ott.entity.Reply;
-// import com.example.ott.entity.User;
-// import com.example.ott.service.ReportService;
-// import com.example.ott.service.ReplyService;
-// import com.example.ott.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-// import lombok.RequiredArgsConstructor;
+import java.net.URI;
+import java.util.List;
 
-// /**
-// * 신고(Report) 관련 요청 처리 컨트롤러
-// * - 관리자용 신고 리스트 페이지 렌더링
-// * - 신고 REST API (신고 등록, 상태 변경 등)
-// */
-// @Controller
-// @RequestMapping("/admin/report")
-// @RequiredArgsConstructor
-// public class ReportController {
+@Controller
+@Log4j2
+@RequiredArgsConstructor
+@RequestMapping("/report")
+public class ReportController {
 
-// private final ReportService reportService;
-// private final UserService userService;
-// private final ReplyService replyService;
+    private final ReportService reportService;
 
-// /**
-// * 관리자용 신고 리스트 페이지 (복수형 경로 권장)
-// *
-// * @param status 필터 상태 (optional)
-// * @param model 뷰에 전달할 모델
-// * @return 신고 리스트 페이지 뷰 이름
-// */
-// @GetMapping("/list")
-// public String showReportList(@RequestParam(required = false) String status,
-// Model model) {
-// List<Report> reports;
+    /** 목록 페이지: /report/list */
+    @GetMapping("/list")
+    public String list(
+            @RequestParam(required = false) List<Reason> reasons,
+            @RequestParam(required = false) List<Status> statuses,
+            @PageableDefault(sort = "createdDate", direction = Sort.Direction.DESC, size = 20) Pageable pageable,
+            Model model) {
+        Page<ReportDTO> page = reportService.getReports(reasons, statuses, pageable);
 
-// if (status == null || status.isEmpty()) {
-// reports = reportService.getAllReports();
-// } else {
-// reports = reportService.getReportsByStatus(status);
-// }
+        // 요약 + toString() 한 방
+        log.info("page summary number={}, size={}, totalElements={}, totalPages={}",
+                page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages());
+        log.info("page content = {}", page.getContent()); // List<Report> -> 각 Report.toString() 사용
+        model.addAttribute("page", page);
+        model.addAttribute("reasons", reasons);
+        model.addAttribute("statuses", statuses);
+        return "report/reportlist"; // 뷰 템플릿
+    }
 
-// model.addAttribute("reports", reports);
-// model.addAttribute("selectedStatus", status);
+    /** 신고 생성: POST /report (JSON 본문: ReportDTO) */
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<ReportDTO> createReport(@Valid @RequestBody ReportDTO dto) {
+        Report saved = reportService.createReport(dto);
+        ReportDTO body = reportService.entityToDto(saved);
+        return ResponseEntity
+                .created(URI.create("/report/" + saved.getId())) // Location 헤더
+                .body(body);
+    }
 
-// return "report/reportlist"; // templates/admin/report.html 렌더링
-// }
+    /**
+     * 신고 상태 업데이트: PATCH /report/{id}/status (JSON 본문: UpdateReportStatusRequest)
+     */
+    @PatchMapping(value = "/{id}/status", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<Void> updateReportStatus(@PathVariable Long id,
+            @Valid @RequestBody UpdateReportStatusRequest req) {
+        ReportDTO dto = ReportDTO.builder()
+                .id(id)
+                .status(req.getStatus())
+                .reason(req.getReason())
+                .build();
+        reportService.updateReportStatus(dto);
+        return ResponseEntity.noContent().build(); // 204
+    }
 
-// /**
-// * 신고 등록 API
-// */
-// @PostMapping("/create")
-// @ResponseBody
-// public ResponseEntity<String> createReport(Principal principal,
-// @RequestParam Long replyId,
-// @RequestParam String reason,
-// @RequestParam(required = false) String detail,
-// @RequestParam(required = false) String evidenceUrl) {
+    @Data
+    public static class UpdateReportStatusRequest {
+        @NotNull
+        private Status status; // 필수
+        private Reason reason; // 선택
+    }
 
-// String userId = principal.getName();
+    @Data
+    public static class ErrorResponse {
+        private final String code;
+        private final String message;
+    }
 
-// Optional<User> optionalUser = userService.findById(userId);
-// if (optionalUser.isEmpty()) {
-// return ResponseEntity.badRequest().body("신고자 정보가 없습니다.");
-// }
-// User reporter = optionalUser.get();
-
-// Optional<Reply> optionalReply = replyService.findById(replyId);
-// if (optionalReply.isEmpty()) {
-// return ResponseEntity.badRequest().body("신고 대상 댓글이 존재하지 않습니다.");
-// }
-// Reply reply = optionalReply.get();
-
-// reportService.createReport(reporter, reply, reason, detail, evidenceUrl);
-
-// return ResponseEntity.ok("신고가 접수되었습니다.");
-// }
-
-// /**
-// * 특정 상태에 해당하는 신고 목록 조회 API (기본 상태: PENDING)
-// */
-// @GetMapping
-// @ResponseBody
-// public ResponseEntity<List<Report>> getAllReports() {
-// List<Report> reports = reportService.getReportsByStatus("PENDING");
-// return ResponseEntity.ok(reports);
-// }
-
-// /**
-// * 신고 상태 변경 API (관리자 전용)
-// */
-// @PostMapping("/{id}/status")
-// @ResponseBody
-// public ResponseEntity<String> updateStatus(@PathVariable Long id,
-// @RequestParam String status,
-// Principal principal) {
-
-// String handlerName = principal.getName();
-
-// try {
-// reportService.updateReportStatus(id, status, handlerName);
-// return ResponseEntity.ok("신고 상태가 업데이트 되었습니다.");
-// } catch (IllegalArgumentException e) {
-// return ResponseEntity.badRequest().body(e.getMessage());
-// }
-// }
-// }
+}

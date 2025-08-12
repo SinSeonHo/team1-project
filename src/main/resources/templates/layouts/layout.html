@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <th:block layout:fragment="title"></th:block>
-
+    <th:block layout:fragment="metadata"></th:block>
     <meta name="description" content="Anime Template" />
     <meta name="keywords" content="Anime, unica, creative, html" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
@@ -51,7 +51,7 @@
     <script th:src="@{/js/search.js}"></script>
   </head>
   <body>
-    <div th:replace="./fragments/header::header"></div>
+    <div th:replace="~{/fragments/header :: header}"></div>
 
     <!-- <main th:fragment="content"></main> -->
     <div layout:fragment="content">

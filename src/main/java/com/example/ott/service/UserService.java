@@ -19,6 +19,7 @@ import com.example.ott.entity.UserRole;
 import com.example.ott.repository.ImageRepository;
 import com.example.ott.repository.UserRepository;
 import com.example.ott.security.CustomUserDetails;
+import com.example.ott.type.Status;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -103,25 +104,28 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // // 아이디, 비밀번호 변경 (예시)
-    // public String changeAccountInfo(SecurityUserDTO securityUserDTO) {
-    // // 암호화된 비밀번호로 체크하려면 matches 사용!
-    // User user = userRepository.findById(securityUserDTO.getId())
-    // .orElse(null);
+    // 신고 처리에 따라 경고 점수 부여
+    public void addWarningCount(String id, Status status) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
+        switch (status) {
+            case WARNING:
+                user.addWarnningCount(1);
+                break;
+            case DELETED:
+                user.addWarnningCount(3);
+                break;
 
-    // if (user == null || !passwordEncoder.matches(securityUserDTO.getPassword(),
-    // user.getPassword())) {
-    // return "입력하신 정보가 일치하지 않습니다.";
-    // }
-    // // 이미 사용중인 ID 체크
-    // if (userRepository.existsById(securityUserDTO.getId())) {
-    // return "이미 존재하는 Id입니다.";
-    // }
-    // user.changeAccountInfo(securityUserDTO.getId(),
-    // passwordEncoder.encode(securityUserDTO.getPassword()));
-    // userRepository.save(user);
-    // return "변경되었습니다";
-    // }
+            default:
+                break;
+
+        }
+        // 경고 누적 점수가 10점 초과시 로그인 제한 평생!!!!!!!!!!!!
+        if (user.getWarningCnt() > 10) {
+            user.setUserRole(UserRole.BAN);
+        }
+        // 반영
+        userRepository.save(user);
+    }
 
     public User getUserById(String id) {
         User user = null;

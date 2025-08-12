@@ -1,6 +1,6 @@
 // CSRF 토큰과 헤더 이름을 메타태그에서 가져옴
-const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
-const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
+// const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute("content");
+// const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute("content");
 
 // AJAX 요청 공통 함수
 function sendAsyncRequest(endpoint, successMsg) {

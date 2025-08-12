@@ -33,7 +33,7 @@ public class SecurityConfig {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
+                // http.csrf().disable();
                 http
                                 .authorizeHttpRequests(authorize -> authorize
                                                 // 정적 리소스 접근 허용
@@ -44,7 +44,8 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 // 신고 페이지 (ADMIN만 허용)
-                                                .requestMatchers("/report", "/WEB-INF/**").hasRole("ADMIN")
+                                                .requestMatchers("/report/**").permitAll()
+                                                // .requestMatchers("/report", "/WEB-INF/**").hasRole("ADMIN")
 
                                                 // 에러페이지/홈/회원가입/인증 관련
 
@@ -72,6 +73,14 @@ public class SecurityConfig {
                                                 .hasAnyRole("USER", "MANAGER", "ADMIN")
                                                 .requestMatchers(HttpMethod.PUT, "/replies/**").authenticated()
                                                 .requestMatchers(HttpMethod.DELETE, "/replies/**").authenticated()
+
+                                                // 신고 관련 이게 찐임
+
+                                                // .requestMatchers(HttpMethod.GET, "/report/list").hasRole("ADMIN")
+                                                // .requestMatchers(HttpMethod.POST, "/report/**")
+                                                // .hasAnyRole("USER", "MANAGER", "ADMIN")
+                                                // .requestMatchers(HttpMethod.PATCH, "/report/**").hasRole("ADMIN")
+                                                // .requestMatchers(HttpMethod.DELETE, "/report/**").hasRole("ADMIN")
 
                                                 // 유저 관련(로그인 필요)
                                                 .requestMatchers("/user/modifyUserProfile", "/user/uploadProfile",

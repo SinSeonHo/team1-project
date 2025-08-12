@@ -15,6 +15,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@ToString(exclude = { "reporter", "reply" })
 @Table(name = "report")
 public class Report extends BaseEntity {
 
@@ -35,16 +36,18 @@ public class Report extends BaseEntity {
 
     // 신고 사유 (enum 클래스)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false)
     private Reason reason;
 
     // 처리 상태 (예: RECEIVED, WARNING, DELETED, NO_ACTION)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Status status;
+    @Builder.Default
+    private Status status = Status.RECEIVED;
 
     // 알림 확인여부
-    private boolean checked;
+    @Builder.Default
+    private boolean checked = false;
 
     // 처리자 이름 (관리자명)
     // @Column(length = 100)
