@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -204,4 +205,11 @@ public class ReplyService {
             }
         }
     }
+
+    // 0812 신선호 신고기능때문에 추가
+    // ID로 댓글 조회 (Optional 반환)
+    public Optional<Reply> findById(Long id) {
+        return replyRepository.findById(id);
+    }
+
 }

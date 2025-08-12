@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout}">
+  <head>
+    <meta charset="UTF-8" />
+    <title>관리자 페이지</title>
+
+    <!-- CSRF 메타태그 -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <!-- JS 외부 파일 -->
+    <script th:src="@{/js/admin.js}"></script>
+
+    <!-- 신고 리스트 전용 최소 스타일 -->
+    <style>
+      table.report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      table.report-table th,
+      table.report-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+      td,
+      label {
+        color: #ffffff;
+      }
+      table.report-table th {
+        background-color: #f4f4f4;
+      }
+      .status-pending {
+        color: orange;
+        font-weight: bold;
+      }
+      .status-done {
+        color: green;
+        font-weight: bold;
+      }
+      .status-rejected {
+        color: red;
+        font-weight: bold;
+      }
+      .btn {
+        padding: 6px 10px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background: #0056b3;
+      }
+      .search-form {
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+  <body layout:fragment="content">
+    <h1 class="text-center">관리자 신고 리스트</h1>
+
+    <!-- 🔍 검색 & 필터 -->
+    <form method="get" th:action="@{/admin/report/list}" class="search-form text-center">
+      <label>
+        검색:
+        <input type="text" name="keyword" placeholder="아이디/닉네임/사유" th:value="${keyword}" />
+      </label>
+      <label>
+        상태:
+        <select name="status">
+          <option value="" th:selected="${selectedStatus == null or selectedStatus == ''}">전체</option>
+          <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">대기</option>
+          <option value="IN_PROGRESS" th:selected="${selectedStatus == 'IN_PROGRESS'}">검토중</option>
+          <option value="DONE" th:selected="${selectedStatus == 'DONE'}">처리완료</option>
+          <option value="REJECTED" th:selected="${selectedStatus == 'REJECTED'}">거절</option>
+        </select>
+      </label>
+      <button type="submit" class="btn">검색</button>
+    </form>
+
+    <!-- 📋 신고 리스트 -->
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>신고자 ID</th>
+          <th>신고자 닉네임</th>
+          <th>대상 ID</th>
+          <th>대상 닉네임</th>
+          <th>카테고리</th>
+          <th>신고 사유</th>
+          <th>상세 설명</th>
+          <th>게시글</th>
+          <th>증거 자료</th>
+          <th>신고 일시</th>
+          <th>처리 상태</th>
+          <th>처리자</th>
+          <th>처리일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="report, iterStat : ${reports}">
+          <td th:text="${iterStat.index + 1}">1</td>
+          <td th:text="${report.reporter.id}">user01</td>
+          <td th:text="${report.reporter.nickname}">홍길동</td>
+          <td th:text="${report.reply.replyer.id}">target99</td>
+          <td th:text="${report.reply.replyer.nickname}">임꺽정</td>
+          <td th:text="${report.reason}">욕설</td>
+          <td th:text="${report.detail != null ? report.detail : '-'}">심한 욕설 사용</td>
+          <td>
+            <a th:href="@{/posts/{postId}(postId=${report.reply.rno})}" target="_blank">보기</a>
+          </td>
+          <td>
+            <span th:if="${report.evidenceUrl != null}">
+              <a th:href="${report.evidenceUrl}" target="_blank">보기</a>
+            </span>
+            <span th:if="${report.evidenceUrl == null}">없음</span>
+          </td>
+          <td th:text="${#dates.format(report.reportDate, 'yyyy-MM-dd HH:mm')}">2025-08-12 14:30</td>
+          <td
+            th:text="${report.status}"
+            th:classappend="
+                ${report.status == 'PENDING'} ? 'status-pending' :
+                ${report.status == 'DONE'} ? 'status-done' :
+                ${report.status == 'REJECTED'} ? 'status-rejected' : ''"
+          >
+            대기
+          </td>
+          <td th:text="${report.handlerName != null ? report.handlerName : '-'}">-</td>
+          <td th:text="${report.handleDate != null ? #dates.format(report.handleDate, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(reports)}">
+          <td colspan="14" style="color: #fff">검색 결과가 없습니다.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 페이지네이션 제거 (List라서 지원 안함) -->
+  </body>
+</html>

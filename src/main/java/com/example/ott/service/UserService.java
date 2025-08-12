@@ -1,6 +1,7 @@
 package com.example.ott.service;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -42,13 +43,13 @@ public class UserService {
         UserRole userRole = UserRole.GUEST;
         if (!totalUserDTO.getEmail().isEmpty()) {
             // 소셜 회원가입 일경우 user등급 및 social 종류 추가
-                SecurityContext context = SecurityContextHolder.getContext();
-                Authentication auth = context.getAuthentication();
-                CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
-                 social = cud.getTemp().getSocial();
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication auth = context.getAuthentication();
+            CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
+            social = cud.getTemp().getSocial();
 
             userRole = UserRole.USER;
-            
+
         }
 
         User user = User.builder()
@@ -171,5 +172,11 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
         user.setUserRole(UserRole.ADMIN);
         userRepository.save(user);
+    }
+
+    // 0812 신선호 신고기능때문에 추가
+    // ID로 유저 조회 (Optional 반환)
+    public Optional<User> findById(String id) {
+        return userRepository.findById(id);
     }
 }

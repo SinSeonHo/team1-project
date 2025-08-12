@@ -62,11 +62,17 @@ public class ContentsService {
 
     }
 
-    public int getFollowCnt(String id) {
-        Contents contents = contentsRepository.findByContentsId(id)
-                .orElseThrow(() -> new NoSuchElementException("요청하신 콘텐츠는 존재하지 않는 콘텐츠입니다."));
+    // public int getFollowCnt(String id) {
+    // Contents contents = contentsRepository.findByContentsId(id)
+    // .orElseThrow(() -> new NoSuchElementException("요청하신 콘텐츠는 존재하지 않는 콘텐츠입니다."));
 
-        return contents.getFollowCnt();
+    // return contents.getFollowCnt();
+    // }
+
+    public int getFollowCnt(String id) {
+        return contentsRepository.findByContentsId(id)
+                .map(Contents::getFollowCnt)
+                .orElse(0); // 없으면 0 리턴
     }
 
 }

@@ -1,71 +1,54 @@
 package com.example.ott.entity;
 
 import java.time.LocalDateTime;
-
 import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
-
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.ott.type.Gender;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Getter
 @ToString(exclude = { "replies", "image" })
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EntityListeners(value = AuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "user_table")
 @Entity
 public class User {
 
     @Id
     @Setter
-    private String id;
+    private String id; // 유저 PK, 아이디
 
     @Setter
-    private String name;
-
-    @Setter
-    @Column(unique = true)
-    private String nickname;
+    private String name; // 유저 이름(실명 등)
 
     @Setter
     @Column(unique = true)
-    private String email;
+    private String nickname; // 닉네임 (중복 불가)
+
+    @Setter
+    @Column(unique = true)
+    private String email; // 이메일 (중복 불가)
 
     @Column(nullable = false)
-    private String password;
+    private String password; // 비밀번호
 
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole userRole = UserRole.GUEST;
+    private UserRole userRole = UserRole.GUEST; // 유저 권한
 
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Socials social = Socials.NONE; // 소셜 계정(Kakao, Naver, Google, X)
+    private Socials social = Socials.NONE; // 소셜 로그인 종류
 
     @Column(nullable = false)
     private Integer age;
@@ -74,28 +57,29 @@ public class User {
     @Column(nullable = false)
     private Gender gender;
 
-    private boolean firstLogin;
+    private boolean firstLogin; // 첫 로그인 여부
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate; // 계정 생성일
 
     @LastModifiedDate
-    private LocalDateTime updatedDate;
+    private LocalDateTime updatedDate; // 마지막 수정일
 
     @Setter
-    private String grade;
+    private String grade; // 등급 (임의 필드)
 
     @Setter
     @OneToOne(cascade = CascadeType.REMOVE)
-    private Image image;
+    private Image image; // 프로필 이미지
 
+    // 유저가 작성한 댓글 리스트 (Reply.replyer와 매핑)
     @OneToMany(mappedBy = "replyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reply> replies;
 
+    // 계정 정보 변경 메서드
     public void changeAccountInfo(String id, String password) {
         this.id = id;
         this.password = password;
     }
-
 }
