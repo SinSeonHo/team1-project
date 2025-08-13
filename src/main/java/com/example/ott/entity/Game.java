@@ -2,10 +2,10 @@ package com.example.ott.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -39,7 +39,7 @@ public class Game extends BaseEntity {
 
     private String platform;
 
-    private int rank;
+    private int ranking;
 
     private String genres;
 
@@ -94,8 +94,8 @@ public class Game extends BaseEntity {
         this.synopsis = synopsis;
     }
 
-    public void setRank(int rank) {
-        this.rank = rank;
+    public void setRank(int ranking) {
+        this.ranking = ranking;
     }
 
     public void setCcu(int ccu) {

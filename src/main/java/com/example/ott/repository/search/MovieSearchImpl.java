@@ -57,7 +57,7 @@ public class MovieSearchImpl implements MovieSearch {
         JPAQuery<Movie> query = queryFactory
                 .selectFrom(movie)
                 .where(builder)
-                .orderBy(movie.rank.asc()) // 우선 랭크 기준으로 정렬!
+                .orderBy(movie.ranking.asc()) // 우선 랭크 기준으로 정렬!
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 

@@ -18,18 +18,22 @@ const action = {
 };
 
 function updateCityOptions() {
-  const content = document.getElementById("content").value;
-  const typeSelect = document.getElementById("type");
-  typeSelect.innerHTML = "";
-  // 컨텐츠에 해당하는 키워드 목록 추가
-  if (content && contentOptions[content]) {
-    contentOptions[content].forEach((city) => {
-      const option = document.createElement("option");
-      option.value = city.code;
-      option.textContent = city.name;
-      typeSelect.appendChild(option);
-    });
-    document.querySelector(".search-box").action = action[content];
+  try { // 회원정보 입력 페이지에서 에러날 때 임시 방편
+    const content = document.getElementById("content").value;
+    const typeSelect = document.getElementById("type");
+    typeSelect.innerHTML = "";
+    // 컨텐츠에 해당하는 키워드 목록 추가
+    if (content && contentOptions[content]) {
+      contentOptions[content].forEach((city) => {
+        const option = document.createElement("option");
+        option.value = city.code;
+        option.textContent = city.name;
+        typeSelect.appendChild(option);
+      });
+      document.querySelector(".search-box").action = action[content];
+    }
+  } catch (error) {
+    return ;
   }
 }
 

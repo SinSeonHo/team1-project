@@ -51,6 +51,8 @@ public class UserService {
 
             userRole = UserRole.USER;
 
+        } else {
+            totalUserDTO.setEmail(null);
         }
 
         User user = User.builder()

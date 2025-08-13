@@ -1,33 +1,41 @@
 import os
 import requests
 from urllib.request import urlretrieve
-import cx_Oracle
+# import cx_Oracle
+import mysql.connector
 import uuid
 import re
 import time
 
 # 1. 이미지 저장 경로 설정
-BASE_PATH = r"C:/upload/images/gameimages"  # 실제 이미지 저장 경로
-STATIC_PATH = os.path.abspath(
-    "../src/main/resources/static"
-)  # static 기준 상대경로 계산용
-os.makedirs(BASE_PATH, exist_ok=True)  # 디렉토리 없으면 생성
+BASE_PATH = r"C:/upload/images/gameimages"
+STATIC_PATH = os.path.abspath("../src/main/resources/static")
+os.makedirs(BASE_PATH, exist_ok=True)
 
-# 2. Oracle DB 연결
-dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
-conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+# 2. DB 연결
+# ===== [Oracle 전용] =====
+# dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
+# conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+# cursor = conn.cursor()
+
+# ===== [MySQL 전용] =====
+conn = mysql.connector.connect(
+    host="localhost",
+    port=3306,
+    user="ott_test",
+    password="12345",
+    database="ott_test_db",
+    charset="utf8mb4",
+    use_unicode=True
+)
 cursor = conn.cursor()
 
 # 3. 이미지가 없는 게임 정보 가져오기
 cursor.execute("SELECT gid, title, appid FROM game WHERE image_id IS NULL")
 games = cursor.fetchall()
 
-
-# 4. 이미지 다운로드 함수 정의
+# 4. 이미지 다운로드 함수
 def download_image(url, full_path, title):
-    """
-    주어진 URL에서 이미지를 다운로드하고 지정된 경로에 저장합니다.
-    """
     try:
         head = requests.head(url, allow_redirects=True, timeout=5)
         print(f"[{title}] HEAD {url} status_code: {head.status_code}")
@@ -42,27 +50,21 @@ def download_image(url, full_path, title):
         print(f"[{title}] 이미지 다운로드 실패: {e}")
         return False
 
-
-# 5. 각 게임 이미지 처리 루프
+# 5. 각 게임 처리
 for gid, title, appid in games:
     print(f"\n[{title}] 이미지 수집 시작...")
 
-    # 파일 이름 안전화
     unique_id = str(uuid.uuid4())
     safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip()).strip("_- ")
     ext = "jpg"
-    file_name = (
-        f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
-    )
+    file_name = f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
     full_path = os.path.join(BASE_PATH, file_name)
 
-    # 1순위: capsule 이미지
-    capsule_url = (
-        f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
-    )
+    # 1순위: capsule
+    capsule_url = f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
     success = download_image(capsule_url, full_path, title)
 
-    # 실패 시: header_image로 대체
+    # 실패 시 header_image
     data = None
     if not success:
         print(f"[{title}] capsule 실패 → header_image 시도")
@@ -70,7 +72,7 @@ for gid, title, appid in games:
             time.sleep(0.5)
             res = requests.get(
                 f"https://store.steampowered.com/api/appdetails?appids={appid}",
-                timeout=5,
+                timeout=5
             )
             data = res.json()
             header_img = data.get(str(appid), {}).get("data", {}).get("header_image")
@@ -82,12 +84,11 @@ for gid, title, appid in games:
             print(f"[{title}] Storefront API 호출 오류: {e}")
             success = False
     else:
-        # capsule 성공 시도 → API 요청은 그래도 진행하여 screenshots 추출
         try:
             time.sleep(0.5)
             res = requests.get(
                 f"https://store.steampowered.com/api/appdetails?appids={appid}",
-                timeout=5,
+                timeout=5
             )
             data = res.json()
         except Exception as e:
@@ -98,36 +99,45 @@ for gid, title, appid in games:
         print(f"[{title}] 이미지 수집 실패 - 건너뜀")
         continue
 
-    # 6. 이미지 정보 DB 저장
     try:
-        # static 기준 상대경로 구하기
         relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
 
-        # image 테이블 삽입 + inum 반환
-        output_inum = cursor.var(cx_Oracle.NUMBER)
+        # ===== [Oracle 전용] =====
+        # output_inum = cursor.var(cx_Oracle.NUMBER)
+        # cursor.execute(
+        #     """
+        #     INSERT INTO image (uuid, img_name, path) 
+        #     VALUES (:uuid, :img_name, :path)
+        #     RETURNING inum INTO :output_inum
+        #     """,
+        #     {
+        #         "uuid": unique_id,
+        #         "img_name": file_name,
+        #         "path": "images/gameimages/" + file_name,
+        #         "output_inum": output_inum,
+        #     },
+        # )
+        # image_id = int(output_inum.getvalue()[0])
+        # cursor.execute(
+        #     "UPDATE game SET image_id = :imgid WHERE gid = :gid",
+        #     {"imgid": image_id, "gid": gid},
+        # )
+
+        # ===== [MySQL 전용] =====
         cursor.execute(
             """
-            INSERT INTO image (uuid, img_name, path) 
-            VALUES (:uuid, :img_name, :path)
-            RETURNING inum INTO :output_inum
+            INSERT INTO image (uuid, img_name, path)
+            VALUES (%s, %s, %s)
             """,
-            {
-                "uuid": unique_id,
-                "img_name": file_name,
-                "path": "images/gameimages/" + file_name,
-                "output_inum": output_inum,
-            },
+            (unique_id, file_name, "images/gameimages/" + file_name),
         )
-
-        image_id = int(output_inum.getvalue()[0])
-
-        # game 테이블 업데이트
+        image_id = cursor.lastrowid
         cursor.execute(
-            "UPDATE game SET image_id = :imgid WHERE gid = :gid",
-            {"imgid": image_id, "gid": gid},
+            "UPDATE game SET image_id = %s WHERE gid = %s",
+            (image_id, gid),
         )
 
-        # 7. screenshots 테이블 처리 (최대 10개)
+        # ===== screenshots 처리 =====
         try:
             if data and "data" in data.get(str(appid), {}):
                 game_data = data[str(appid)]["data"]
@@ -141,15 +151,25 @@ for gid, title, appid in games:
                         url = shot.get("path_thumbnail")
                         if url:
                             try:
+                                # ===== [Oracle 전용] =====
+                                # cursor.execute(
+                                #     """
+                                #     INSERT INTO image_screenshots (image_id, screenshot_url)
+                                #     VALUES (:image_id, :screenshot_url)
+                                #     """,
+                                #     {
+                                #         "image_id": image_id,
+                                #         "screenshot_url": url,
+                                #     },
+                                # )
+
+                                # ===== [MySQL 전용] =====
                                 cursor.execute(
                                     """
                                     INSERT INTO image_screenshots (image_id, screenshot_url)
-                                    VALUES (:image_id, :screenshot_url)
+                                    VALUES (%s, %s)
                                     """,
-                                    {
-                                        "image_id": image_id,
-                                        "screenshot_url": url,
-                                    },
+                                    (image_id, url),
                                 )
                                 print(f"[{title}] 스크린샷 저장: {url}")
                                 time.sleep(0.1)

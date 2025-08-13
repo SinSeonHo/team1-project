@@ -171,7 +171,7 @@ public class MovieService {
                 .mid(mid)
                 .title(dto.getTitle())
                 .openDate(dto.getOpenDate())
-                .rank(dto.getRank())
+                .ranking(dto.getRank())
                 .movieCd(dto.getMovieCd())
                 .actors(dto.getActors())
                 .director(dto.getDirector())
@@ -293,7 +293,7 @@ public class MovieService {
                     if (optionalMovie.isPresent()) {
                         // update existing movie (synopsis는 업데이트 안함, 필요시 추가 가능)
                         Movie existing = optionalMovie.get();
-                        existing.setRank(rank);
+                        existing.setRanking(rank);
                         existing.setDirector(directorName);
                         existing.setActors(actorStr);
                         existing.setGenres(genreStr);
@@ -426,7 +426,7 @@ public class MovieService {
                 .actors(movie.getActors())
                 .director(movie.getDirector())
                 .openDate(movie.getOpenDate())
-                .rank(movie.getRank())
+                .rank(movie.getRanking())
                 .genres(movie.getGenres())
                 .showTm(movie.getShowTm())
                 .nationNm(movie.getNationNm())

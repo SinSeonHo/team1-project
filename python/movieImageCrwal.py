@@ -1,6 +1,8 @@
 import os
 import requests
-import cx_Oracle
+
+# import cx_Oracle
+import mysql.connector
 import time
 import uuid
 import re
@@ -16,8 +18,17 @@ STATIC_PATH = os.path.abspath(
 os.makedirs(BASE_PATH, exist_ok=True)  # 디렉토리 없으면 생성
 
 # 2. Oracle DB 연결 설정
-dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
-conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+# dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
+# conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+conn = mysql.connector.connect(
+    host="localhost",
+    port=3306,
+    user="ott_test",
+    password="12345",
+    database="ott_test_db",
+    charset="utf8mb4",
+    use_unicode=True
+)
 cursor = conn.cursor()
 
 # 3. TMDb API 정보
@@ -150,28 +161,45 @@ try:
             # 6) 상대 경로 구성 (static 기준)
             relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
 
+            # ========== [Oracle 전용 insert] ==========
             # 7) image 테이블에 포스터 정보 저장
-            output_inum = cursor.var(cx_Oracle.NUMBER)
+            # output_inum = cursor.var(cx_Oracle.NUMBER)
+            # cursor.execute(
+            #     """
+            #     INSERT INTO image (uuid, img_name, path)
+            #     VALUES (:uuid, :img_name, :path)
+            #     RETURNING inum INTO :output_inum
+            #     """,
+            #     {
+            #         "uuid": unique_id,
+            #         "img_name": file_name,
+            #         "path": "images/movieimages/" + file_name,
+            #         "output_inum": output_inum,
+            #     },
+            # )
+            # image_id = int(output_inum.getvalue()[0])
+            # 8) movie 테이블에 image_id 업데이트
+            # cursor.execute(
+            #     "UPDATE movie SET image_id = :imgid WHERE mid = :mid",
+            #     {"imgid": image_id, "mid": mid},
+            # )
+            # ========== ===================== ==========
+
+            # ========== [MySQL 전용 insert] ==========
             cursor.execute(
                 """
-                INSERT INTO image (uuid, img_name, path) 
-                VALUES (:uuid, :img_name, :path)
-                RETURNING inum INTO :output_inum
+                INSERT INTO image (uuid, img_name, path)
+                VALUES (%s, %s, %s)
                 """,
-                {
-                    "uuid": unique_id,
-                    "img_name": file_name,
-                    "path": "images/movieimages/" + file_name,
-                    "output_inum": output_inum,
-                },
+                (unique_id, file_name, "images/movieimages/" + file_name),
             )
-            image_id = int(output_inum.getvalue()[0])
+            image_id = cursor.lastrowid  # MySQL에서 AUTO_INCREMENT 키 가져오기
 
-            # 8) movie 테이블에 image_id 업데이트
             cursor.execute(
-                "UPDATE movie SET image_id = :imgid WHERE mid = :mid",
-                {"imgid": image_id, "mid": mid},
+                "UPDATE movie SET image_id = %s WHERE mid = %s",
+                (image_id, mid),
             )
+            # ========== ===================== ==========
 
             # 9) 스틸컷(backdrops) 이미지 최대 10장까지 저장
             if movie_id:
@@ -190,16 +218,27 @@ try:
                             if path:
                                 screenshot_url = IMAGE_BASE_URL + path
                                 try:
+                                    # ========== [Oracle 전용 insert] ==========
+                                    # cursor.execute(
+                                    #     """
+                                    #     INSERT INTO image_screenshots (image_id, screenshot_url)
+                                    #     VALUES (:image_id, :screenshot_url)
+                                    #     """,
+                                    #     {
+                                    #         "image_id": image_id,
+                                    #         "screenshot_url": screenshot_url,
+                                    #     },
+                                    # )
+                                    # ========== ===================== ==========
+                                    # ========== [MySQL 전용 insert] ==========
                                     cursor.execute(
                                         """
                                         INSERT INTO image_screenshots (image_id, screenshot_url)
-                                        VALUES (:image_id, :screenshot_url)
+                                        VALUES (%s, %s)
                                         """,
-                                        {
-                                            "image_id": image_id,
-                                            "screenshot_url": screenshot_url,
-                                        },
+                                        (image_id, screenshot_url),
                                     )
+                                    # ========== ===================== ==========
                                     count += 1
                                     print(f"[{title}] → 스틸컷 저장: {screenshot_url}")
                                     time.sleep(0.1)

@@ -36,7 +36,7 @@ public class Movie extends BaseEntity {
     private String openDate;
 
     @Column(nullable = false)
-    private int rank;
+    private int ranking;
 
     @Column(unique = true)
     private String movieCd;
