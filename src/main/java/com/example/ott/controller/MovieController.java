@@ -28,9 +28,10 @@ import com.example.ott.service.MovieService;
 import com.example.ott.service.ReplyService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
-// @RestController
 @Controller
+@Log4j2
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
 public class MovieController {
@@ -62,6 +63,7 @@ public class MovieController {
     public String getMovieList(PageRequestDTO pageRequestDTO, Model model) {
         PageResultDTO<MovieDTO> result = movieService.getSearch(pageRequestDTO);
         model.addAttribute("movies", result.getDtoList());
+        log.info("movie전체리스트 로그로그");
         return "ott_contents/movieList";
     }
 
@@ -73,8 +75,6 @@ public class MovieController {
         Movie movie = (Movie) data.get("movie");
         boolean isFollowed = false;
         isFollowed = followedContentsService.isFollowed(userDetails, mid);
-
-        // 상영시간 분 -> n시간 n분형태 변환메소드 호출
 
         // 즐겨찾기 여부
         isFollowed = followedContentsService.isFollowed(userDetails, mid);

@@ -1,7 +1,7 @@
 import os
 import requests
 from urllib.request import urlretrieve
-import cx_Oracle
+import mysql.connector
 import uuid
 import re
 import time
@@ -13,9 +13,14 @@ STATIC_PATH = os.path.abspath(
 )  # static 기준 상대경로 계산용
 os.makedirs(BASE_PATH, exist_ok=True)  # 디렉토리 없으면 생성
 
-# 2. Oracle DB 연결
-dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
-conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+# 2. MySQL DB 연결
+conn = mysql.connector.connect(
+    host="localhost",
+    user="ott_test",
+    password="12345",
+    database="ott_test",
+    charset="utf8mb4",
+)
 cursor = conn.cursor()
 
 # 3. 이미지가 없는 게임 정보 가져오기
@@ -103,28 +108,23 @@ for gid, title, appid in games:
         # static 기준 상대경로 구하기
         relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
 
-        # image 테이블 삽입 + inum 반환
-        output_inum = cursor.var(cx_Oracle.NUMBER)
+        # image 테이블 삽입
         cursor.execute(
             """
-            INSERT INTO image (uuid, img_name, path) 
-            VALUES (:uuid, :img_name, :path)
-            RETURNING inum INTO :output_inum
+            INSERT INTO image (uuid, img_name, path)
+            VALUES (%s, %s, %s)
             """,
-            {
-                "uuid": unique_id,
-                "img_name": file_name,
-                "path": "images/gameimages/" + file_name,
-                "output_inum": output_inum,
-            },
+            (unique_id, file_name, "images/gameimages/" + file_name),
         )
+        conn.commit()
 
-        image_id = int(output_inum.getvalue()[0])
+        # 삽입된 image_id 가져오기 (MySQL LAST_INSERT_ID())
+        image_id = cursor.lastrowid
 
         # game 테이블 업데이트
         cursor.execute(
-            "UPDATE game SET image_id = :imgid WHERE gid = :gid",
-            {"imgid": image_id, "gid": gid},
+            "UPDATE game SET image_id = %s WHERE gid = %s",
+            (image_id, gid),
         )
 
         # 7. screenshots 테이블 처리 (최대 10개)
@@ -144,12 +144,9 @@ for gid, title, appid in games:
                                 cursor.execute(
                                     """
                                     INSERT INTO image_screenshots (image_id, screenshot_url)
-                                    VALUES (:image_id, :screenshot_url)
+                                    VALUES (%s, %s)
                                     """,
-                                    {
-                                        "image_id": image_id,
-                                        "screenshot_url": url,
-                                    },
+                                    (image_id, url),
                                 )
                                 print(f"[{title}] 스크린샷 저장: {url}")
                                 time.sleep(0.1)

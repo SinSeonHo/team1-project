@@ -10,7 +10,7 @@ import com.example.ott.repository.search.GameSearchRepository;
 
 public interface GameRepository extends JpaRepository<Game, String>, GameSearchRepository {
 
-    @Query(value = "SELECT gid FROM game WHERE gid LIKE 'g_%' ORDER BY TO_NUMBER(SUBSTR(gid, 3)) DESC FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
+    @Query(value = "SELECT gid FROM game WHERE gid LIKE 'g_%' ORDER BY CAST(SUBSTRING(gid, 3) AS UNSIGNED) DESC LIMIT 1", nativeQuery = true)
     String findLastGameId();
 
     Optional<Game> findByAppid(String appid);

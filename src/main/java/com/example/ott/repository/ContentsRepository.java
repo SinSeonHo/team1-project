@@ -19,7 +19,7 @@ public interface ContentsRepository extends JpaRepository<Contents, String> {
 
     Optional<Contents> findByContentsId(String contentsId);
 
-    @Query(value = "SELECT * FROM contents ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
+    @Query(value = "SELECT * FROM contents ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Contents> pickRandom();
 
 }

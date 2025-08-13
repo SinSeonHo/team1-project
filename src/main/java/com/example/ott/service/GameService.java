@@ -142,7 +142,7 @@ public class GameService {
                 .ccu(dto.getCcu())
                 .platform(dto.getPlatform())
                 .price(dto.getPrice())
-                .rank(dto.getRank())
+                .ranking(dto.getRanking())
                 .genres(dto.getGenres())
                 .originalPrice(dto.getOriginalPrice())
                 .discountRate(dto.getDiscountRate())
@@ -302,7 +302,7 @@ public class GameService {
                     if (optionalGame.isPresent()) {
                         Game existing = optionalGame.get();
 
-                        existing.setRank(rank);
+                        existing.setRanking(rank);
                         existing.setOriginalPrice(originalPrice);
                         existing.setPrice(discountPrice);
                         existing.setDiscountRate(discountRate);
@@ -324,7 +324,7 @@ public class GameService {
                                 .appid(appid)
                                 .title(name)
                                 .developer(developer)
-                                .rank(rank)
+                                .ranking(rank)
                                 .ccu(ccu)
                                 .originalPrice(originalPrice)
                                 .price(discountPrice)
@@ -352,6 +352,7 @@ public class GameService {
     // 게임 + 댓글 DTO 리스트 함께 반환
 
     public Map<String, Object> getGame(String gid) {
+        System.out.println("게임정보 상세조회 로그로그");
         log.info("게임정보 상세조회");
 
         // 1. 게임 조회
@@ -464,7 +465,7 @@ public class GameService {
                 .positive(game.getPositive())
                 .price(game.getPrice())
                 .publisher(game.getPublisher())
-                .rank(game.getRank())
+                .ranking(game.getRanking())
                 .replycnt(game.getReplies() != null ? game.getReplies().size() : 0)
                 .synopsis(game.getSynopsis())
                 .followcnt(contentsService.getFollowCnt(game.getGid()))
