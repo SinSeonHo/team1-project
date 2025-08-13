@@ -11,14 +11,15 @@
         .trending__product {
           padding: 0 10%;
         }
-        img {
-          height: 500px;
-          width: 250px;
+        .product__item__pic {
+          height: 290px;
+          width: 290px;
+          position: relative; /* 배치 기준 */
         }
       </style>
     </th:block>
     <th:block layout:fragment="title">
-      <title>MovieList</title>
+      <title>컨텐츠 검색</title>
     </th:block>
   </head>
   <body>
@@ -27,7 +28,7 @@
         <div class="row">
           <div class="col-lg-8 col-md-8 col-sm-8">
             <div class="section-title">
-              <h4>영화리스트</h4>
+              <h4>컨텐츠 검색 결과</h4>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-4">
@@ -35,31 +36,31 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-2 col-md-6 col-sm-9" th:each="movie : ${movies}">
+          <div class="col-lg-3 col-md-6 col-sm-6" th:each="content : ${contents}">
             <div class="product__item">
               <div class="product__item__pic">
-                <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
-                  <img
-                    th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
+                <a
+                  th:href="${content.contentsType.name == 'MOVIE' ? '/api/movies/read/' + content.contentsId : '/api/games/read/' + content.contentsId}"
+                  ><img
+                    th:src="${ content.imgUrl }"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
-                    alt="영화 이미지"
+                    alt="이미지"
                     loading="lazy"
                     class="product__item__pic"
                   />
                   <!-- 팔로우수  -->
-                  <div class="comment_movie"><i class="fa-solid fa-heart"></i>&nbsp;[[${movie.followcnt}]]</div>
+                  <div class="comment_movie"><i class="fa-solid fa-heart"></i>&nbsp;[[${content.followCnt}]]</div>
                   <!-- 댓글갯수  -->
-                  <div class="view_movie"><i class="fa-solid fa-comment"></i>&nbsp;[[${movie.replycnt}]]</div>
+                  <div class="view_movie"><i class="fa-solid fa-comment"></i>&nbsp;[[${content.replyCnt}]]</div>
                 </a>
               </div>
 
               <div class="product__item__text">
-                <ul class="genre">
-                  <li th:text="${movie.nationNm}"></li>
-                  <li th:text="${movie.genres}"></li>
-                </ul>
                 <h5>
-                  <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}"></a>
+                  <a
+                    th:href="${content.contentsType == 'MOVIE' ? '/api/movies/read/'+content.contentsId :'/api/games/read/'+content.contentsId}"
+                    th:text="${content.title}"
+                  ></a>
                 </h5>
               </div>
             </div>
@@ -70,6 +71,7 @@
         </div>
       </div>
     </div>
+
     <th:block layout:fragment="script">
       <!-- 개별 페이지 script 작성 -->
       <script th:src="@{/js/scroll.js}"></script>

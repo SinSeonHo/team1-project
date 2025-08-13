@@ -19,8 +19,6 @@ import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.Image;
 import com.example.ott.entity.Movie;
 
-import com.example.ott.entity.Reply;
-
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
 

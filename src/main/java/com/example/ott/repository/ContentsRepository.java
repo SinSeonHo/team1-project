@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.search.ContentsSearchRepository;
 
-public interface ContentsRepository extends JpaRepository<Contents, String> {
+public interface ContentsRepository extends JpaRepository<Contents, String>, ContentsSearchRepository {
 
     boolean existsByContentsId(String contentsId);
 

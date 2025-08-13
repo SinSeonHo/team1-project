@@ -19,7 +19,6 @@ import com.example.ott.entity.Reply;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
-import com.example.ott.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +29,10 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public int insert(ReplyDTO dto) {
-        User user = userRepository.findById(dto.getReplyer()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userService.getUserById(dto.getReplyer());
 
         if (dto.getRef() == null) {
             if (dto.getId() != null) {
@@ -87,7 +86,7 @@ public class ReplyService {
 
     private ReplyDTO entityToDto(Reply reply) {
 
-        User user = userRepository.findById(reply.getReplyer().getId()).get();
+        User user = userService.getUserById(reply.getReplyer().getId());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
@@ -102,7 +101,7 @@ public class ReplyService {
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
-                .replyer(reply.getReplyer().getId())
+                .replyer(user.getId())
                 .replyerNickname(user.getNickname())
                 .rate(reply.getRecommend())
                 .ref(reply.getRef())
@@ -124,10 +123,14 @@ public class ReplyService {
         Movie movie = null;
         Game game = null;
         // 별점 제한
-        if (dto.getRate() < 0) {
+        if (dto.getRef() == null) {
+            if (dto.getRate() < 0) {
+                dto.setRate(0);
+            } else if (dto.getRate() > 5) {
+                dto.setRate(5);
+            }
+        } else {
             dto.setRate(0);
-        } else if (dto.getRate() > 5) {
-            dto.setRate(5);
         }
 
         if (dto.getId() != null) {
