@@ -53,7 +53,7 @@
               <div class="row">
                 <div class="col-lg-3">
                   <img
-                    th:src="@{${movieInfo.image != null} ? '/images/movieimages/' + ${movieInfo.image.imgName} : '/images/sample.png'}"
+                    th:src="@{${movieInfo.image != null} ? '/images/movieimages/' + ${movieInfo.image.imgName} : '/images/sample.jpg'}"
                     onerror="this.onerror=null; this.src='/images/sample.jpg';"
                     alt="영화 이미지"
                     loading="lazy"
@@ -129,104 +129,107 @@
             <div class="section-title">
               <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
             </div>
-            <!-- 댓글 시작 -->
-            <div th:each="reply : ${replies}" class="anime__review__item">
-              <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
-              <div class="anime__review__item__pic">
-                <!-- 로그인: 프로필 이미지 / 없을 경우 기본 이미지 -->
-                <img
-                  th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' : '/images/view/' + ${reply.thumbnailPath}"
-                  alt="프로필"
-                  class="rounded-circle border border-primary shadow-sm"
-                  style="width: 40px; height: 40px; object-fit: cover; background: #eee"
-                />
-              </div>
-              <div
-                class="anime__review__item__text reply"
-                th:data-rno="${reply.rno}"
-                th:data-replyer="${reply.replyer}"
-                th:data-replyerNickname="${reply.replyerNickname}"
-                th:data-text="${reply.text}"
-                th:data-mid="${reply.id}"
-                th:data-mention="${reply.mention}"
-                th:data-ref="${reply.ref}"
-                th:data-rate="${reply.rate}"
-              >
-                <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
-                <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span>
-                <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
-                <button
-                  type="button"
-                  class="delete-btn btn btn-secondary btn-sm"
-                  th:if="${#authentication.name == reply.replyer}"
-                  th:data-rno="${reply.rno}"
-                >
-                  x
-                </button>
-                <button
-                  type="button"
-                  class="update-btn btn btn-secondary btn-sm"
-                  th:if="${#authentication.name == reply.replyer}"
-                  th:data-rno="${reply.rno}"
-                >
-                  수정
-                </button>
-                <button
-                  type="button"
-                  class="mention-btn btn btn-secondary btn-sm"
-                  th:if="${#authentication.name != 'anonymousUser'}"
-                  th:data-rno="${reply.rno}"
-                >
-                  대댓글
-                </button>
-                <!-- 리뷰는 별점 표시 -->
-                <span>
-                  <i
-                    th:if="${reply.ref == null}"
-                    th:each="idx : ${#numbers.sequence(0, 4)}"
-                    class="fa-star"
-                    th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
-                  ></i>
-                </span>
-                <p th:text="${reply.text}">댓글 텍스트</p>
-              </div>
+            <!-- 별점 -->
+            <div class="rating mb-3">
+              <span th:text="' 평균 '+${rating}+'점'">평균 별점</span>
             </div>
-            <!-- 댓글 리스트 끝 -->
+            <!-- 댓글 시작 -->
+            <div th:each="reply : ${replies}">
+              <div class="anime__review__item">
+                <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
+                <div class="anime__review__item__pic">
+                  <!-- 로그인: 프로필 이미지 / 없을 경우 기본 이미지 -->
+                  <img
+                    th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' : '/images/view/' + ${reply.thumbnailPath}"
+                    alt="프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </div>
+                <div
+                  class="anime__review__item__text reply"
+                  th:data-rno="${reply.rno}"
+                  th:data-replyer="${reply.replyer}"
+                  th:data-replyerNickname="${reply.replyerNickname}"
+                  th:data-text="${reply.text}"
+                  th:data-mid="${reply.id}"
+                  th:data-mention="${reply.mention}"
+                  th:data-ref="${reply.ref}"
+                  th:data-rate="${reply.rate}"
+                >
+                  <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
+                  <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
+                  <button
+                    type="button"
+                    class="delete-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                  >
+                    ✖
+                  </button>
+                  <button
+                    type="button"
+                    class="update-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    class="mention-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                  >
+                    댓글
+                  </button> 
+                  <button class="report-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}">🚨</button>
+                  <!-- 리뷰는 별점 표시 -->
+                  <span>
+                    <i
+                      th:if="${reply.ref == null}"
+                      th:each="idx : ${#numbers.sequence(0, 4)}"
+                      class="fa-star"
+                      th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
+                    ></i>
+                  </span>
+                  <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
+                </div>
+              </div>
           </div>
 
           <!-- 댓글 작성 폼 -->
-          <div class="anime__details__form">
+          <div class="anime__details__form" th:fragment="replyform">
             <div class="section-title">
               <h5>댓글 작성</h5>
             </div>
-            <span class="mention badge badge-secondary"></span>
-            <form id="replyForm" method="post">
-              <!-- 별점 -->
-              <div class="anime__details__rating">
-                <input type="hidden" name="rate" />
-                <span class="rating" name="rate">
-                  <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
-                </span>
-                <span th:text="' 평균 '+${rating}+'점'">0 평균 별점</span>
-              </div>
-
+            <span class="mention badge badge-secondary btn p-2"></span>
+            <form id="replyForm" method="post" th:if="${#authentication.name != 'anonymousUser'}">
               <input type="hidden" name="id" th:value="${movieInfo.mid}" />
               <input type="hidden" name="rno" />
               <input type="hidden" name="replyer" th:value="${#authentication.name}" />
               <input type="hidden" name="mention" />
               <input type="hidden" name="ref" />
+              <!-- 별점 -->
+              <div class="rating-form">
+                <input type="hidden" name="rate" />
+                <span class="rating" name="rate"
+                  >평가:
+                  <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
+                </span>
+              </div>
               <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
-              <span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자
-
-              <div th:if="${#authentication.name != 'anonymousUser'}">
-                <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
-                <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
-              </div>
-
-              <div th:if="${#authentication.name == 'anonymousUser'}">
-                <button class="btn btn-sm">로그인</button>
-              </div>
+              <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
+              <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">지우기</button>
             </form>
+
+            <div th:if="${#authentication.name == 'anonymousUser'}">
+              <a href="/user/login" class="btn site-btn" style="color: #eee">로그인</a>
+            </div>
+            <div class="p-4"></div>
           </div>
           <!-- 댓글 작성 폼 끝 -->
         </div>

@@ -37,7 +37,7 @@ replyForm.addEventListener("submit", (e) => {
   } else {
     // 댓글 추가
     if (data.replyer.value === "anonymousUser") {
-      alert("로그인해 주세요");
+      alert("로그인 페이지로 이동합니다");
       location.href = "/user/login";
     } else {
       axios
@@ -55,8 +55,11 @@ replyForm.addEventListener("submit", (e) => {
           }
         })
         .catch((err) => {
-          console.error(err);
-          alert("댓글 등록 실패");
+          if (err.status == 403) {
+            alert("우선 이메일 인증을 해주세요");
+          } else {
+            alert("댓글 등록 오류");
+          }
         });
     }
   }
@@ -77,9 +80,23 @@ document.querySelectorAll(".update-btn").forEach((e) => {
     // 리뷰 정보
     replyForm.mention.value = data.mention;
     replyForm.ref.value = data.ref;
-    // 별점
-    replyForm.rate.value = data.rate;
-    highlightStars(data.rate);
+
+    const mentionname = data.mention;
+
+    if (data.ref == undefined) {
+      // 리뷰라면
+      document.querySelector(".mention").innerHTML = "";
+      // 별점 추가
+      starsContainer.classList.remove("hide");
+      replyForm.rate.value = data.rate;
+      starsContainer.dataset.rating = data.rate;
+      highlightStars(parseInt(data.rate));
+    } else {
+      // 댓글이라면
+      const mention = document.querySelector(".mention");
+      mention.innerHTML = "멘션: " + mentionname + " ✖";
+      starsContainer.classList.add("hide");
+    }
   });
 });
 
@@ -87,7 +104,7 @@ document.querySelectorAll(".update-btn").forEach((e) => {
 document.querySelectorAll(".delete-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const rno = btn.getAttribute("data-rno");
-    if (!confirm("정말 삭제하시겠습니까? 댓글까지 삭제됩니다.")) return;
+    if (!confirm("정말 삭제하시겠습니까? 달린 댓글도 삭제됩니다.")) return;
 
     axios
       .delete(`/replies/${rno}`, {
@@ -104,10 +121,10 @@ document.querySelectorAll(".delete-btn").forEach((btn) => {
   });
 });
 
-const replyText = document.querySelector("#replytext");
+const replyText = document.getElementById("replytext");
 const currentCharCount = document.getElementById("currentCharCount");
 const maxLength = 200; // 최대 글자 수
-document.querySelector("#maxChar").textContent = maxLength;
+document.getElementById("maxChar").textContent = maxLength;
 
 // 입력 필드에 'input' 이벤트 리스너 추가
 replyText.addEventListener("input", () => {
@@ -129,22 +146,29 @@ replyText.addEventListener("input", () => {
 // 페이지 로드 시 초기 글자 수 표시 (만약 미리 텍스트가 있다면)
 currentCharCount.textContent = replyText.value.length;
 
-// 리뷰 멘션 추가
+// 리뷰에 댓글 추가
 document.querySelectorAll(".mention-btn").forEach((re) => {
   re.addEventListener("click", (e) => {
+    // 데이터 가져와서 폼에 추가
     const data = e.target.closest(".anime__review__item__text").dataset;
     const rno = data.rno;
     const reviewer = data.replyernickname;
 
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
+    replyForm.rno.value = null;
+    // textarea 멘션 추가
+    replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+    replyForm.text.value = `@${reviewer} ` + (replyForm.text.value == undefined ? " " : replyForm.text.value);
+
     const mention = document.querySelector(".mention");
-    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>X</button>";
-    mention.querySelector(".btn").addEventListener("click", (e) => {
-      replyForm.mention.value = null;
-      replyForm.ref.value = null;
-      mention.innerHTML = "";
+    mention.innerHTML = "멘션: " + reviewer + " ✖";
+    // 멘션 제거버튼 기능 추가
+    mention.addEventListener("click", (e) => {
+      removeMention();
     });
+
+    starsContainer.classList.add("hide");
   });
 });
 
@@ -152,50 +176,62 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
 replyForm.addEventListener("click", (e) => {
   const btn = e.target;
   if (btn.classList.contains("btn-cancel")) {
+    // 멘션 제거
+    removeMention();
     replyForm.rno.value = null;
-    replyForm.mention.value = null;
-    replyForm.ref.value = null;
     replyForm.text.value = null;
-    document.querySelector(".mention").innerHTML = "";
     currentCharCount.textContent = 0;
+
+    // 별점 초기화
+    document.querySelector(".rating-form").classList.remove("hide"); // 별점 보이기
     highlightStars(0);
   }
 });
 
-// 별점 기능
-const starsContainer = document.querySelector(".rating");
-const allStars = document.querySelectorAll(".rating .fa-star");
-// const selectedRatingText = document.querySelector(".current-rating");
+function removeMention() {
+  const mention = document.querySelector(".mention");
+  mention.innerHTML = "";
+  replyForm.mention.value = null;
+  replyForm.ref.value = null;
+  replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+  // 별점 초기화
+  starsContainer.classList.remove("hide"); // 별점 보이기
+  starsContainer.dataset.rating = 0; // data-rating 속성 업데이트
+  replyForm.rate.value = 0;
+  highlightStars(0);
+}
 
+// 별점 기능
+const starsContainer = document.querySelector(".rating-form");
+const allStars = document.querySelectorAll(".rating-form .fa-star");
+const rateStars = document.querySelectorAll(".rating-rate .fa-star");
 let currentRating = parseInt(starsContainer.dataset.rating); // 현재 선택된 별점 (초기값)
 
 // 초기 별점 설정 (페이지 로드 시)
 highlightStars(currentRating);
+
 // 클릭 이벤트 (별점 선택)
 starsContainer.addEventListener("click", (event) => {
   if (event.target.classList.contains("fa-star")) {
-    const clickedValue = parseInt(event.target.dataset.value);
-    currentRating = clickedValue; // 현재 선택된 별점 업데이트
+    currentRating = parseInt(event.target.dataset.value); // 현재 선택된 별점 업데이트
     starsContainer.dataset.rating = currentRating; // data-rating 속성 업데이트
     highlightStars(currentRating); // 별점 UI 업데이트
-    // selectedRatingText.textContent = currentRating; // 텍스트 업데이트
-
-    // 여기서 서버로 별점 데이터를 전송하는 로직을 추가할 수 있습니다.
-    console.log(`별점 ${currentRating}점이 선택되었습니다.`);
     replyForm.rate.value = currentRating;
   }
 });
+
 // 마우스 오버 이벤트 (미리 보기)
 starsContainer.addEventListener("mouseover", (event) => {
   if (event.target.classList.contains("fa-star")) {
-    const hoverValue = parseInt(event.target.dataset.value);
-    highlightStars(hoverValue);
+    highlightStars(parseInt(event.target.dataset.value)); // 선택된 별의 점수
   }
 });
+
 // 마우스 아웃 이벤트 (원래 별점으로 되돌리기)
 starsContainer.addEventListener("mouseout", () => {
   highlightStars(currentRating); // 원래 선택된 별점으로 돌아가기
 });
+
 // 별들을 하이라이트하는 함수 (마우스 오버 및 클릭 시 사용)
 function highlightStars(value) {
   allStars.forEach((star) => {

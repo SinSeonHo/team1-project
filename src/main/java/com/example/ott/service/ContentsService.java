@@ -2,10 +2,17 @@ package com.example.ott.service;
 
 import java.util.NoSuchElementException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ContentsDTO;
+import com.example.ott.dto.PageRequestDTO;
+import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.ContentsRepository;
@@ -35,7 +42,8 @@ public class ContentsService {
             // 존재하지 않는 콘텐츠 일 경우
             Contents contents = Contents.builder()
                     .contentsId(contentsDTO.getContentsId())
-                    .contentsType(contentsDTO.getContentsType())
+                    .contentsType((contentsDTO.getContentsType() == ContentsType.GAME) ? ContentsType.GAME
+                            : ContentsType.MOVIE)
                     .title(contentsDTO.getTitle())
                     .build();
 
@@ -72,7 +80,41 @@ public class ContentsService {
     public int getFollowCnt(String id) {
         return contentsRepository.findByContentsId(id)
                 .map(Contents::getFollowCnt)
-                .orElse(0); // 없으면 0 리턴
+                .orElse(0);
     }
 
+    public PageResultDTO<ContentsDTO> search(PageRequestDTO pageRequestDTO) {
+        Page<Contents> result = contentsRepository.search(pageRequestDTO);
+
+        List<ContentsDTO> dtoList = result.stream().map(content -> entityToDto(content)).collect(Collectors.toList());
+
+        return PageResultDTO.<ContentsDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(result.getTotalElements())
+                .build();
+    }
+
+    private ContentsDTO entityToDto(Contents content) {
+        ContentsDTO dto = ContentsDTO.builder()
+                .contentsId(content.getContentsId())
+                .contentsType(content.getContentsType())
+                .followCnt(content.getFollowCnt())
+                .title(content.getTitle())
+                .build();
+        if (content.getMovie() != null) {
+            dto.setReplyCnt(content.getMovie().getReplies().size());
+            if (content.getMovie().getImage() != null) {
+                dto.setImgUrl(content.getMovie().getImage().getPath());
+            }
+        } else if (content.getGame() != null) {
+            dto.setReplyCnt(content.getGame().getReplies().size());
+            if (content.getGame().getImage() != null) {
+                dto.setImgUrl(content.getGame().getImage().getPath());
+            }
+        } else {
+            dto.setImgUrl(null);
+        }
+        return dto;
+    }
 }
