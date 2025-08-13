@@ -3,6 +3,7 @@ package com.example.ott.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.Game;
@@ -18,5 +19,8 @@ public interface ContentsRepository extends JpaRepository<Contents, String>, Con
     Contents findByMovie(Movie movie);
 
     Optional<Contents> findByContentsId(String contentsId);
+
+    @Query(value = "SELECT * FROM contents ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
+    Optional<Contents> pickRandom();
 
 }

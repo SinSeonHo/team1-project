@@ -66,7 +66,7 @@ public class FollowedContentsService {
         // 팔로우 여부 확인
         boolean isFollowed = isFollowed(user, contentsId);
         Contents contents = contentsRepository.findById(contentsId).get();
-
+        log.info("팔로우 여부 확인 {}", isFollowed);
         if (isFollowed) {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
@@ -92,6 +92,7 @@ public class FollowedContentsService {
             followedContentsRepository.save(followedContents);
 
             try {
+
                 userGenrePreferenceService.addUserPreference(user, contents);
 
             } catch (Exception e) {
