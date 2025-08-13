@@ -719,7 +719,7 @@ ol {
   border: 0px solid #394867;
   color: #dbeafe; /* 밝은 파랑 글씨 */
   padding: 8px 10px;
-  border-radius: 0px;
+  border-radius: 4px 0 0 4px;
   font-size: 14px;
 }
 
@@ -2214,9 +2214,6 @@ ol {
     top: -42px;
     padding: 0;
   }
-  .header__menu {
-    display: none;
-  }
   .slicknav_menu {
     background: transparent;
     padding: 0;
@@ -2318,9 +2315,6 @@ ol {
     right: 120px;
     top: -42px;
     padding: 0;
-  }
-  .header__menu {
-    display: none;
   }
   .slicknav_menu {
     background: transparent;
@@ -2615,4 +2609,10 @@ ol {
 
 .next-btn {
   right: 20px;
+}
+@media (max-width: 767px) {
+  .mobile-menu ul li {
+    border: white 2px;
+    color: white;
+  }
 }

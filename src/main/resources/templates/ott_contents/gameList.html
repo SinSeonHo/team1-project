@@ -61,9 +61,9 @@
                       class="product__item__pic"
                     />
                     <!-- 팔로우수  -->
-                    <div class="comment_game" th:text="'Follow: ' + ${game.followcnt} + 명"></div>
+                    <div class="comment_game"><i class="fa-solid fa-heart"></i>&nbsp;[[${game.followcnt}]]</div>
                     <!-- 댓글갯수  -->
-                    <div class="view_game" th:text="'Re: ' + ${game.replycnt} + 개"></div>
+                    <div class="view_game"><i class="fa-solid fa-comment"></i>&nbsp;[[${game.replycnt}]]</div>
                   </a>
                   <!-- 할인율이 0이 아니면 '할인중' 표시 -->
                   <div class="discount-badge" th:if="${game.discountRate != 0}">SALE !!!</div>

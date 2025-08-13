@@ -1,6 +1,9 @@
 .hide {
   display: none;
 }
+.mention {
+  font-size: medium;
+}
 .re-reply-tag {
   float: left;
   padding: 10px 5px;

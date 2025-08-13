@@ -158,7 +158,6 @@
                   th:data-rate="${reply.rate}"
                 >
                   <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
-                  <!-- <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span> -->
                   <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
                   <button
                     type="button"
@@ -183,7 +182,10 @@
                     th:data-rno="${reply.rno}"
                   >
                     댓글
-                  </button>
+                  </button> 
+                  <button class="report-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}">🚨</button>
                   <!-- 리뷰는 별점 표시 -->
                   <span>
                     <i
@@ -196,22 +198,6 @@
                   <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
                 </div>
               </div>
-              <!-- 대댓글 폼 안씀 -->
-              <form class="reply-form" id="reply-form" method="post" style="display: none">
-                <input type="hidden" name="id" th:value="${movieInfo.mid}" />
-                <input type="hidden" name="rno" />
-                <input type="hidden" name="replyer" th:value="${#authentication.name}" />
-                <input type="hidden" name="mention" />
-                <input type="hidden" name="ref" />
-                <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
-                <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
-                <button class="btn btn-success btn-insert modalBtn" type="submit" style="font-size: medium">
-                  등록
-                </button>
-                <button class="btn btn-primary reply-cancel" type="button" style="font-size: medium">취소</button>
-              </form>
-            </div>
-            <!-- 댓글 리스트 끝 -->
           </div>
 
           <!-- 댓글 작성 폼 -->
@@ -219,7 +205,7 @@
             <div class="section-title">
               <h5>댓글 작성</h5>
             </div>
-            <span class="mention badge badge-secondary"></span>
+            <span class="mention badge badge-secondary btn p-2"></span>
             <form id="replyForm" method="post" th:if="${#authentication.name != 'anonymousUser'}">
               <input type="hidden" name="id" th:value="${movieInfo.mid}" />
               <input type="hidden" name="rno" />

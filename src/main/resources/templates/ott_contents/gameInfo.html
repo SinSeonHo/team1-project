@@ -213,6 +213,13 @@
                   >
                     댓글
                   </button>
+                  <button
+                    class="report-btn btn btn-secondary btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                  >
+                    🚨
+                  </button>
                   <!-- 리뷰는 별점 표시 -->
                   <span>
                     <i
@@ -234,7 +241,7 @@
             <div class="section-title">
               <h5>댓글 작성</h5>
             </div>
-            <span class="mention badge badge-secondary"></span>
+            <span class="mention badge badge-secondary btn p-2"></span>
             <form id="replyForm" method="post" th:if="${#authentication.name != 'anonymousUser'}">
               <!-- 별점 -->
               <div class="rating-form">

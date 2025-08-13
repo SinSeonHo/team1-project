@@ -95,11 +95,16 @@ public class ContentsService {
                 .followCnt(content.getFollowCnt())
                 .title(content.getTitle())
                 .build();
-
-        if (content.getMovie() != null && content.getMovie().getImage() != null) {
-            dto.setImgUrl(content.getMovie().getImage().getPath());
-        } else if (content.getGame() != null && content.getGame().getImage() != null) {
-            dto.setImgUrl(content.getGame().getImage().getPath());
+        if (content.getMovie() != null) {
+            dto.setReplyCnt(content.getMovie().getReplies().size());
+            if (content.getMovie().getImage() != null) {
+                dto.setImgUrl(content.getMovie().getImage().getPath());
+            }
+        } else if (content.getGame() != null) {
+            dto.setReplyCnt(content.getGame().getReplies().size());
+            if (content.getGame().getImage() != null) {
+                dto.setImgUrl(content.getGame().getImage().getPath());
+            }
         } else {
             dto.setImgUrl(null);
         }

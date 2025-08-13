@@ -397,7 +397,7 @@ public class GameService {
 
     public List<GameDTO> getRandom(int num) {
         List<GameDTO> result = new ArrayList<>();
-        List<Game> list = gameRepository.findAll();
+        List<Game> list = getGameAll();
 
         // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
         if (list.isEmpty()) {

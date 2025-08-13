@@ -81,12 +81,22 @@ document.querySelectorAll(".update-btn").forEach((e) => {
     replyForm.mention.value = data.mention;
     replyForm.ref.value = data.ref;
 
-    const reviewer = data.replyernickname;
-    const mention = document.querySelector(".mention");
-    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
-    // 별점
-    replyForm.rate.value = data.rate;
-    highlightStars(data.rate);
+    const mentionname = data.mention;
+
+    if (data.ref == undefined) {
+      // 리뷰라면
+      document.querySelector(".mention").innerHTML = "";
+      // 별점 추가
+      starsContainer.classList.remove("hide");
+      replyForm.rate.value = data.rate;
+      starsContainer.dataset.rating = data.rate;
+      highlightStars(parseInt(data.rate));
+    } else {
+      // 댓글이라면
+      const mention = document.querySelector(".mention");
+      mention.innerHTML = "멘션: " + mentionname + " ✖";
+      starsContainer.classList.add("hide");
+    }
   });
 });
 
@@ -94,7 +104,7 @@ document.querySelectorAll(".update-btn").forEach((e) => {
 document.querySelectorAll(".delete-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const rno = btn.getAttribute("data-rno");
-    if (!confirm("정말 삭제하시겠습니까? 댓글도 삭제됩니다.")) return;
+    if (!confirm("정말 삭제하시겠습니까? 달린 댓글도 삭제됩니다.")) return;
 
     axios
       .delete(`/replies/${rno}`, {
@@ -114,12 +124,11 @@ document.querySelectorAll(".delete-btn").forEach((btn) => {
 const replyText = document.getElementById("replytext");
 const currentCharCount = document.getElementById("currentCharCount");
 const maxLength = 200; // 최대 글자 수
-document.querySelector("#maxChar").textContent = maxLength;
+document.getElementById("maxChar").textContent = maxLength;
 
 // 입력 필드에 'input' 이벤트 리스너 추가
 replyText.addEventListener("input", () => {
   let currentLength = replyText.value.length;
-  console.log(replyText.value);
 
   // 글자 수가 제한을 초과하는 경우
   if (currentLength > maxLength) {
@@ -147,14 +156,15 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
 
     replyForm.mention.value = reviewer;
     replyForm.ref.value = rno;
+    replyForm.rno.value = null;
     // textarea 멘션 추가
     replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
     replyForm.text.value = `@${reviewer} ` + (replyForm.text.value == undefined ? " " : replyForm.text.value);
 
     const mention = document.querySelector(".mention");
-    mention.innerHTML = "멘션: " + reviewer + "<button type='button' class='btn btn-secondary btn-sm'>✖</button>";
+    mention.innerHTML = "멘션: " + reviewer + " ✖";
     // 멘션 제거버튼 기능 추가
-    mention.querySelector(".btn").addEventListener("click", (e) => {
+    mention.addEventListener("click", (e) => {
       removeMention();
     });
 
@@ -170,7 +180,6 @@ replyForm.addEventListener("click", (e) => {
     removeMention();
     replyForm.rno.value = null;
     replyForm.text.value = null;
-    starsContainer.dataset.rating = 0;
     currentCharCount.textContent = 0;
 
     // 별점 초기화

@@ -8,13 +8,12 @@
           <div class="header__logo"></div>
         </div>
 
-        <div class="col-lg-7 col-sm-4">
+        <div class="col-lg-7 col-md-12">
           <div class="header__nav">
             <nav class="header__menu mobile-menu">
               <ul>
                 <li><a th:href="@{/}">Sol</a></li>
                 <li>
-                  <!-- <a th:href="@{/api/movies/list}">Movie List<span class="arrow_carrot-down"></span></a> -->
                   <a th:href="@{/api/movies/list}">Movie List</a>
                 </li>
                 <li><a th:href="@{/api/games/list}">Game List</a></li>
@@ -41,7 +40,6 @@
                     </li>
                   </ul>
                 </li>
-
                 <!-- <li><a href="http://localhost:8080/report?rCode=REP00CFA52B028345FCAAEB504271E20234">Chart</a></li> -->
                 <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/admin/home}">관리자</a></li>
               </ul>
@@ -50,7 +48,7 @@
         </div>
         <div class="col-lg-5 col-sm-12">
           <div class="header-btns">
-            <div class="primary-btn d-flex">
+            <div class="primary-btn d-flex align-items-center">
               <!-- 검색창 -->
               <form
                 action="/contents"

@@ -26,6 +26,7 @@ public class ContentsDTO {
 
     private String imgUrl;
     private int followCnt;
+    private int replyCnt;
 
     public static class ContentsDTOBuilder {
         public ContentsDTOBuilder genres(String genres) {
