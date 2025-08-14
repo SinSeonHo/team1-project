@@ -13,16 +13,22 @@ import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
+import com.example.ott.exception.ReportActionException;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
+import com.example.ott.repository.ReportRepository;
+import com.example.ott.type.Status;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
@@ -30,6 +36,7 @@ public class ReplyService {
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
     private final UserService userService;
+    private final ReportRepository reportRepository;
 
     public int insert(ReplyDTO dto) {
         User user = userService.getUserById(dto.getReplyer());
@@ -63,14 +70,30 @@ public class ReplyService {
             Game game = gameRepository.findById(id).get();
             list = replyRepository.findByGame(game);
         }
-        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
+        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> {
+            // 신고된 댓글이 삭제처리 된 경우 내용이 대체됨.
+            ReplyDTO dto = entityToDto(reply);
+            if (dto.getStatus().equals(Status.DELETED)) {
+                dto.setText("관리자에 의해 삭제된 게시물입니다.");
+            }
+            return dto;
+        })
                 .collect(Collectors.toList());
         return result;
     }
 
     // 댓글 내용 변경
     public ReplyDTO updateReply(ReplyDTO dto) {
+        // 신고가 접수된 게시물은 수정할 수 없음
         Reply reply = replyRepository.findById(dto.getRno()).get();
+        boolean isReported = reply.getStatus() != Status.NO_ACTION;
+        log.info("=================================================================");
+        log.info("isReported : {} \n dto의 status : {}", isReported, dto.getStatus());
+        log.info("=================================================================");
+        if (isReported) {
+            throw new ReportActionException("신고가 접수된 게시물로 수정할 수 없습니다.");
+        }
+
         reply.changeText(dto.getText());
         reply.changeRate(dto.getRate());
 
@@ -79,6 +102,12 @@ public class ReplyService {
 
     @Transactional
     public void deleteReply(Long id) {
+        Reply reply = replyRepository.findById(id).get();
+        List<Report> reports = reportRepository.findByReply(reply);
+        reports.forEach(report -> {
+            report.setReply(null);
+            reportRepository.save(report);
+        });
         List<Reply> list = replyRepository.findByRef(id);
         list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
         replyRepository.deleteById(id);
@@ -110,6 +139,7 @@ public class ReplyService {
                 .updatedDate(formattedUpDate)
                 .thumbnailPath(thumbnailPath)
                 .badgePath(badge)
+                .status(reply.getStatus())
                 .build();
         if (reply.getMovie() != null) {
             dto.setId(reply.getMovie().getMid());

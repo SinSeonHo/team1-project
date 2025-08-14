@@ -1,5 +1,6 @@
 package com.example.ott.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Service;
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
-import com.example.ott.repository.ImageRepository;
-import com.example.ott.repository.UserRepository;
+import com.example.ott.repository.*;
 import com.example.ott.security.CustomUserDetails;
 import com.example.ott.type.Status;
 
@@ -29,9 +32,15 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final ReportRepository reportRepository;
+
+    private final UserGenrePreferenceRepository userGenrePreferenceRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
+    private final FollowedContentsRepository followedContentsRepository;
+    private final ReplyRepository replyRepository;
 
     // 계정 생성 + 자동 로그인
     public String registerAndLogin(TotalUserDTO totalUserDTO) {
@@ -100,9 +109,23 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // TODO reply 먼저
-    // 지워야돼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void deleteUser(String id) {
+        User user = userRepository.findById(id).get();
+        List<Report> reports = reportRepository.findByReporter(user);
+
+        reports.forEach(report -> {
+
+            reportRepository.save(report);
+        });
+        // 지워야 될 거
+        // 1. user genre 취향
+        userGenrePreferenceRepository.findByUser(user).forEach(pre -> userGenrePreferenceRepository.delete(pre));
+        // 2. followed contents
+        List<FollowedContents> contents = followedContentsRepository.findByUser(user);
+        contents.forEach(content -> followedContentsRepository.delete(content));
+        // 3, reply
+        List<Reply> replies = replyRepository.findByReplyer(user);
+        replies.forEach(reply -> replyRepository.delete(reply));
         userRepository.deleteById(id);
     }
 

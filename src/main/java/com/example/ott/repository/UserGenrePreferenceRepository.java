@@ -55,4 +55,5 @@ public interface UserGenrePreferenceRepository extends JpaRepository<UserGenrePr
   List<ContentRecommendation> recommendByUserPreference(
       @Param("userId") String userId);
 
+  List<UserGenrePreference> findByUser(User user);
 }

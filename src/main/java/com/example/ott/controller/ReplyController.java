@@ -36,7 +36,8 @@ public class ReplyController {
 
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
-        return replyService.updateReply(dto);
+        ReplyDTO replyDTO = replyService.updateReply(dto);
+        return replyDTO;
     }
 
     @PostMapping("/new")

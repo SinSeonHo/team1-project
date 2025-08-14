@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/report.css}">
+  </th:block>
+        <th:block layout:fragment="metadata">
+        <meta name="current-user-id" th:content="${#authentication.principal.securityUserDTO.id}" />
+     </th:block>
   <body>
     <div layout:fragment="content">
       <!-- 자식 템플릿 전용 스타일 (head 밖, content 내부 최상단에 둠) -->
@@ -49,6 +55,8 @@
         <!-- 상세정보 -->
         <section class="anime-details spad">
           <div class="container">
+
+
             <div class="anime__details__content">
               <div class="row">
                 <div class="col-lg-3">
@@ -183,9 +191,14 @@
                   >
                     댓글
                   </button> 
-                  <button class="report-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
-                    th:data-rno="${reply.rno}">🚨</button>
+                    <button class="report-btn btn btn-secondary btn-sm"
+                            th:if="${#authentication.name != 'anonymousUser' 
+                                  and reply.replyer != #authentication.name}"
+                            th:data-rno="${reply.rno}"
+                            th:data-replyer-nickname="${reply.replyerNickname}">
+                      🚨
+                    </button>
+
                   <!-- 리뷰는 별점 표시 -->
                   <span>
                     <i
@@ -234,17 +247,53 @@
           <!-- 댓글 작성 폼 끝 -->
         </div>
         <!-- col-lg-6 mx-auto -->
+         <th:block layout:fragment="report-modal">
+        <!-- ───────────── 신고 모달 (일반) ───────────── -->
+<!-- 신고 모달 -->
+<div id="reportModal" class="report-backdrop" aria-hidden="true">
+  <div class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+    <div class="report-header">
+      <h5 id="reportTitle">댓글 신고</h5>
+      <button type="button" class="report-close" aria-label="닫기">×</button>
+    </div>
 
+    <div class="report-body">
+      <div class="mb-2">
+        <small>대상 닉네임</small>
+        <div id="reportTarget" class="font-weight-bold"></div>
+      </div>
+
+      <label for="reportReason" class="mb-1">신고 사유</label>
+      <select id="reportReason" name="reason" required>
+        <option value="" selected disabled>선택하세요</option>
+        <option value="INAPPROPRIATE_NICKNAME">부적절한 닉네임</option>
+        <option value="SPOILER">스포일러</option>
+        <option value="PROFANITY">욕설</option>
+        <option value="ADVERTISEMENT">광고/홍보</option>
+      </select>
+    </div>
+
+    <div class="report-footer">
+      <button type="button" class="btn btn-secondary btn-cancel-report">취소</button>
+      <button type="button" class="btn btn-primary btn-submit-report">신고 제출</button>
+    </div>
+  </div>
+</div>
+
+        </th:block>
         <!-- 스크립트 -->
-        <script th:src="@{/js/reply.js}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+          <th:block layout:fragment="script">
         <script>
           const id = "[[${movieInfo.mid}]]";
           const csrf = "[[${_csrf.token}]]";
         </script>
-        <script th:src="@{/js/followbtn.js}"></script>
-        <script th:src="@{/js/imgSlider.js}"></script>
-        <script th:src="@{/js/imgModal.js}"></script>
+          <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+          <script th:src="@{/js/reply.js}"></script>
+          <script th:src="@{/js/followbtn.js}"></script>
+          <script th:src="@{/js/imgSlider.js}"></script>
+          <script th:src="@{/js/imgModal.js}"></script>
+          <script th:src="@{/js/report.js}"></script>
+        </th:block>
       </div>
       <!-- gradient-bg -->
     </div>

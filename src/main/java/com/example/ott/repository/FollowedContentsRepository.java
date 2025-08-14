@@ -24,4 +24,5 @@ public interface FollowedContentsRepository extends JpaRepository<FollowedConten
     boolean existsByUserAndContents(User user, Contents contents); // 사용
 
     long countByContents(Contents contents); // 사용
+
 }

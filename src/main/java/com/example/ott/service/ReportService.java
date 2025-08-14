@@ -75,28 +75,49 @@ public class ReportService {
     }
 
     /** 신고 상태 업데이트 (조회→수정) + 경고카운트 적용 */
+    @Transactional
     public void updateReportStatus(ReportDTO dto) {
         Report report = reportRepository.findById(dto.getId())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 신고정보 입니다."));
 
+        // 새 상태 보정
+        Status newStatus = Status.orDefault(dto.getStatus());
+
         // 상태/사유 갱신
-        report.setStatus(dto.getStatus());
-        // report.setReason(dto.getReason());
-        report.setChecked(true); // 필요 시
+        report.setStatus(newStatus);
+        if (dto.getReason() != null) {
+            report.setReason(dto.getReason());
+        }
 
-        // 신고 대상 유저는 엔티티 경로로 신뢰성 있게 획득
-        User target = report.getReply().getReplyer();
+        // ✅ 신고 엔티티를 통해 안전하게 대상 Reply 획득 (dto.replyId 필요 없음)
+        Reply reply = report.getReply();
+        if (reply == null) {
+            throw new NoSuchElementException("신고 대상 댓글이 존재하지 않습니다.");
+        }
 
-        // 처리 결과에 따른 경고 카운트
-        userService.addWarningCount(target.getId(), dto.getStatus());
-        // save() 불필요 — dirty checking
+        // 댓글에도 상태 반영(정책에 맞게)
+        reply.setStatus(newStatus);
+
+        // NO_ACTION(무혐의)면 신고 레코드는 삭제하고 종료
+        if (newStatus == Status.NO_ACTION) {
+            reportRepository.delete(report);
+            return;
+        }
+
+        // 경고/삭제 등 처분에 따른 경고 카운트
+        User target = reply.getReplyer();
+        userService.addWarningCount(target.getId(), newStatus);
+        // dirty checking으로 자동 반영
     }
 
     /** 신고 생성 */
     public Report createReport(ReportDTO dto) {
         Report report = dtoToEntity(dto);
         if (report.getStatus() == null) {
+            Reply reply = replyRepository.findById(dto.getReplyId()).get();
             report.setStatus(Status.RECEIVED);
+            reply.setStatus(Status.RECEIVED);
+            replyRepository.save(reply);
         }
         log.info("report 정보 : {}", report);
         return reportRepository.save(report);
@@ -117,6 +138,7 @@ public class ReportService {
                 .reason(report.getReason())
                 .reportDate(report.getCreatedDate())
                 .handleDate(report.getUpdatedDate())
+                .text(report.getText())
                 .status(report.getStatus())
                 .build();
 
@@ -134,6 +156,7 @@ public class ReportService {
                 .id(dto.getId()) // 업데이트라면 필수
                 .reporter(reporterRef)
                 .reply(replyRef)
+                .text(dto.getText())
                 .reason(dto.getReason())
                 .status(dto.getStatus())
                 .build();

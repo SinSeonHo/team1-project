@@ -10,6 +10,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 public class ReportDTO {
     private Long id; // 신고 고유 ID
@@ -22,5 +23,6 @@ public class ReportDTO {
     private LocalDateTime reportDate; // 신고 일시
     private LocalDateTime handleDate; // 처리 일시
     private Status status; // 처리 상태
+    private String text;
 
 }

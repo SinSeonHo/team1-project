@@ -29,4 +29,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     Optional<Reply> findByReplyerAndGameAndRefIsNull(User replyer, Game game);
 
+    List<Reply> findByReplyer(User replyer);
+
 }

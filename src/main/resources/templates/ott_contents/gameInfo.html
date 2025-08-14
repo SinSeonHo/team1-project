@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+      <th:block layout:fragment="metadata">
+        <meta name="current-user-id" th:content="${#authentication.principal.securityUserDTO.id}" />
+     </th:block>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block layout:fragment="@{/report.css}"></th:block>
     <title>GameInfo</title>
+      <th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/report.css}">
+  </th:block>
     <style>
       /* 강제 덮어쓰기 */
       .anime__details__widget ul li span {
@@ -13,6 +20,7 @@
       }
     </style>
   </head>
+  
   <body>
     <div layout:fragment="content">
       <div class="gradient-bg">
@@ -213,13 +221,17 @@
                   >
                     댓글
                   </button>
+                  <!-- 트리거 버튼 -->
                   <button
                     class="report-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:if="${#authentication.name != 'anonymousUser' 
+                                  and reply.replyer != #authentication.name}"
                     th:data-rno="${reply.rno}"
+                    th:data-replyer-nickname="${reply.replyerNickname}"
                   >
                     🚨
                   </button>
+
                   <!-- 리뷰는 별점 표시 -->
                   <span>
                     <i
@@ -269,6 +281,36 @@
         </div>
         <!-- gradient-bg 닫기 -->
       </div>
+      <!-- 신고 모달 -->
+      <div id="reportModal" class="report-backdrop" aria-hidden="true">
+        <div class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+          <div class="report-header">
+            <h5 id="reportTitle">댓글 신고</h5>
+            <button type="button" class="report-close" aria-label="닫기">×</button>
+          </div>
+
+          <div class="report-body">
+            <div class="mb-2">
+              <small>대상 닉네임</small>
+              <div id="reportTarget" class="font-weight-bold"></div>
+            </div>
+
+            <label for="reportReason" class="mb-1">신고 사유</label>
+            <select id="reportReason" name="reason" required>
+              <option value="" selected disabled>선택하세요</option>
+              <option value="INAPPROPRIATE_NICKNAME">부적절한 닉네임</option>
+              <option value="SPOILER">스포일러</option>
+              <option value="PROFANITY">욕설</option>
+              <option value="ADVERTISEMENT">광고/홍보</option>
+            </select>
+          </div>
+
+          <div class="report-footer">
+            <button type="button" class="btn btn-secondary btn-cancel-report">취소</button>
+            <button type="button" class="btn btn-primary btn-submit-report">신고 제출</button>
+          </div>
+        </div>
+      </div>
 
       <!-- 전역 스크립트 -->
       <script>
@@ -280,6 +322,7 @@
       <script th:src="@{/js/followbtn.js}"></script>
       <script th:src="@{/js/imgSlider.js}"></script>
       <script th:src="@{/js/imgModal.js}"></script>
+      <script th:src="@{/js/report.js}"></script>
     </div>
   </body>
 </html>

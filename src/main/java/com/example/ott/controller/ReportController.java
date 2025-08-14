@@ -75,6 +75,7 @@ public class ReportController {
                 .status(req.getStatus())
                 .reason(req.getReason())
                 .build();
+        log.info("dto 정보 : {}", dto);
         reportService.updateReportStatus(dto);
         return ResponseEntity.noContent().build(); // 204
     }
