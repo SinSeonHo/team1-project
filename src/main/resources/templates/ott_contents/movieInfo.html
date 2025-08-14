@@ -185,21 +185,6 @@
                   >
                     수정
                   </button>
-                  <button
-                    type="button"
-                    class="mention-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
-                    th:data-rno="${reply.rno}"
-                  >
-                    댓글
-                  </button> 
-                    <button class="report-btn btn btn-secondary btn-sm"
-                            th:if="${#authentication.name != 'anonymousUser' 
-                                  and reply.replyer != #authentication.name}"
-                            th:data-rno="${reply.rno}"
-                            th:data-replyer-nickname="${reply.replyerNickname}">
-                      🚨
-                    </button>
 
                   <!-- 리뷰는 별점 표시 -->
                   <span>
@@ -240,12 +225,17 @@
                   >
                     <i class="fa-solid fa-comment"></i>
                   </button> 
-                  <button class="report-btn btn btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
+                  <button
+                    class="report-btn btn btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser' 
+                                  and reply.replyer != #authentication.name}"
                     th:data-rno="${reply.rno}"
+                    th:data-replyer-nickname="${reply.replyerNickname}"
                     aria-label="신고"
                     title="신고"
-                    >🚨</button>
+                  >
+                    🚨
+                  </button>
                   <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
                 </div>
               </div>
