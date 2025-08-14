@@ -97,11 +97,12 @@
         </div>
       </div>
     </section>
-    <th:block layout:fragment="script">
-      <script th:src="@{/js/login.js}"></script>
-      <script th:if="${param.error}">
-        alert("아이디 또는 비밀번호가 잘못되었습니다.");
-      </script>
-    </th:block>
+      <th:block layout:fragment="script">
+        <script th:src="@{/js/login.js}"></script>
+        <script th:if="${loginErrorMessage}" th:inline="javascript">
+          const msg = /*[[${loginErrorMessage}]]*/ '로그인에 실패했습니다.';
+          alert(msg);
+        </script>
+      </th:block>
   </main>
 </html>

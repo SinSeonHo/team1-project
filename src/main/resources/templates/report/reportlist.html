@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layouts/layout}">
-  <head>
-    <meta charset="UTF-8" />
-    <title>관리자 페이지</title>
+  <th:block layout:fragment="title"></th:block>
+  <title>관리자 페이지</title>
 
-    <!-- CSRF 메타태그 -->
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <!-- CSRF 메타태그 -->
+  <th:block layout:fragment="metadata">
+    <!-- 없으면 렌더링 안 함 -->
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+  </th:block>
 
-    <!-- JS 외부 파일 -->
-    <script th:src="@{/js/admin.js}"></script>
+  <!-- JS 외부 파일 -->
 
-    <!-- 신고 리스트 전용 최소 스타일 -->
+  <!-- 신고 리스트 전용 최소 스타일 -->
+  <th:block layout:fragment="css">
     <style>
       table.report-table {
         width: 100%;
@@ -31,16 +33,21 @@
       table.report-table th {
         background-color: #f4f4f4;
       }
-      .status-pending {
+      /* Status(enum) 스타일 */
+      .status-received {
         color: orange;
         font-weight: bold;
       }
-      .status-done {
-        color: green;
+      .status-warning {
+        color: #ffcc00;
         font-weight: bold;
       }
-      .status-rejected {
+      .status-deleted {
         color: red;
+        font-weight: bold;
+      }
+      .status-noaction {
+        color: #9aa0a6;
         font-weight: bold;
       }
       .btn {
@@ -60,87 +67,260 @@
         margin-bottom: 10px;
       }
     </style>
-  </head>
+  </th:block>
+  <body>
+    <main layout:fragment="content">
+      <div class="container">
+        <h1 class="text-center">관리자 신고 리스트</h1>
 
-  <body layout:fragment="content">
-    <h1 class="text-center">관리자 신고 리스트</h1>
+        <!-- 🔍 검색 & 필터: 컨트롤러 시그니처에 맞게 /report/list 로 변경 -->
 
-    <!-- 🔍 검색 & 필터 -->
-    <form method="get" th:action="@{/admin/report/list}" class="search-form text-center">
-      <label>
-        검색:
-        <input type="text" name="keyword" placeholder="아이디/닉네임/사유" th:value="${keyword}" />
-      </label>
-      <label>
-        상태:
-        <select name="status">
-          <option value="" th:selected="${selectedStatus == null or selectedStatus == ''}">전체</option>
-          <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">대기</option>
-          <option value="IN_PROGRESS" th:selected="${selectedStatus == 'IN_PROGRESS'}">검토중</option>
-          <option value="DONE" th:selected="${selectedStatus == 'DONE'}">처리완료</option>
-          <option value="REJECTED" th:selected="${selectedStatus == 'REJECTED'}">거절</option>
-        </select>
-      </label>
-      <button type="submit" class="btn">검색</button>
-    </form>
+        <form method="get" th:action="@{/report/list}" class="search-form text-center">
+          <!-- (선택) 사유 필터: 필요 없으면 제거 가능 -->
+          <label>
+            사유(다중):
+            <select name="reasons">
+              <option
+                th:value="${T(com.example.ott.type.Reason).PROFANITY}"
+                th:selected="${reasons != null and #lists.contains(reasons, T(com.example.ott.type.Reason).PROFANITY)}"
+              >
+                욕설
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Reason).INAPPROPRIATE_NICKNAME}"
+                th:selected="${reasons != null and #lists.contains(reasons, T(com.example.ott.type.Reason).INAPPROPRIATE_NICKNAME)}"
+              >
+                부적절한 닉네임
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Reason).SPOILER}"
+                th:selected="${reasons != null and #lists.contains(reasons, T(com.example.ott.type.Reason).SPOILER)}"
+              >
+                스포일러
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Reason).ADVERTISEMENT}"
+                th:selected="${reasons != null and #lists.contains(reasons, T(com.example.ott.type.Reason).ADVERTISEMENT)}"
+              >
+                광고
+              </option>
+            </select>
+          </label>
 
-    <!-- 📋 신고 리스트 -->
-    <table class="report-table">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>신고자 ID</th>
-          <th>신고자 닉네임</th>
-          <th>대상 ID</th>
-          <th>대상 닉네임</th>
-          <th>카테고리</th>
-          <th>신고 사유</th>
-          <th>상세 설명</th>
-          <th>게시글</th>
-          <th>증거 자료</th>
-          <th>신고 일시</th>
-          <th>처리 상태</th>
-          <th>처리자</th>
-          <th>처리일</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="report, iterStat : ${reports}">
-          <td th:text="${iterStat.index + 1}">1</td>
-          <td th:text="${report.reporter.id}">user01</td>
-          <td th:text="${report.reporter.nickname}">홍길동</td>
-          <td th:text="${report.reply.replyer.id}">target99</td>
-          <td th:text="${report.reply.replyer.nickname}">임꺽정</td>
-          <td th:text="${report.reason}">욕설</td>
-          <td th:text="${report.detail != null ? report.detail : '-'}">심한 욕설 사용</td>
-          <td>
-            <a th:href="@{/posts/{postId}(postId=${report.reply.rno})}" target="_blank">보기</a>
-          </td>
-          <td>
-            <span th:if="${report.evidenceUrl != null}">
-              <a th:href="${report.evidenceUrl}" target="_blank">보기</a>
-            </span>
-            <span th:if="${report.evidenceUrl == null}">없음</span>
-          </td>
-          <td th:text="${#dates.format(report.reportDate, 'yyyy-MM-dd HH:mm')}">2025-08-12 14:30</td>
-          <td
-            th:text="${report.status}"
-            th:classappend="
-                ${report.status == 'PENDING'} ? 'status-pending' :
-                ${report.status == 'DONE'} ? 'status-done' :
-                ${report.status == 'REJECTED'} ? 'status-rejected' : ''"
-          >
-            대기
-          </td>
-          <td th:text="${report.handlerName != null ? report.handlerName : '-'}">-</td>
-          <td th:text="${report.handleDate != null ? #dates.format(report.handleDate, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(reports)}">
-          <td colspan="14" style="color: #fff">검색 결과가 없습니다.</td>
-        </tr>
-      </tbody>
-    </table>
+          <label>
+            상태(다중):
+            <select name="statuses">
+              <option
+                th:value="${T(com.example.ott.type.Status).RECEIVED}"
+                th:selected="${statuses != null and #lists.contains(statuses, T(com.example.ott.type.Status).RECEIVED)}"
+              >
+                접수됨
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Status).WARNING}"
+                th:selected="${statuses != null and #lists.contains(statuses, T(com.example.ott.type.Status).WARNING)}"
+              >
+                경고
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Status).DELETED}"
+                th:selected="${statuses != null and #lists.contains(statuses, T(com.example.ott.type.Status).DELETED)}"
+              >
+                삭제
+              </option>
+              <option
+                th:value="${T(com.example.ott.type.Status).NO_ACTION}"
+                th:selected="${statuses != null and #lists.contains(statuses, T(com.example.ott.type.Status).NO_ACTION)}"
+              >
+                무혐의
+              </option>
+            </select>
+          </label>
 
-    <!-- 페이지네이션 제거 (List라서 지원 안함) -->
+          <button type="submit" class="btn">검색</button>
+        </form>
+
+        <!-- 📋 신고 리스트 -->
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>신고자 ID</th>
+              <!-- DTO에 reporter 닉네임 없음 -->
+              <!-- <th>신고자 닉네임</th> -->
+              <!-- DTO에 대상 ID 없음 -->
+              <!-- <th>대상 ID</th> -->
+              <th>대상 닉네임</th>
+              <!-- DTO에 카테고리/상세설명/증거/처리자 없음 -->
+              <!-- <th>카테고리</th> -->
+              <th>신고 사유</th>
+              <!-- <th>상세 설명</th> -->
+              <th>게시글</th>
+              <!-- <th>증거 자료</th> -->
+              <th>신고 일시</th>
+              <th>처리 상태</th>
+              <!-- <th>처리자</th> -->
+              <th>처리일</th>
+              <th>변경</th>
+              <!-- ✅ 새 열 -->
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Page<...> 를 모델에 page로 넣었으니 page.content 순회 -->
+            <tr th:each="report, iterStat : ${page.content}">
+              <td th:text="${iterStat.index + 1}">1</td>
+
+              <!-- reporterId (DTO) || entity.reporter.id 폴백 -->
+              <td
+                th:text="${report.reporterId != null ? report.reporterId : (report.reporter != null ? report.reporter.id : '-') }"
+              >
+                user01
+              </td>
+
+              <!-- replyNickName (DTO) || entity.reply.replyer.nickname 폴백 -->
+              <td
+                th:text="${report.replyNickName != null ? report.replyNickName
+                        : (report.reply != null and report.reply.replyer != null ? report.reply.replyer.nickname : '-') }"
+              >
+                임꺽정
+              </td>
+
+              <!-- 신고 사유 -->
+              <td th:text="${report.reason}">PROFANITY</td>
+
+              <!-- 게시글 링크: replyId(DTO) || entity.reply.rno 폴백 -->
+              <td>
+                <a
+                  th:href="@{/posts/{postId}(postId=${report.replyId != null ? report.replyId : (report.reply != null ? report.reply.rno : 0)})}"
+                  target="_blank"
+                  >보기</a
+                >
+              </td>
+
+              <!-- 신고 일시: reportDate(DTO) || entity.createdDate 폴백 -->
+              <td th:text="${ #temporals.format(report.handleDate ?: report.updatedDate, 'yyyy-MM-dd HH:mm') }">-</td>
+
+              <!-- 처리 상태 + 클래스 매핑 (enum 이름 기준) -->
+              <td
+                class="set-status"
+                th:data-id="${report.id}"
+                th:data-status="${report.status}"
+                th:text="${report.status}"
+                th:classappend="${
+          report.status == 'RECEIVED' ? ' status-received' :
+          (report.status == 'WARNING' ? ' status-warning' :
+          (report.status == 'DELETED' ? ' status-deleted' :
+          (report.status == 'NO_ACTION' ? ' status-noaction' : '')))
+        }"
+              ></td>
+
+              <!-- 처리일: handleDate(DTO) || entity.updatedDate 폴백 -->
+              <td
+                th:text="${
+  report.handleDate != null
+    ? #temporals.format(report.handleDate, 'yyyy-MM-dd HH:mm')
+    : (report.updatedDate != null
+        ? #temporals.format(report.updatedDate, 'yyyy-MM-dd HH:mm')
+        : '-')
+}"
+              >
+                -
+              </td>
+              <td>
+                <button type="button" class="btn-update" th:data-id="${report.id}">Update</button>
+              </td>
+            </tr>
+
+            <!-- 결과 없음 -->
+            <tr th:if="${#lists.isEmpty(page.content)}">
+              <td colspan="9" style="color: #fff">검색 결과가 없습니다.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- (선택) 페이지네이션은 page 정보를 사용해 구성 가능 -->
+      </div>
+      <th:block layout:fragment="script">
+        <script th:src="@{/js/admin.js}"></script>
+        <script>
+          (function () {
+            const ORDER = ["RECEIVED", "WARNING", "DELETED", "NO_ACTION"];
+
+            // Cycle status on cell click
+            document.addEventListener("click", function (e) {
+              const cell = e.target.closest(".set-status");
+              if (!cell) return;
+
+              const current = cell.getAttribute("data-status") || "";
+              const idx = ORDER.indexOf(current);
+              const next = ORDER[(idx + 1 + ORDER.length) % ORDER.length];
+
+              // Update value & class (no outline/focus/font tweaks)
+              cell.setAttribute("data-status", next);
+              cell.textContent = next;
+              cell.className = "set-status " + statusToClass(next);
+            });
+
+            // Send PATCH on "Update" button click
+            document.addEventListener("click", function (e) {
+              const btn = e.target.closest(".btn-update");
+              if (!btn) return;
+
+              const id = btn.getAttribute("data-id");
+              const row = btn.closest("tr");
+              const cell = row ? row.querySelector('.set-status[data-id="' + id + '"]') : null;
+              if (!cell) {
+                alert("Status cell not found.");
+                return;
+              }
+
+              const status = cell.getAttribute("data-status");
+              if (!status) {
+                alert("No status to update.");
+                return;
+              }
+
+              // Optional confirm
+              if (!confirm(`Change status to '${status}'?`)) return;
+
+              // CSRF disabled for test (commented out)
+              const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute("content");
+              const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute("content");
+
+              const headers = { "Content-Type": "application/json" };
+              if (csrfToken && csrfHeader) headers[csrfHeader] = csrfToken;
+
+              fetch(`/report/${id}/status`, {
+                method: "PATCH",
+                headers,
+                body: JSON.stringify({ status }),
+              })
+                .then((res) => {
+                  if (res.status === 204) {
+                    btn.textContent = "Updated";
+                    setTimeout(() => (btn.textContent = "Update"), 900);
+                  } else {
+                    throw new Error("Update failed: " + res.status);
+                  }
+                })
+                .catch((err) => {
+                  console.error(err);
+                  alert("Error updating status.");
+                });
+            });
+
+            function statusToClass(s) {
+              const map = {
+                RECEIVED: "status-received",
+                WARNING: "status-warning",
+                DELETED: "status-deleted",
+                NO_ACTION: "status-noaction",
+              };
+              return map[s] || "";
+            }
+          })();
+        </script>
+      </th:block>
+    </main>
   </body>
 </html>

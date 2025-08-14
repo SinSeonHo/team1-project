@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
 import com.example.ott.entity.User;
 
 import java.util.List;
@@ -27,4 +28,5 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     Optional<Reply> findByReplyerAndMovieAndRefIsNull(User replyer, Movie movie);
 
     Optional<Reply> findByReplyerAndGameAndRefIsNull(User replyer, Game game);
+
 }

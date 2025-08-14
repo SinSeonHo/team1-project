@@ -23,6 +23,7 @@ conn = mysql.connector.connect(
     password="12345",
     database="ott_test",
     charset="utf8mb4",
+    use_unicode=True,
 )
 cursor = conn.cursor()
 
@@ -156,6 +157,7 @@ try:
             # 6) 상대 경로 구성 (static 기준)
             relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
 
+            # ========== [Oracle 전용 insert] ==========
             # 7) image 테이블에 포스터 정보 저장
             insert_sql = """
                 INSERT INTO image (uuid, img_name, path) 
@@ -197,6 +199,7 @@ try:
                                     cursor.execute(
                                         insert_ss_sql, (image_id, screenshot_url)
                                     )
+                                    # ========== ===================== ==========
                                     count += 1
                                     print(f"[{title}] → 스틸컷 저장: {screenshot_url}")
                                     time.sleep(0.1)

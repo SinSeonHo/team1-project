@@ -71,7 +71,12 @@ public class ReplyService {
     // 댓글 내용 변경
     public ReplyDTO updateReply(ReplyDTO dto) {
         Reply reply = replyRepository.findById(dto.getRno()).get();
-        reply.changeText(dto.getText());
+        if (reply.getRef() == null) {
+
+            reply.changeText(dto.getText());
+        } else {
+            reply.changeText("@" + dto.getMention() + " " + dto.getText());
+        }
         reply.changeRate(dto.getRate());
 
         return entityToDto(replyRepository.save(reply));
@@ -147,6 +152,9 @@ public class ReplyService {
                 .mention(dto.getMention())
                 .recommend(dto.getRate())
                 .build();
+        if (dto.getRef() != null) {
+            reply.changeText("@" + dto.getMention() + " " + reply.getText());
+        }
         return reply;
     }
 

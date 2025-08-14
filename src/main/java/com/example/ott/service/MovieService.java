@@ -432,11 +432,6 @@ public class MovieService {
                 .followcnt(contentsService.getFollowCnt(movie.getMid()))
                 .build();
 
-        if (movie.getImage() == null) {
-            dto.setImgUrl("");
-        } else {
-            dto.setImgUrl(movie.getImage().getImgName());
-        }
         return dto;
     }
 }

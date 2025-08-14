@@ -73,6 +73,9 @@ public class User {
     @OneToOne(cascade = CascadeType.REMOVE)
     private Image image; // 프로필 이미지
 
+    @Builder.Default
+    private int warningCnt = 0;
+
     // 유저가 작성한 댓글 리스트 (Reply.replyer와 매핑)
     @OneToMany(mappedBy = "replyer", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Reply> replies;
@@ -81,5 +84,9 @@ public class User {
     public void changeAccountInfo(String id, String password) {
         this.id = id;
         this.password = password;
+    }
+
+    public void addWarnningCount(int addCount) {
+        this.warningCnt += addCount;
     }
 }
