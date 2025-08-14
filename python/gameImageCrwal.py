@@ -1,6 +1,7 @@
 import os
 import requests
 from urllib.request import urlretrieve
+
 # import cx_Oracle
 import mysql.connector
 import uuid
@@ -24,15 +25,16 @@ conn = mysql.connector.connect(
     port=3306,
     user="ott_test",
     password="12345",
-    database="ott_test_db",
+    database="ott_test",
     charset="utf8mb4",
-    use_unicode=True
+    use_unicode=True,
 )
 cursor = conn.cursor()
 
 # 3. 이미지가 없는 게임 정보 가져오기
 cursor.execute("SELECT gid, title, appid FROM game WHERE image_id IS NULL")
 games = cursor.fetchall()
+
 
 # 4. 이미지 다운로드 함수
 def download_image(url, full_path, title):
@@ -50,6 +52,7 @@ def download_image(url, full_path, title):
         print(f"[{title}] 이미지 다운로드 실패: {e}")
         return False
 
+
 # 5. 각 게임 처리
 for gid, title, appid in games:
     print(f"\n[{title}] 이미지 수집 시작...")
@@ -57,11 +60,15 @@ for gid, title, appid in games:
     unique_id = str(uuid.uuid4())
     safe_title = re.sub(r"[^a-zA-Z0-9_-]", "", title.strip()).strip("_- ")
     ext = "jpg"
-    file_name = f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
+    file_name = (
+        f"{unique_id}_{safe_title}.{ext}" if safe_title else f"{unique_id}.{ext}"
+    )
     full_path = os.path.join(BASE_PATH, file_name)
 
     # 1순위: capsule
-    capsule_url = f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
+    capsule_url = (
+        f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/capsule_616x353.jpg"
+    )
     success = download_image(capsule_url, full_path, title)
 
     # 실패 시 header_image
@@ -72,7 +79,7 @@ for gid, title, appid in games:
             time.sleep(0.5)
             res = requests.get(
                 f"https://store.steampowered.com/api/appdetails?appids={appid}",
-                timeout=5
+                timeout=5,
             )
             data = res.json()
             header_img = data.get(str(appid), {}).get("data", {}).get("header_image")
@@ -88,7 +95,7 @@ for gid, title, appid in games:
             time.sleep(0.5)
             res = requests.get(
                 f"https://store.steampowered.com/api/appdetails?appids={appid}",
-                timeout=5
+                timeout=5,
             )
             data = res.json()
         except Exception as e:
@@ -101,29 +108,6 @@ for gid, title, appid in games:
 
     try:
         relative_path = os.path.relpath(full_path, STATIC_PATH).replace("\\", "/")
-
-        # ===== [Oracle 전용] =====
-        # output_inum = cursor.var(cx_Oracle.NUMBER)
-        # cursor.execute(
-        #     """
-        #     INSERT INTO image (uuid, img_name, path) 
-        #     VALUES (:uuid, :img_name, :path)
-        #     RETURNING inum INTO :output_inum
-        #     """,
-        #     {
-        #         "uuid": unique_id,
-        #         "img_name": file_name,
-        #         "path": "images/gameimages/" + file_name,
-        #         "output_inum": output_inum,
-        #     },
-        # )
-        # image_id = int(output_inum.getvalue()[0])
-        # cursor.execute(
-        #     "UPDATE game SET image_id = :imgid WHERE gid = :gid",
-        #     {"imgid": image_id, "gid": gid},
-        # )
-
-        # ===== [MySQL 전용] =====
         cursor.execute(
             """
             INSERT INTO image (uuid, img_name, path)
@@ -131,7 +115,12 @@ for gid, title, appid in games:
             """,
             (unique_id, file_name, "images/gameimages/" + file_name),
         )
+        conn.commit()
+
+        # 삽입된 image_id 가져오기 (MySQL LAST_INSERT_ID())
         image_id = cursor.lastrowid
+
+        # game 테이블 업데이트
         cursor.execute(
             "UPDATE game SET image_id = %s WHERE gid = %s",
             (image_id, gid),

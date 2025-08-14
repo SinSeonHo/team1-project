@@ -24,6 +24,10 @@ public class ContentsDTO {
     private ContentsType contentsType;
     private List<String> genreNames;
 
+    private String imgUrl;
+    private int followCnt;
+    private int replyCnt;
+
     public static class ContentsDTOBuilder {
         public ContentsDTOBuilder genres(String genres) {
 

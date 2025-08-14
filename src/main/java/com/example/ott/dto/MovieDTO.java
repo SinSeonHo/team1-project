@@ -21,7 +21,7 @@ public class MovieDTO {
     private String actors; // 배우들
     private String director; // 감독
     private String openDate; // 개봉일
-    private int rank; // 순위
+    private int ranking; // 순위
     private String genres; // 장르
     private String showTm; // 상영시간
     private String nationNm; // 제작국가

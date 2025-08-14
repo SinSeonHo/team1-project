@@ -3,9 +3,10 @@ package com.example.ott.controller;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,6 +27,12 @@ import lombok.RequiredArgsConstructor;
 public class ReplyController {
     private final ReplyService replyService;
     private final UserService userService;
+
+    @GetMapping
+    public String replyform(Model model) {
+        model.addAttribute("m");
+        return "ott_contents/movieInfo::replyform";
+    }
 
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {

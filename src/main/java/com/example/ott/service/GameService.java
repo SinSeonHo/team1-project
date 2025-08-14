@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +71,7 @@ public class GameService {
         runPythonGameCrawlerAsync(); // @Async 붙은 메서드 호출
     }
 
+    @CacheEvict(value = "games", key = "'allGames'")
     @Async
     @Transactional
     public void runPythonGameCrawlerAsync() {
@@ -142,7 +146,7 @@ public class GameService {
                 .ccu(dto.getCcu())
                 .platform(dto.getPlatform())
                 .price(dto.getPrice())
-                .ranking(dto.getRank())
+                .ranking(dto.getRanking())
                 .genres(dto.getGenres())
                 .originalPrice(dto.getOriginalPrice())
                 .discountRate(dto.getDiscountRate())
@@ -302,7 +306,7 @@ public class GameService {
                     if (optionalGame.isPresent()) {
                         Game existing = optionalGame.get();
 
-                        existing.setRank(rank);
+                        existing.setRanking(rank);
                         existing.setOriginalPrice(originalPrice);
                         existing.setPrice(discountPrice);
                         existing.setDiscountRate(discountRate);
@@ -352,6 +356,7 @@ public class GameService {
     // 게임 + 댓글 DTO 리스트 함께 반환
 
     public Map<String, Object> getGame(String gid) {
+        System.out.println("게임정보 상세조회 로그로그");
         log.info("게임정보 상세조회");
 
         // 1. 게임 조회
@@ -369,37 +374,13 @@ public class GameService {
         return result;
     }
 
-    // 인기 게임 목록 조회
-    public List<Game> getGameRank(int num) {
-        List<Game> list = gameRepository.findAll(Sort.by("rank"));
-        List<Game> result;
-        // originalList에 10개 이상 있으면 0~9까지 자르고, 아니면 전부 복사
-        if (list.size() > num) {
-            result = new ArrayList<>(list.subList(0, num));
-        } else {
-            result = new ArrayList<>(list);
-        }
-        return result;
-    }
-
     // 전체 게임 목록 조회
+    // 최초 호출 시 DB에서 조회 후 캐시에 저장
+    @Cacheable(value = "games", key = "'allGames'")
     public List<Game> getGameAll() {
+        System.out.println("전체 game 조회 ");
         return gameRepository.findAll();
     }
-    // 주석처리 6/25
-    // public PageResultDTO<GameDTO> getGameRequest(PageRequestDTO requestDTO) {
-    // Page<Game> result = gameRepository.search(requestDTO);
-
-    // List<GameDTO> dtoList = result.stream()
-    // .map(game -> entityToDto(game))
-    // .collect(Collectors.toList());
-
-    // return PageResultDTO.<GameDTO>withAll()
-    // .dtoList(dtoList)
-    // .pageRequestDTO(requestDTO)
-    // .totalCount(result.getTotalElements())
-    // .build();
-    // }
 
     public PageResultDTO<GameDTO> getSearch(PageRequestDTO requestDTO) {
         Page<Game> result = gameRepository.search(requestDTO);
@@ -417,7 +398,7 @@ public class GameService {
 
     public List<GameDTO> getRandom(int num) {
         List<GameDTO> result = new ArrayList<>();
-        List<Game> list = gameRepository.findAll();
+        List<Game> list = getGameAll();
 
         // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
         if (list.isEmpty()) {
@@ -464,7 +445,7 @@ public class GameService {
                 .positive(game.getPositive())
                 .price(game.getPrice())
                 .publisher(game.getPublisher())
-                .rank(game.getRanking())
+                .ranking(game.getRanking())
                 .replycnt(game.getReplies() != null ? game.getReplies().size() : 0)
                 .synopsis(game.getSynopsis())
                 .followcnt(contentsService.getFollowCnt(game.getGid()))

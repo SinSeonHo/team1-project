@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.search.ContentsSearchRepository;
 
-public interface ContentsRepository extends JpaRepository<Contents, String> {
+public interface ContentsRepository extends JpaRepository<Contents, String>, ContentsSearchRepository {
 
     boolean existsByContentsId(String contentsId);
 
@@ -19,7 +20,7 @@ public interface ContentsRepository extends JpaRepository<Contents, String> {
 
     Optional<Contents> findByContentsId(String contentsId);
 
-    @Query(value = "SELECT * FROM contents ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 1 ROWS ONLY", nativeQuery = true)
+    @Query(value = "SELECT * FROM contents ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Contents> pickRandom();
 
 }

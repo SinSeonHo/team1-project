@@ -23,7 +23,8 @@ public class PageRequestDTO {
     private int size = 100;
 
     // 검색
-    private String type;
+    @Builder.Default
+    private String type = "t";
     private String keyword;
 
     public Pageable getPageable(Sort sort) {

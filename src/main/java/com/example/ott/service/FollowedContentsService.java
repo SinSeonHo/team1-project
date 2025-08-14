@@ -32,6 +32,9 @@ public class FollowedContentsService {
     // 팔로우 여부를 확인하는 메서드
     public boolean isFollowed(UserDetails userDetails, String contentsId) {
 
+        if (userDetails == null) {
+            return false;
+        }
         // 존재하지 않는 콘텐츠일 경우 처리
         if (!contentsRepository.existsByContentsId(contentsId)) {
             throw new NoSuchElementException("존재하지 않는 콘텐츠입니다.");

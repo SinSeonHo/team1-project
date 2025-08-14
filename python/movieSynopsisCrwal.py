@@ -1,17 +1,22 @@
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
-import cx_Oracle
+import mysql.connector
 import time
 
-# 오라클 DSN 설정
-dsn = cx_Oracle.makedsn("localhost", 1521, service_name="XE")
-conn = cx_Oracle.connect(user="ott_test", password="12345", dsn=dsn, encoding="UTF-8")
+# MySQL DB 연결
+conn = mysql.connector.connect(
+    host="localhost",
+    user="ott_test",
+    password="12345",
+    database="ott_test",
+    charset="utf8mb4",
+)
 cursor = conn.cursor()
 
 # synopsis 없는 영화 가져오기 (컬럼명 수정)
 cursor.execute(
-    "SELECT mid, title, open_Date FROM movie WHERE synopsis IS NULL OR synopsis = ''"
+    "SELECT mid, title, open_date FROM movie WHERE synopsis IS NULL OR synopsis = ''"
 )
 movies = cursor.fetchall()
 
@@ -51,7 +56,7 @@ for mid, title, open_date in movies:
 
     synopsis = get_synopsis(title)
     if synopsis:
-        cursor.execute("UPDATE movie SET synopsis = :1 WHERE mid = :2", (synopsis, mid))
+        cursor.execute("UPDATE movie SET synopsis = %s WHERE mid = %s", (synopsis, mid))
         conn.commit()
         print(f"저장 완료: {title}")
     else:

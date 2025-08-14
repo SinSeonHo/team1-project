@@ -52,7 +52,7 @@ public class MovieSearchImpl implements MovieSearch {
             }
             builder.and(searchBuilder);
         }
-        Pageable pageable = requestDTO.getPageable(Sort.by("rank").descending());
+        Pageable pageable = requestDTO.getPageable(Sort.by("ranking").descending());
 
         JPAQuery<Movie> query = queryFactory
                 .selectFrom(movie)

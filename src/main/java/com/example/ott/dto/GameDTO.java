@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +22,7 @@ public class GameDTO {
     private int ccu;
     private String platform;
 
-    private int rank;
+    private int ranking;
     private String genres;
 
     private String originalPrice; // 할인 전 가격
@@ -36,5 +38,5 @@ public class GameDTO {
     private int followcnt;
     private String imgUrl;
     private int replycnt;
-
+    private List<ReplyDTO> Replies; // 댓글
 }

@@ -76,6 +76,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/games/**").permitAll()
                                                 .requestMatchers("/games/**").permitAll()
 
+                                                // 컨텐츠 관련
+                                                .requestMatchers("/contents/**").permitAll()
                                                 // 댓글 관련
                                                 .requestMatchers(HttpMethod.GET, "/replies/**").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/replies/**")

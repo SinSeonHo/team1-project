@@ -63,6 +63,7 @@ public class GameController {
 
         PageResultDTO<GameDTO> result = gameService.getSearch(pageRequestDTO);
         model.addAttribute("games", result.getDtoList());
+        log.info("game전체리스트 로그로그");
         return "ott_contents/gameList";
     }
 
@@ -73,14 +74,15 @@ public class GameController {
         Game game = (Game) data.get("game");
         boolean isFollowed = false;
         isFollowed = followedContentsService.isFollowed(userDetails, gid);
-
+        System.out.println("게임컨트롤러 상세페이지 로그로그");
+        log.info("게임컨트롤러 상세페이지 로그로그{}처음", game);
         // 이미지 및 스크린샷 처리
         Image image = game.getImage(); // Image 객체 얻기
         List<String> screenshots = new ArrayList<>();
         if (image != null && image.getInum() != null) {
             screenshots = imageService.getScreenshotsByImageId(image.getInum());
         }
-
+        log.info("게임컨트롤러 상세페이지 로그로그{}중간", game);
         // 즐겨찾기 여부
         isFollowed = followedContentsService.isFollowed(userDetails, gid);
         // 별점 정보
@@ -96,7 +98,7 @@ public class GameController {
         model.addAttribute("isFollowed", isFollowed);
         model.addAttribute("rating", rating);
         model.addAttribute("screenshotUrls", screenshots);
-
+        log.info("게임컨트롤러 상세페이지 로그로그{}마지막", game);
         return "ott_contents/gameInfo";
     }
 
