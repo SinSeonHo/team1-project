@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-3 col-md-6 col-sm-6" th:each="content : ${contents}">
+          <div class="col-lg-3 col-md-6 col-sm-6 content-item" th:each="content : ${contents}">
             <div class="product__item">
               <div class="product__item__pic">
                 <a
@@ -49,13 +49,67 @@
                     class="product__item__pic"
                   />
                   <!-- 팔로우수  -->
-                  <div class="comment_movie"><i class="fa-solid fa-heart"></i>&nbsp;[[${content.followCnt}]]</div>
+                  <div class="comment_movie">
+                    <i class="fa-solid fa-heart"></i>&nbsp;[[${content.followCnt > 99 ? '+99' : content.followCnt}]]
+                  </div>
                   <!-- 댓글갯수  -->
-                  <div class="view_movie"><i class="fa-solid fa-comment"></i>&nbsp;[[${content.replyCnt}]]</div>
+                  <div class="view_movie">
+                    <i class="fa-solid fa-comment"></i>&nbsp;[[${content.replyCnt > 99 ? '+99' : content.replyCnt}]]
+                  </div>
                 </a>
               </div>
 
               <div class="product__item__text">
+                <ul>
+                  <li th:each="genre : ${content.genreNames}">[[${genre}]]</li>
+                </ul>
+                <h5>
+                  <a
+                    th:href="${content.contentsType == 'MOVIE' ? '/api/movies/read/'+content.contentsId :'/api/games/read/'+content.contentsId}"
+                    th:text="${content.title}"
+                  ></a>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row col-lg-12">
+          <div class="section-title">
+            <h4>장르 검색</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div
+            class="col-lg-3 col-md-6 col-sm-6"
+            th:if="${genreContents.size > 0}"
+            th:each="content : ${genreContents}"
+          >
+            <div class="product__item">
+              <div class="product__item__pic">
+                <a
+                  th:href="${content.contentsType.name == 'MOVIE' ? '/api/movies/read/' + content.contentsId : '/api/games/read/' + content.contentsId}"
+                  ><img
+                    th:src="${ content.imgUrl }"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="이미지"
+                    loading="lazy"
+                    class="product__item__pic"
+                  />
+                  <!-- 팔로우수  -->
+                  <div class="comment_movie">
+                    <i class="fa-solid fa-heart"></i>&nbsp;[[${content.followCnt > 99 ? '+99' : content.followCnt}]]
+                  </div>
+                  <!-- 댓글갯수  -->
+                  <div class="view_movie">
+                    <i class="fa-solid fa-comment"></i>&nbsp;[[${content.replyCnt > 99 ? '+99' : content.replyCnt}]]
+                  </div>
+                </a>
+              </div>
+
+              <div class="product__item__text">
+                <ul>
+                  <li th:each="genre : ${content.genreNames}">[[${genre}]]</li>
+                </ul>
                 <h5>
                   <a
                     th:href="${content.contentsType == 'MOVIE' ? '/api/movies/read/'+content.contentsId :'/api/games/read/'+content.contentsId}"

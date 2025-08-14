@@ -19,11 +19,9 @@ import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
-import com.example.ott.security.CustomUserDetails;
 import com.example.ott.service.ContentsService;
 import com.example.ott.service.GameService;
 import com.example.ott.service.MovieService;
-import com.example.ott.type.ContentType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,8 +44,11 @@ public class HomeController {
 
         @GetMapping("/contents")
         public String contents(Model model, PageRequestDTO requestDTO) {
+                List<ContentsDTO> genre = contentsService.searchByGenre(requestDTO.getKeyword());
                 PageResultDTO<ContentsDTO> result = contentsService.search(requestDTO);
                 model.addAttribute("contents", result.getDtoList());
+                // model.addAttribute("result", result);
+                model.addAttribute("genreContents", genre);
                 return "ott_contents/contentList";
         }
 

@@ -43,4 +43,8 @@ public class ContentsGenreService {
         });
     }
 
+    public List<ContentsGenre> search(String keyword) {
+        List<ContentsGenre> result = contentsGenreRepository.findByGenreName(keyword);
+        return result;
+    }
 }

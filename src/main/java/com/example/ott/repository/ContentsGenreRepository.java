@@ -12,4 +12,5 @@ import com.example.ott.entity.ContentsGenre;
 public interface ContentsGenreRepository extends JpaRepository<ContentsGenre, Long> {
     List<ContentsGenre> findByContents(Contents contents);
 
+    List<ContentsGenre> findByGenreName(String genreName);
 }

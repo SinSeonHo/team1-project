@@ -54,7 +54,8 @@ window.addEventListener("DOMContentLoaded", () => {
   // keyword 가져오기
   if (searchQuery.includes("keyword=")) {
     const type = searchQuery.split("keyword=");
-    const encodedValue = type[1].split("&")[0]; // %91%82 형태로 나옴
+    let encodedValue = type[1].split("&")[0]; // %91%82 형태로 나옴
+    encodedValue = encodedValue.replaceAll("+", " ");
     document.getElementById("search").value = decodeURIComponent(encodedValue); // 검색창에 인코딩 해서 한글 띄움
   }
 });
