@@ -98,8 +98,10 @@
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
                         th:data-mid="${movieInfo.mid}"
-                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
-                      ></button>
+                      >
+                      <i th:if="${isFollowed}" class="fa-solid fa-heart"></i>
+                      <i th:if="${!isFollowed}" class="fa-regular fa-heart"></i>
+                    </button>
                     </div>
                   </div>
                 </div>
@@ -208,6 +210,42 @@
                       th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
                     ></i>
                   </span>
+                  <button
+                    type="button"
+                    class="delete-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="삭제"
+                    title="삭제"
+                  >
+                    ✖
+                  </button>
+                  <button
+                    type="button"
+                    class="update-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="수정하기"
+                    title="수정하기"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="mention-btn btn btn-sm text-white"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="댓글 달기"
+                    title="댓글 달기"
+                  >
+                    <i class="fa-solid fa-comment"></i>
+                  </button> 
+                  <button class="report-btn btn btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="신고"
+                    title="신고"
+                    >🚨</button>
                   <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
                 </div>
               </div>
@@ -236,7 +274,7 @@
               <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
               <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
               <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">지우기</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
             </form>
 
             <div th:if="${#authentication.name == 'anonymousUser'}">

@@ -86,15 +86,20 @@ public class ReplyService {
     public ReplyDTO updateReply(ReplyDTO dto) {
         // 신고가 접수된 게시물은 수정할 수 없음
         Reply reply = replyRepository.findById(dto.getRno()).get();
+
         boolean isReported = reply.getStatus() != Status.NO_ACTION;
-        log.info("=================================================================");
-        log.info("isReported : {} \n dto의 status : {}", isReported, dto.getStatus());
-        log.info("=================================================================");
+
         if (isReported) {
             throw new ReportActionException("신고가 접수된 게시물로 수정할 수 없습니다.");
         }
 
-        reply.changeText(dto.getText());
+        if (reply.getRef() == null) {
+
+            reply.changeText(dto.getText());
+        } else {
+            reply.changeText("@" + dto.getMention() + " " + dto.getText());
+        }
+
         reply.changeRate(dto.getRate());
 
         return entityToDto(replyRepository.save(reply));
@@ -177,6 +182,9 @@ public class ReplyService {
                 .mention(dto.getMention())
                 .recommend(dto.getRate())
                 .build();
+        if (dto.getRef() != null) {
+            reply.changeText("@" + dto.getMention() + " " + reply.getText());
+        }
         return reply;
     }
 

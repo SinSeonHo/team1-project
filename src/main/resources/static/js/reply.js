@@ -128,6 +128,9 @@ document.querySelectorAll(".update-btn").forEach((e) => {
       highlightStars(parseInt(data.rate));
     } else {
       // 댓글이라면
+      // 멘션 제거
+      replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+
       const mention = document.querySelector(".mention");
       mention.innerHTML = "멘션: " + mentionname + " ✖";
       starsContainer.classList.add("hide");
@@ -193,9 +196,6 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
     replyForm.ref.value = rno;
     replyForm.rno.value = null;
     // textarea 멘션 추가
-    replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
-    replyForm.text.value = `@${reviewer} ` + (replyForm.text.value == undefined ? " " : replyForm.text.value);
-
     const mention = document.querySelector(".mention");
     mention.innerHTML = "멘션: " + reviewer + " ✖";
     // 멘션 제거버튼 기능 추가

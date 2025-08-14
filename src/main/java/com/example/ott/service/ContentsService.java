@@ -1,7 +1,7 @@
 package com.example.ott.service;
 
 import java.util.NoSuchElementException;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +12,7 @@ import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsGenre;
 import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
@@ -83,6 +84,15 @@ public class ContentsService {
                 .orElse(0);
     }
 
+    public List<ContentsDTO> searchByGenre(String keyword) {
+        List<ContentsGenre> genres = contentsGenreService.search(keyword);
+        if (genres.size() > 0) {
+            return genres.stream().map(c -> entityToDto(c.getContents())).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
     public PageResultDTO<ContentsDTO> search(PageRequestDTO pageRequestDTO) {
         Page<Contents> result = contentsRepository.search(pageRequestDTO);
 
@@ -96,25 +106,29 @@ public class ContentsService {
     }
 
     private ContentsDTO entityToDto(Contents content) {
-        ContentsDTO dto = ContentsDTO.builder()
-                .contentsId(content.getContentsId())
-                .contentsType(content.getContentsType())
-                .followCnt(content.getFollowCnt())
-                .title(content.getTitle())
-                .build();
         if (content.getMovie() != null) {
+            // 영화면
+            ContentsDTO dto = ContentsDTO.builder()
+                    .contentsId(content.getContentsId())
+                    .contentsType(content.getContentsType())
+                    .followCnt(content.getFollowCnt())
+                    .title(content.getTitle())
+                    .genres(movieRepository.findById(content.getContentsId()).get().getGenres())
+                    .build();
             dto.setReplyCnt(content.getMovie().getReplies().size());
-            if (content.getMovie().getImage() != null) {
-                dto.setImgUrl(content.getMovie().getImage().getPath());
-            }
+            return dto;
         } else if (content.getGame() != null) {
-            dto.setReplyCnt(content.getGame().getReplies().size());
-            if (content.getGame().getImage() != null) {
-                dto.setImgUrl(content.getGame().getImage().getPath());
-            }
-        } else {
-            dto.setImgUrl(null);
+            // 게임이면
+            ContentsDTO dto = ContentsDTO.builder()
+                    .contentsId(content.getContentsId())
+                    .contentsType(content.getContentsType())
+                    .followCnt(content.getFollowCnt())
+                    .title(content.getTitle())
+                    .genres(gameRepository.findById(content.getContentsId()).get().getGenres())
+                    .build();
+            dto.setImgUrl(content.getGame().getImage().getPath());
+            return dto;
         }
-        return dto;
+        return null;
     }
 }
