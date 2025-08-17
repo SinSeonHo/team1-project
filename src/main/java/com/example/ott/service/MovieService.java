@@ -51,6 +51,13 @@ public class MovieService {
     private final ReplyService replyService;
     private final ContentsService contentsService;
 
+    public List<MovieDTO> getTop10() {
+        List<Movie> movies = movieRepository.findTop10ByOrderByRankingAsc();
+        movies.forEach(movie -> log.info("영화 정보 : {}", movie));
+        List<MovieDTO> dtos = movies.stream().map(movie -> entityToDto(movie)).collect(Collectors.toList());
+        return dtos;
+    }
+
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
     public void scheduledMovieImport() {
         log.info("자동 영화 데이터 수집 시작");

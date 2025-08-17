@@ -10,12 +10,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 
 public class ContentsDTO {
 
@@ -27,6 +29,7 @@ public class ContentsDTO {
     private String imgUrl;
     private int followCnt;
     private int replyCnt;
+    private int ranking;
 
     public static class ContentsDTOBuilder {
         public ContentsDTOBuilder genres(String genres) {

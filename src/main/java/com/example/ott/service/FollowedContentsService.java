@@ -171,4 +171,9 @@ public class FollowedContentsService {
         return followedContentsDTOs;
     }
 
+    // 팔로우 수 반환
+    public long getFollowedContentsCnt() {
+        return followedContentsRepository.count();
+    }
+
 }

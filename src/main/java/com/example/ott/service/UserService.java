@@ -9,7 +9,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.ott.dto.CountDatasDTO;
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
@@ -109,23 +111,33 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(String id) {
         User user = userRepository.findById(id).get();
-        List<Report> reports = reportRepository.findByReporter(user);
-
-        reports.forEach(report -> {
-
-            reportRepository.save(report);
-        });
         // 지워야 될 거
         // 1. user genre 취향
         userGenrePreferenceRepository.findByUser(user).forEach(pre -> userGenrePreferenceRepository.delete(pre));
         // 2. followed contents
         List<FollowedContents> contents = followedContentsRepository.findByUser(user);
         contents.forEach(content -> followedContentsRepository.delete(content));
-        // 3, reply
         List<Reply> replies = replyRepository.findByReplyer(user);
-        replies.forEach(reply -> replyRepository.delete(reply));
+        // 3. report
+        // 4. reply
+        replies.forEach(reply -> {
+            try {
+                List<Report> reports = reportRepository.findByReply(reply);
+                reports.forEach(report -> {
+                    report.setReply(null);
+                    reportRepository.save(report);
+                });
+
+            } catch (Exception e) {
+
+            }
+            List<Reply> list = replyRepository.findByRef(reply.getRno());
+            list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
+            replyRepository.deleteById(reply.getRno());
+        });
         userRepository.deleteById(id);
     }
 
@@ -207,5 +219,10 @@ public class UserService {
     // ID로 유저 조회 (Optional 반환)
     public Optional<User> findById(String id) {
         return userRepository.findById(id);
+    }
+
+    // 회원 수 반환
+    public long getUserCnt() {
+        return userRepository.count();
     }
 }

@@ -10,28 +10,23 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 게임 이미지
-        registry.addResourceHandler("/images/gameimages/**")
-                .addResourceLocations("file:///C:/upload/images/gameimages/")
-                .setCachePeriod(3600);
-
-        // 영화 이미지
         registry.addResourceHandler("/images/movieimages/**")
-                .addResourceLocations("file:///C:/upload/images/movieimages/")
+                .addResourceLocations(
+                        "file:///C:/upload/images/movieimages/", // 외부
+                        "classpath:/static/images/movieimages/" // 클래스패스 fallback
+                )
                 .setCachePeriod(3600);
 
-        // 업로드 파일
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/")
+        registry.addResourceHandler("/images/gameimages/**")
+                .addResourceLocations(
+                        "file:///C:/upload/images/gameimages/",
+                        "classpath:/static/images/gameimages/")
+                .setCachePeriod(3600);
+
+        registry.addResourceHandler("/uploads/**") // ← 복수로 통일
+                .addResourceLocations("file:///C:/upload/") // ← 절대 경로
                 .setCachePeriod(3600);
     }
+    // configurePathMatch(...)는 삭제 (혼선만 줌)
 
-    /**
-     * 정적 리소스 요청이 컨트롤러 매핑보다 우선하도록 설정
-     */
-    @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        // 기본 static 리소스 핸들러를 우선 적용
-        configurer.setUseRegisteredSuffixPatternMatch(true);
-    }
 }

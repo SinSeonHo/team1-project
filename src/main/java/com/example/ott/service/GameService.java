@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.GameDTO;
-
+import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
@@ -58,6 +58,13 @@ public class GameService {
     private final ReplyService replyService;
     private final ModelMapper modelMapper;
     private final ContentsService contentsService;
+
+    public List<GameDTO> getTop10() {
+        List<Game> games = gameRepository.findTop10ByOrderByRankingAsc();
+        List<GameDTO> dtos = games.stream().map(game -> entityToDto(game)).collect(Collectors.toList());
+
+        return dtos;
+    }
 
     @Scheduled(cron = "0 10 10 * * *") // 매일 오전10:10시에 실행
     public void scheduledGameImport() {

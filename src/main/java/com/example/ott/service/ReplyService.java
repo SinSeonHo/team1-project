@@ -253,4 +253,9 @@ public class ReplyService {
         return replyRepository.findById(id);
     }
 
+    // 댓글 수 반환
+    public long getreplyCnt() {
+        return replyRepository.count();
+    }
+
 }

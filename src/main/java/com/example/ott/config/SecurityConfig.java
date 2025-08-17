@@ -25,7 +25,7 @@ import com.example.ott.security.CustomOAuth2DetailsService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -46,25 +46,16 @@ public class SecurityConfig {
                 http
                                 .authorizeHttpRequests(authorize -> authorize
                                                 // 정적 리소스 접근 허용
-                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**",
-
+                                                .requestMatchers("/css/**", "/js/**", "/images/**", "/upload/**",
                                                                 "/social/**", "/auth/**")
 
                                                 .permitAll()
-
-                                                // 신고 페이지 (ADMIN만 허용)
-                                                .requestMatchers("/report/**").permitAll()
-                                                // .requestMatchers("/report", "/WEB-INF/**").hasRole("ADMIN")
-
                                                 // 에러페이지/홈/회원가입/인증 관련
 
-                                                .requestMatchers("/", "/error/**",
+                                                .requestMatchers("/", "/home", "/error/**",
                                                                 "/user/upgrade", "/user/userConsent", "/user/register")
 
                                                 .permitAll()
-
-                                                // 어드민 페이지 관련
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
 
                                                 // 영화 관련
                                                 // .requestMatchers("/api/movies/import").hasRole("ADMIN")
@@ -87,11 +78,11 @@ public class SecurityConfig {
 
                                                 // 신고 관련 이게 찐임
 
-                                                // .requestMatchers(HttpMethod.GET, "/report/list").hasRole("ADMIN")
-                                                // .requestMatchers(HttpMethod.POST, "/report")
-                                                // .hasAnyRole("USER", "MANAGER", "ADMIN")
-                                                // .requestMatchers(HttpMethod.PATCH, "/report/**").hasRole("ADMIN")
-                                                // .requestMatchers(HttpMethod.DELETE, "/report/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.GET, "/report/list").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.POST, "/report")
+                                                .hasAnyRole("USER", "MANAGER", "ADMIN")
+                                                .requestMatchers(HttpMethod.PATCH, "/report/**").hasRole("ADMIN")
+                                                .requestMatchers(HttpMethod.DELETE, "/report/**").hasRole("ADMIN")
 
                                                 // 유저 관련(로그인 필요)
                                                 .requestMatchers("/user/modifyUserProfile", "/user/uploadProfile",

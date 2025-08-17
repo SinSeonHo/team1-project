@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
       <th:block layout:fragment="metadata">
-        <meta name="current-user-id" th:content="${#authentication.principal.securityUserDTO.id}" />
+        <meta name="current-user-id"
+      th:content="${#authorization.expression('isAuthenticated()') ? #authentication.principal.securityUserDTO.id : ''}" />
+
      </th:block>
   <head>
     <meta charset="UTF-8" />

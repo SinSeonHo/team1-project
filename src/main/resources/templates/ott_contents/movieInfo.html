@@ -4,7 +4,9 @@
   <link rel="stylesheet" th:href="@{/css/report.css}">
   </th:block>
         <th:block layout:fragment="metadata">
-        <meta name="current-user-id" th:content="${#authentication.principal.securityUserDTO.id}" />
+        <meta name="current-user-id"
+      th:content="${#authorization.expression('isAuthenticated()') ? #authentication.principal.securityUserDTO.id : ''}" />
+
      </th:block>
   <body>
     <div layout:fragment="content">
