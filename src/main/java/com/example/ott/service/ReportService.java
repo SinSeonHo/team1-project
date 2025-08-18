@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -128,22 +129,33 @@ public class ReportService {
     public ReportDTO entityToDto(Report report) {
         Reply reply = report.getReply();
         User reporter = report.getReporter();
-        User reportTarget = reply.getReplyer();
 
-        ReportDTO reportDTO = ReportDTO.builder()
+        // reply가 null이어도 안전하게 값 추출
+        Long replyId = Optional.ofNullable(reply)
+                .map(Reply::getRno)
+                .orElse(null); // 빈 값: null
+
+        String replyNickName = Optional.ofNullable(reply)
+                .map(Reply::getReplyer)
+                .map(User::getNickname)
+                .orElse(""); // 빈 값: 빈 문자열
+
+        String text = Optional.ofNullable(reply)
+                .map(Reply::getText)
+                .orElse("");
+
+        return ReportDTO.builder()
                 .id(report.getId())
-                .reporterId(reporter.getId())
-                .replyId(reply.getRno())
-                .replyNickName(reportTarget.getNickname())
+                .reporterId(reporter != null ? reporter.getId() : null)
+                .replyId(replyId)
+                .replyNickName(replyNickName)
                 .reason(report.getReason())
                 .reportDate(report.getCreatedDate())
                 .handleDate(report.getUpdatedDate())
                 .text(report.getText())
                 .status(report.getStatus())
+                .text(text)
                 .build();
-
-        return reportDTO;
-
     }
 
     /** DTO → 엔티티 (생성/업데이트 공용, 업데이트 시 dto.id 필수) */

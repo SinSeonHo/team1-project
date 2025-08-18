@@ -73,34 +73,89 @@
         <form th:action="@{/user/register}" th:object="${totalUserDTO}" method="post" class="registerForm w-50 my-2">
           <!-- 이름 -->
           <div class="input-item" th:with="err=${#fields.hasErrors('name')}">
-            <input type="text" class="form-control w-100" name="name" th:value="${err} ? null : ${totalUserDTO.name}" th:placeholder="${err} ? ${#fields.errors('name')[0]} : '이름'" th:classappend="${err} ? 'input-error' : ''" />
+            <input
+              type="text"
+              class="form-control w-100"
+              name="name"
+              th:value="${err} ? null : ${totalUserDTO.name}"
+              th:placeholder="${err} ? ${#fields.errors('name')[0]} : '이름'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
             <span class="fas fa-user input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
           </div>
 
           <!-- 닉네임 -->
           <div class="input-item" th:with="err=${#fields.hasErrors('nickname')}">
-            <input type="text" class="form-control w-100" name="nickname" th:value="${err} ? null : ${totalUserDTO.nickname}" th:placeholder="${err} ? ${#fields.errors('nickname')[0]} : '별명'" th:classappend="${err} ? 'input-error' : ''" />
+            <input
+              type="text"
+              class="form-control w-100"
+              name="nickname"
+              th:value="${err} ? null : ${totalUserDTO.nickname}"
+              th:placeholder="${err} ? ${#fields.errors('nickname')[0]} : '별명'"
+              th:classappend="${err} ? 'input-error' : ''"
+            />
             <span class="fas fa-solid fa-circle-user input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
           </div>
-
           <!-- 아이디 -->
-          <div class="input-item" th:with="err=${#fields.hasErrors('id')}">
-            <input type="text" class="form-control" name="id" th:value="${err} ? null : ${totalUserDTO.id}" th:placeholder="${err} ? ${#fields.errors('id')[0]} : '아이디'" th:classappend="${err} ? 'input-error' : ''" />
-            <span class="fas fa-id-badge input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
+          <div class="input-item" th:with="err=${#fields.hasErrors('id')}, social=${totalUserDTO.email != null}">
+            <!-- 일반 가입 -->
+            <input
+              type="text"
+              class="form-control"
+              name="id"
+              th:if="${!social}"
+              th:value="${err} ? null : totalUserDTO.id}"
+              th:placeholder="${(err and !social) ? #fields.errors('id')[0] : '아이디'}"
+              th:classappend="${(err and !social) ? 'input-error' : ''}"
+            />
+
+            <!-- 소셜 로그인 표시용(제출되지 않음) -->
+            <input type="text" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
+
+            <!-- 실제 제출값: JS에서 이메일 기반으로 특수문자 제거 후 넣어줌 -->
+            <input type="hidden" name="id" th:if="${social}" />
+            <span class="fas fa-id-badge input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
           </div>
 
           <!-- 비밀번호 -->
-          <div class="input-item" style="position: relative" th:with="err=${#fields.hasErrors('password')}">
-            <input type="password" class="form-control" name="password" th:placeholder="${err} ? ${#fields.errors('password')[0]} : '비밀번호'" th:classappend="${err} ? 'input-error' : ''" />
-            <span class="fas fa-lock input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
-            <span class="fas fa-eye toggle-password"></span>
+          <div
+            class="input-item"
+            style="position: relative"
+            th:with="err=${#fields.hasErrors('password')}, social=${totalUserDTO.email != null}"
+          >
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              th:if="${!social}"
+              th:placeholder="${(err and !social) ? #fields.errors('password')[0] : '비밀번호'}"
+              th:classappend="${(err and !social) ? 'input-error' : ''}"
+            />
+            <input type="password" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
+            <input type="hidden" name="password" th:value="${totalUserDTO.email}" th:if="${social}" />
+            <span class="fas fa-lock input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
+            <span class="fas fa-eye toggle-password" th:if="${!social}"></span>
           </div>
 
           <!-- 비밀번호 확인 -->
-          <div class="input-item" style="position: relative" th:with="err=${#fields.hasErrors('checkPassword')}">
-            <input type="password" class="form-control" name="checkPassword" th:value="${err} ? null : ${totalUserDTO.checkPassword}" th:placeholder="${err} ? ${#fields.errors('checkPassword')[0]} : '비밀번호 확인'" th:classappend="${err} ? 'input-error' : ''" />
-            <span class="fas fa-lock input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
-            <span class="fas fa-eye toggle-password"></span>
+          <div
+            class="input-item"
+            style="position: relative"
+            th:with="err=${#fields.hasErrors('checkPassword')}, social=${totalUserDTO.email != null}"
+          >
+            <input
+              type="password"
+              class="form-control"
+              name="checkPassword"
+              th:if="${!social}"
+              th:value="${err} ? null : totalUserDTO.checkPassword"
+              th:placeholder="${(err and !social) ? #fields.errors('checkPassword')[0] : '비밀번호 확인'}"
+              th:classappend="${(err and !social) ? 'input-error' : ''}"
+            />
+            <input type="password" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
+            <input type="hidden" name="checkPassword" th:value="${totalUserDTO.email}" th:if="${social}" />
+            <span class="fas fa-lock input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
+            <span class="fas fa-eye toggle-password" th:if="${!social}"></span>
           </div>
 
           <!-- 나이 -->
@@ -137,46 +192,71 @@
         <div class="input-item">
           <button type="button" class="site-btn mx-1 ok">결정</button>
           <!-- 숨은 로그아웃 폼 -->
-          <form id="logoutForm"  th:action="@{/logout}" method="post" style="display: none">
+          <form id="logoutForm" th:action="@{/logout}" method="post" style="display: none">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           </form>
 
           <!-- 버튼 -->
-          <button type="button" class="site-btn reverse mx-1" th:onclick="|document.getElementById('logoutForm').submit()|">취소</button>
+          <button
+            type="button"
+            class="site-btn reverse mx-1"
+            th:onclick="|document.getElementById('logoutForm').submit()|"
+          >
+            취소
+          </button>
         </div>
       </div>
     </div>
   </main>
   <th:block layout:fragment="script">
-    <script>
-      const registerForm = document.querySelector(".registerForm");
-      const submitBtn = document.querySelector(".ok");
+    <script th:inline="javascript">
+      (function () {
+        const registerForm = document.querySelector(".registerForm");
+        const submitBtn = document.querySelector(".ok");
+        if (!registerForm || !submitBtn) return;
 
-      submitBtn.addEventListener("click", () => {
-        event.preventDefault();
-        // const formData = new FormData(registerForm);
+        // Thymeleaf 값 주입 (서버에서 치환됨)
+        const isSocial = /*[[${totalUserDTO.email != null}]]*/ false;
+        const emailVal = /*[[${totalUserDTO.email}]]*/ "";
 
-        // // 모든 값 확인
-        // for (let [name, value] of formData.entries()) {
-        //   console.log(name, value);
-        // }
-        registerForm.submit();
-      });
+        // 이메일 -> 안전한 아이디(영/숫자만)로 변환
+        function toSafeId(email) {
+          if (!email) return "";
+          const local = String(email).split("@")[0].toLowerCase();
+          const safe = local.replace(/[^a-z0-9]/g, "");
+          return safe || "user" + Date.now();
+        }
 
-      document.querySelectorAll(".toggle-password").forEach((eyeIcon) => {
-        eyeIcon.addEventListener("click", () => {
-          const input = eyeIcon.parentElement.querySelector("input");
-          if (input.type === "password") {
-            input.type = "text";
-            eyeIcon.classList.remove("fa-eye");
-            eyeIcon.classList.add("fa-eye-slash");
-          } else {
-            input.type = "password";
-            eyeIcon.classList.remove("fa-eye-slash");
-            eyeIcon.classList.add("fa-eye");
+        // 제출 버튼(단일 리스너)
+        submitBtn.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          if (isSocial && emailVal) {
+            // 히든 id 채우기(특수문자 제거된 값)
+            const hiddenId = registerForm.querySelector('input[name="id"][type="hidden"]');
+            if (hiddenId) hiddenId.value = toSafeId(emailVal);
+
+            // 히든 password / checkPassword 는 이메일 그대로
+            const hiddenPw = registerForm.querySelector('input[name="password"][type="hidden"]');
+            const hiddenPw2 = registerForm.querySelector('input[name="checkPassword"][type="hidden"]');
+            if (hiddenPw) hiddenPw.value = emailVal;
+            if (hiddenPw2) hiddenPw2.value = emailVal;
           }
+
+          registerForm.submit();
         });
-      });
+
+        // 비밀번호 토글(존재하는 아이콘에만 바인딩, 중복 바인딩 제거)
+        document.querySelectorAll(".toggle-password").forEach((eyeIcon) => {
+          eyeIcon.addEventListener("click", () => {
+            const input = eyeIcon.parentElement.querySelector("input.form-control");
+            if (!input) return;
+            input.type = input.type === "password" ? "text" : "password";
+            eyeIcon.classList.toggle("fa-eye");
+            eyeIcon.classList.toggle("fa-eye-slash");
+          });
+        });
+      })();
     </script>
   </th:block>
 </html>

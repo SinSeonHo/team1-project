@@ -97,16 +97,20 @@
         <section class="user-gallery-section mt-4" th:if="${followedContentsList.content.size() > 0}">
           <div class="user-gallery-grid container">
             <div class="row">
-              <div class="col-4 p-2" th:each="followedContent : ${followedContentsList.content}">
+              <div
+                class="p-2"
+                th:each="followedContent : ${followedContentsList.content}"
+                th:classappend="${followedContentsList.content.size() == 1} ? ' col-12' : ' col-4'"
+              >
                 <a
-                  th:href="@{${followedContent.contentsType.name() == 'MOVIE'} ?
-               '/api/movies/read/' + ${followedContent.contentsId} :
-               '/api/games/read/' + ${followedContent.contentsId}}"
+                  th:href="${followedContent.contentsType.name() == 'MOVIE'} ?
+                     @{/api/movies/read/{id}(id=${followedContent.contentsId})} :
+                     @{/api/games/read/{id}(id=${followedContent.contentsId})}"
                 >
                   <img
                     th:src="@{'/' + ${followedContent.imageUrl}}"
                     alt="콘텐츠 이미지"
-                    class="gallery-img img-fluid"
+                    class="gallery-img img-fluid w-100"
                   />
                 </a>
               </div>

@@ -180,10 +180,12 @@
 
               <td>
                 <a
-                  th:href="@{/posts/{postId}(postId=${report.replyId != null ? report.replyId : (report.reply != null ? report.reply.rno : 0)})}"
+                  th:if="${report.replyId != null}"
+                  th:href="@{/posts/{postId}(postId=${report.replyId})}"
                   target="_blank"
                   >보기</a
                 >
+                <span th:if="${report.replyId == null}">-</span>
               </td>
 
               <!-- 신고 일시 (원본 로직) -->
