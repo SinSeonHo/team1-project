@@ -76,7 +76,7 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.PUT, "/replies/**").authenticated()
                                                 .requestMatchers(HttpMethod.DELETE, "/replies/**").authenticated()
 
-                                                // 신고 관련 이게 찐임
+                                                // 신고 관련
 
                                                 .requestMatchers(HttpMethod.GET, "/report/list").hasRole("ADMIN")
                                                 .requestMatchers(HttpMethod.POST, "/report")
@@ -88,6 +88,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/user/modifyUserProfile", "/user/uploadProfile",
                                                                 "/user/userProfile", "/user/delete")
                                                 .authenticated()
+                                                .requestMatchers("/user/testCode")
+                                                .hasRole("ADMIN")
 
                                                 // 기타 모든 경로는 인증 필요
                                                 .anyRequest().authenticated());

@@ -2,11 +2,14 @@ package com.example.ott.controller;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,6 +42,7 @@ import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.Image;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
+import com.example.ott.service.TestService;
 import com.example.ott.service.UserService;
 import com.example.ott.type.SessionKeys;
 
@@ -62,6 +66,7 @@ public class UserController {
     private final FollowedContentsService followedContentsService;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final TestService testService;
 
     @GetMapping("/register")
     public String getRegister(Model model, HttpServletRequest request) {
@@ -267,4 +272,17 @@ public class UserController {
     public void getUserConsent() {
 
     }
+
+    @GetMapping(value = "/testCode", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> makeUser() {
+        // addTestUser()가 Long(생성 ID)을 리턴하면 아래처럼 담아주고,
+        // void라면 id 관련 라인만 빼세요.
+        testService.addTestUser();
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", "OK",
+                        "action", "addTestUser"));
+    }
+
 }
