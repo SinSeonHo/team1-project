@@ -214,19 +214,13 @@
             <div class="spot-card">
               <div class="spot-cover">
                 <img
-                  th:if="${item.contentsType != null and item.contentsType.name() == 'MOVIE'}"
+                  th:if="${item.contentsType != null}"
                   th:src="@{'/' + ${item.imgUrl}}"
                   onerror="this.onerror=null; this.src='/images/sample.jpg';"
                   alt=""
                   loading="lazy"
                 />
-                <img
-                  th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}"
-                  th:src="@{'/' + ${item.imgUrl}}"
-                  onerror="this.onerror=null; this.src='/images/sample.jpg';"
-                  alt=""
-                  loading="lazy"
-                />
+                <!-- <img th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}" th:src="@{'/' + ${item.imgUrl}}" onerror="this.onerror=null; this.src='/images/sample.jpg';" alt="" loading="lazy" /> -->
                 <img th:if="${item.contentsType == null}" th:src="@{'/images/sample.jpg'}" alt="" loading="lazy" />
                 <span class="spot-chip">
                   <i class="fa-solid fa-tags"></i>
@@ -253,7 +247,7 @@
                   >
                 </div>
 
-                <h5 class="spot-title" th:text="${item.title}">콘텐츠 제목</h5>
+                <h5 class="spot-title" th:text="${item.title}"></h5>
                 <p class="spot-reason">팔로우한 장르와 잘 맞아요</p>
 
                 <div class="spot-actions">

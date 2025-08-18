@@ -69,7 +69,7 @@ public class HomeController {
                 String id = (userDetails != null) ? userDetails.getUsername() : null;
                 List<ContentsDTO> recommendContentsDTO = contentsService.getRecommendContents(id);
                 model.addAttribute("recommendContentsDTO", recommendContentsDTO);
-                // recommendContentsDTO.forEach(dto -> );
+                recommendContentsDTO.forEach(dto -> log.info("dto 정보 : {} \n", dto));
                 log.info("추천 콘텐츠 사이즈 {}", recommendContentsDTO.size());
 
                 return "home";

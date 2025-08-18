@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.ott.dto.CountDatasDTO;
 import com.example.ott.dto.SecurityUserDTO;
@@ -53,17 +54,17 @@ public class UserService {
 
         Socials social = Socials.NONE;
         UserRole userRole = UserRole.GUEST;
-        if (!totalUserDTO.getEmail().isEmpty()) {
-            // 소셜 회원가입 일경우 user등급 및 social 종류 추가
+        String email = totalUserDTO != null ? totalUserDTO.getEmail() : null;
+
+        if (StringUtils.hasText(email)) { // null 아님 && 공백 아닌 문자 존재
+            // 소셜 회원가입 처리
             SecurityContext context = SecurityContextHolder.getContext();
             Authentication auth = context.getAuthentication();
             CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
             social = cud.getTemp().getSocial();
-
             userRole = UserRole.USER;
-
         } else {
-            totalUserDTO.setEmail(null);
+            totalUserDTO.setEmail(null); // 정규화
         }
 
         User user = User.builder()
