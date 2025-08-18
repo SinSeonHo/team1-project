@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 import shutil
 
 # 1. 이미지 저장 경로 설정
-BASE_PATH = r"C:/Users/mogs2/teamProject/team1-project/src/main/resources/static/images/movieimages"  # 저장할 실제 이미지 경로
+BASE_PATH = r"C:/upload/images/movieimages"  # 저장할 실제 이미지 경로
 STATIC_PATH = os.path.abspath(
     "../src/main/resources/static"
 )  # static 기준 상대경로 산출용

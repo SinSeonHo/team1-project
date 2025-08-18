@@ -9,7 +9,7 @@ import re
 import time
 
 # 1. 이미지 저장 경로 설정
-BASE_PATH = r"C:/Users/mogs2/teamProject/team1-project/src/main/resesourc/static/images/gameimages"
+BASE_PATH = r"C:/upload/images/gameimages"
 STATIC_PATH = os.path.abspath("../src/main/resources/static")
 os.makedirs(BASE_PATH, exist_ok=True)
 

@@ -25,7 +25,7 @@ import com.example.ott.security.CustomOAuth2DetailsService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
