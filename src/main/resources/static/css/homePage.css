@@ -347,3 +347,24 @@ html {
   background: #f1f3f5;
   color: #333;
 }
+/* ===== TOP100 슬라이더: 왼쪽 여백(랭킹 공간) 확보 ===== */
+#nowSlider .slider-track,
+#gameSlider .slider-track {
+  padding-left: 28px; /* 왼쪽에 여유 공간 */
+  padding-right: 12px; /* 오른쪽도 살짝 */
+}
+
+/* ===== 랭킹 숫자를 더 바깥으로 밀어내기 ===== */
+#nowSlider .rank,
+#gameSlider .rank {
+  left: -18px; /* 기존 -8px → 더 밖으로 */
+  bottom: 18px; /* 살짝 위로 */
+}
+
+@media (min-width: 992px) {
+  #nowSlider .rank,
+  #gameSlider .rank {
+    left: -24px; /* 데스크톱에서 조금 더 과감하게 */
+    bottom: 22px;
+  }
+}
