@@ -28,6 +28,8 @@ public class SecurityUserDTO {
     @NotBlank(message = "성명을 입력해주세요.")
     private String name;
 
+    private String nickname;
+
     private String email;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")

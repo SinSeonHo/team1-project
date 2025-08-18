@@ -51,12 +51,12 @@ public class GameSearchRepositoryImpl implements GameSearchRepository {
             builder.and(searchBuilder);
         }
 
-        Pageable pageable = requestDTO.getPageable(Sort.by("rank").descending());
+        Pageable pageable = requestDTO.getPageable(Sort.by("ranking").descending());
 
         JPAQuery<Game> query = queryFactory
                 .selectFrom(game)
                 .where(builder)
-                .orderBy(game.rank.asc()) // 우선 랭크 기준으로 정렬!
+                .orderBy(game.ranking.asc()) // 우선 랭크 기준으로 정렬!
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 

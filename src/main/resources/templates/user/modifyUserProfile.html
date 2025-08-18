@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" layout:decorate="~{layouts/layout}">
+<html lang="ko" layout:decorate="~{layouts/layout}">
   <th:block layout:fragment="css">
     <link rel="stylesheet" th:href="@{/css/userProfile.css}" />
   </th:block>
+
   <main layout:fragment="content">
     <div class="container py-5" style="max-width: 900px">
       <div class="row justify-content-center align-items-stretch gx-4 gy-3">
         <h2 class="mb-5 text-center fw-bold w-100" style="color: #fff; letter-spacing: 2px">프로필 정보 설정</h2>
+
         <!-- 왼쪽: 프로필 이미지/버튼 -->
         <div class="col-md-4 col-12 d-flex flex-column align-items-center mb-4 mb-md-0 gap-2">
           <div class="mb-3 position-relative">
@@ -17,90 +19,77 @@
               style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #277aff; background: #eee"
             />
           </div>
-          <!-- 사진 변경, 회원탈퇴 버튼 -->
+          <!-- 회원탈퇴 -->
           <form th:action="@{/user/delete(id=${userProfileDTO.id})}" method="post" class="w-100">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="profile-btn profile-btn-danger">회원탈퇴</button>
           </form>
         </div>
+
         <!-- 오른쪽: 정보 입력 폼 -->
         <div class="col-md-8 col-12">
-          <form
-            th:action="@{/user/modifyUserProfile}"
-            th:object="${userProfileDTO}"
-            method="post"
-            enctype="multipart/form-data"
-          >
+          <form th:action="@{/user/modifyUserProfile}" th:object="${userProfileDTO}" method="post" enctype="multipart/form-data">
             <div class="form-side bg-opacity-50 shadow p-4 rounded-4 mb-4">
+
+              <!-- 연동 성공/실패 배너 (옵션) -->
+              <div th:if="${param.linkSuccess}" class="alert alert-success mb-3" th:text="${param.linkSuccess[0]}"></div>
+              <div th:if="${param.linkError}" class="alert alert-danger mb-3" th:text="${param.linkError[0]}"></div>
+
               <div class="user-info-list mb-4">
                 <div class="user-info-item mb-3">
                   <label for="name" class="user-info-label">이름</label>
-                  <input
-                    type="text"
-                    class="form-control user-info-value"
-                    id="name"
-                    name="name"
-                    maxlength="20"
-                    autocomplete="off"
-                    th:field="*{name}"
-                  />
+                  <input type="text" class="form-control user-info-value" id="name" name="name" maxlength="20" autocomplete="off" th:field="*{name}" />
                   <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
                 </div>
+
                 <div class="user-info-item mb-3">
                   <label for="nickname" class="user-info-label">닉네임</label>
-                  <input
-                    type="text"
-                    class="form-control user-info-value"
-                    id="nickname"
-                    name="nickname"
-                    th:field="*{nickname}"
-                    maxlength="20"
-                    autocomplete="off"
-                  />
+                  <input type="text" class="form-control user-info-value" id="nickname" name="nickname" th:field="*{nickname}" maxlength="20" autocomplete="off" />
                   <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="text-danger"></div>
                 </div>
+
                 <div class="user-info-item mb-3">
                   <label for="userid" class="user-info-label">아이디</label>
-                  <input
-                    type="text"
-                    class="form-control user-info-value"
-                    id="userid"
-                    name="id"
-                    th:value="*{id}"
-                    readonly
-                  />
+                  <input type="text" class="form-control user-info-value" id="userid" name="id" th:value="*{id}" readonly />
                 </div>
+
+                <!-- 이메일 표시 -->
                 <div class="user-info-item mb-3" th:if="*{email} != null">
                   <label for="email" class="user-info-label">이메일</label>
                   <span id="email" class="form-control user-info-value">[[*{email} ?: '인증 필요']]</span>
                 </div>
+
+                <!-- 이메일 연동 버튼 -->
                 <div class="user-info-item mb-3" th:if="*{email} == null">
                   <div class="mb-2" style="font-weight: 500; color: #fff">이메일 인증</div>
                   <div class="d-flex flex-row gap-3 mb-2 justify-content-start">
-                    <a
-                      href="/oauth2/authorization/google"
-                      class="d-flex align-items-center justify-content-center shadow"
-                      style="width: 48px; height: 48px; border-radius: 16px; background: #fff"
-                    >
+                    <!-- Google -->
+                    <button type="submit" form="linkGoogleForm"
+                            class="d-flex align-items-center justify-content-center shadow"
+                            style="width: 48px; height: 48px; border-radius: 16px; background: #fff; border: 0; cursor: pointer"
+                            aria-label="Google로 이메일 인증">
                       <img th:src="@{/social/googleSquare.png}" alt="구글" style="width: 28px; height: 28px" />
-                    </a>
-                    <a
-                      href="/oauth2/authorization/kakao"
-                      class="d-flex align-items-center justify-content-center shadow"
-                      style="width: 48px; height: 48px; border-radius: 16px; background: #fae100"
-                    >
+                    </button>
+
+                    <!-- Kakao -->
+                    <button type="submit" form="linkKakaoForm"
+                            class="d-flex align-items-center justify-content-center shadow"
+                            style="width: 48px; height: 48px; border-radius: 16px; background: #fae100; border: 0; cursor: pointer"
+                            aria-label="Kakao로 이메일 인증">
                       <img th:src="@{/social/kakaoSquareReal.png}" alt="카카오" style="width: 28px; height: 28px" />
-                    </a>
-                    <a
-                      href="/oauth2/authorization/naver"
-                      class="d-flex align-items-center justify-content-center shadow"
-                      style="width: 48px; height: 48px; border-radius: 16px; background: #03c75a"
-                    >
+                    </button>
+
+                    <!-- Naver -->
+                    <button type="submit" form="linkNaverForm"
+                            class="d-flex align-items-center justify-content-center shadow"
+                            style="width: 48px; height: 48px; border-radius: 16px; background: #03c75a; border: 0; cursor: pointer"
+                            aria-label="Naver로 이메일 인증">
                       <img th:src="@{/social/naverSquare.png}" alt="네이버" style="width: 28px; height: 28px" />
-                    </a>
+                    </button>
                   </div>
                   <p class="text-white small ml-3">원하는 계정 아이콘을 눌러 이메일 인증을 진행하세요.</p>
                 </div>
+
                 <div class="user-info-item mb-3">
                   <label class="user-info-label">유저 권한</label>
                   <input
@@ -111,20 +100,30 @@
                   />
                 </div>
               </div>
+
               <div class="d-flex gap-2">
                 <button type="submit" class="profile-btn profile-btn-secondary">저장</button>
-                <a
-                  th:href="@{/user/userProfile(id=${userProfileDTO.id})}"
-                  class="profile-btn profile-btn-lightgray text-center"
-                  >취소</a
-                >
+                <a th:href="@{/user/userProfile(id=${userProfileDTO.id})}" class="profile-btn profile-btn-lightgray text-center">취소</a>
               </div>
             </div>
           </form>
         </div>
       </div>
+
+      <!-- ✅ 숨은 폼들: 최상위에 두어서 '중첩 폼' 문제 방지 -->
+      <form id="linkGoogleForm" th:action="@{/user/link/google}" method="post" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      </form>
+      <form id="linkKakaoForm" th:action="@{/user/link/kakao}" method="post" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      </form>
+      <form id="linkNaverForm" th:action="@{/user/link/naver}" method="post" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      </form>
+
     </div>
   </main>
+
   <th:block layout:fragment="script">
     <script th:src="@{/js/userProfile.js}"></script>
   </th:block>

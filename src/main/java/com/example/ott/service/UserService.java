@@ -1,21 +1,33 @@
 package com.example.ott.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.example.ott.dto.CountDatasDTO;
 import com.example.ott.dto.SecurityUserDTO;
+import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
+import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
-import com.example.ott.repository.ImageRepository;
-import com.example.ott.repository.UserRepository;
-import com.example.ott.type.UserRole;
+import com.example.ott.entity.UserRole;
+import com.example.ott.repository.*;
+import com.example.ott.security.CustomUserDetails;
+import com.example.ott.type.Status;
 
 import jakarta.servlet.http.HttpServletRequest;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,22 +35,52 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final ReportRepository reportRepository;
+
+    private final UserGenrePreferenceRepository userGenrePreferenceRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
+    private final FollowedContentsRepository followedContentsRepository;
+    private final ReplyRepository replyRepository;
 
     // 계정 생성 + 자동 로그인
-    public String registerAndLogin(SecurityUserDTO securityUserDTO, HttpServletRequest request) {
+    public String registerAndLogin(TotalUserDTO totalUserDTO) {
+
+        String nickname = (totalUserDTO.getNickname() == null)
+                ? makeUniqueNickname(userRepository)
+                : totalUserDTO.getNickname();
+
+        Socials social = Socials.NONE;
+        UserRole userRole = UserRole.GUEST;
+        String email = totalUserDTO != null ? totalUserDTO.getEmail() : null;
+
+        if (StringUtils.hasText(email)) { // null 아님 && 공백 아닌 문자 존재
+            // 소셜 회원가입 처리
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication auth = context.getAuthentication();
+            CustomUserDetails cud = (CustomUserDetails) auth.getPrincipal();
+            social = cud.getTemp().getSocial();
+            userRole = UserRole.USER;
+        } else {
+            totalUserDTO.setEmail(null); // 정규화
+        }
+
         User user = User.builder()
-                .name(securityUserDTO.getName())
-                .id(securityUserDTO.getId())
-                .nickname(makeUniqueNickname(userRepository))
-                .password(passwordEncoder.encode(securityUserDTO.getPassword()))
-                .userRole(UserRole.GUEST)
+                .name(totalUserDTO.getName())
+                .id(totalUserDTO.getId())
+                .nickname(nickname)
+                .password(passwordEncoder.encode(totalUserDTO.getPassword()))
+                .userRole(userRole)
+                .age(totalUserDTO.getAge())
+                .gender(totalUserDTO.getGender())
+                .email(totalUserDTO.getEmail())
+                .social(social)
                 .build();
 
         return userRepository.save(user).getId();
-
+        // social 대기
     }
 
     // 프로필 조회
@@ -53,9 +95,8 @@ public class UserService {
                 .email(user.getEmail())
                 .name(user.getName())
                 .nickname(user.getNickname())
-                .mileage(user.getMileage())
                 .profileImageUrl(userProfileUrl)
-                .socials(user.getSocials())
+                .socials(user.getSocial())
                 .grade(user.getUserRole().name())
                 .build();
     }
@@ -71,16 +112,76 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUser(String id) {
+        User user = userRepository.findById(id).get();
+        // 지워야 될 거
+        // 1. user genre 취향
+        userGenrePreferenceRepository.findByUser(user).forEach(pre -> userGenrePreferenceRepository.delete(pre));
+        // 2. followed contents
+        List<FollowedContents> contents = followedContentsRepository.findByUser(user);
+        contents.forEach(content -> followedContentsRepository.delete(content));
+        List<Reply> replies = replyRepository.findByReplyer(user);
+        // 3. report
+        // 4. reply
+        replies.forEach(reply -> {
+            try {
+                List<Report> reports = reportRepository.findByReply(reply);
+                reports.forEach(report -> {
+                    report.setReply(null);
+                    reportRepository.save(report);
+                });
+
+            } catch (Exception e) {
+
+            }
+            List<Reply> list = replyRepository.findByRef(reply.getRno());
+            list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
+            replyRepository.deleteById(reply.getRno());
+        });
         userRepository.deleteById(id);
     }
 
-    public User getUser(String id) {
+    // 신고 처리에 따라 경고 점수 부여
+    public void addWarningCount(String id, Status status) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
+        switch (status) {
+            case WARNING:
+                user.addWarnningCount(1);
+                break;
+            case DELETED:
+                user.addWarnningCount(3);
+                break;
+
+            default:
+                break;
+
+        }
+        // 경고 누적 점수가 10점 초과시 로그인 제한 평생!!!!!!!!!!!!
+        if (user.getWarningCnt() > 10) {
+            user.setUserRole(UserRole.BAN);
+        }
+        // 반영
+        userRepository.save(user);
+    }
+
+    public User getUserById(String id) {
         User user = null;
         try {
             user = userRepository.findById(id).get();
         } catch (NoSuchElementException e) {
             log.error("user 정보를 찾을 수 없음");
+        }
+        return user;
+    }
+
+    public User getUserByNickname(String nickname) {
+        User user = null;
+        try {
+            user = userRepository.findByNickname(nickname);
+
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("해당 유저는 존재하지 않는 유저입니다.");
         }
         return user;
     }
@@ -113,5 +214,16 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("유저를 찾을 수 없습니다."));
         user.setUserRole(UserRole.ADMIN);
         userRepository.save(user);
+    }
+
+    // 0812 신선호 신고기능때문에 추가
+    // ID로 유저 조회 (Optional 반환)
+    public Optional<User> findById(String id) {
+        return userRepository.findById(id);
+    }
+
+    // 회원 수 반환
+    public long getUserCnt() {
+        return userRepository.count();
     }
 }

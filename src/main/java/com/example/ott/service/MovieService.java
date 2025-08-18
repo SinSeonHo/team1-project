@@ -1,27 +1,39 @@
 package com.example.ott.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
+import com.example.ott.entity.Contents;
+import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Movie;
+import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.MovieRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,43 +49,112 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final ReplyService replyService;
+    private final ContentsService contentsService;
+
+    public List<MovieDTO> getTop10() {
+        List<Movie> movies = movieRepository.findTop10ByOrderByRankingAsc();
+        movies.forEach(movie -> log.info("영화 정보 : {}", movie));
+        List<MovieDTO> dtos = movies.stream().map(movie -> entityToDto(movie)).collect(Collectors.toList());
+        return dtos;
+    }
 
     @Scheduled(cron = "00 00 10 * * *") // 매일 오전10:00에 실행
-    @Transactional
     public void scheduledMovieImport() {
         log.info("자동 영화 데이터 수집 시작");
         importMovies();
     }
 
-    @Scheduled(cron = "00 01 10 * * *") // 매일 오전10:01에 실행
-    @Transactional
+    @Scheduled(cron = "00 03 10 * * *") // 매일 오전10:03에 실행
     public void scheduledMovieSynopsisImport() {
         log.info("자동 영화 줄거리 및 포스터 반영");
+        runPythonMovieCrawlerAsync();
+    }
+
+    // 영화 추가/수정 시 캐시 무효화
+    @CacheEvict(value = "movies", key = "'allMovies'")
+    @Async
+    @Transactional
+    public void runPythonMovieCrawlerAsync() {
         runPythonMovieCrawler();
     }
 
     public void runPythonMovieCrawler() {
         try {
-            log.info("Python 크롤러 실행 시작");
+            System.out.println("Python 영화 크롤러 실행 시작");
 
             // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
-                    "C:/SOURCE/ott/python/movieSynopsisCrwal.py");
+                    "python/movieSynopsisCrwal.py");
             Map<String, String> env = pbSynopsis.environment();
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
+
+            // 표준 출력 읽기 (stdout)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processSynopsis.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println("[PYTHON SYNOPSIS STDOUT] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            // 에러 출력 읽기 (stderr)
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(processSynopsis.getErrorStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.err.println("[PYTHON SYNOPSIS STDERR] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
             int exitCodeSynopsis = processSynopsis.waitFor();
-            log.info("줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
+            System.out.println("영화 줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
             if (exitCodeSynopsis == 0) {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
+                System.out.println("Python 영화 포스터 크롤링 시작");
                 ProcessBuilder pbImage = new ProcessBuilder("python",
-                        "C:/SOURCE/ott/python/movieImageCrwal.py");
+                        "python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();
+
+                // 표준 출력 읽기 (stdout)
+                new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(processImage.getInputStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            System.out.println("[PYTHON IMAGE STDOUT] " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
+                // 에러 출력 읽기 (stderr)
+                new Thread(() -> {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(processImage.getErrorStream()))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            System.err.println("[PYTHON IMAGE STDERR] " + line);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
                 int exitCodeImage = processImage.waitFor();
-                log.info("이미지 크롤러 종료. Exit code: " + exitCodeImage);
+                System.out.println("영화 이미지 크롤러 종료. Exit code: " + exitCodeImage);
             } else {
                 System.err.println("줄거리 크롤러가 실패하여 이미지 크롤러를 실행하지 않습니다.");
             }
@@ -102,7 +183,7 @@ public class MovieService {
                 .mid(mid)
                 .title(dto.getTitle())
                 .openDate(dto.getOpenDate())
-                .rank(dto.getRank())
+                .ranking(dto.getRanking())
                 .movieCd(dto.getMovieCd())
                 .actors(dto.getActors())
                 .director(dto.getDirector())
@@ -114,6 +195,15 @@ public class MovieService {
                 .build();
 
         movieRepository.save(movie);
+
+        // contents 테이블에 등록
+        ContentsDTO contentsDTO = ContentsDTO.builder()
+                .contentsId(movie.getMid())
+                .title(movie.getTitle())
+                .contentsType(ContentsType.MOVIE)
+                .genres(movie.getGenres())
+                .build();
+        contentsService.insertContents(contentsDTO);
 
         return movie.getMid();
     }
@@ -215,7 +305,7 @@ public class MovieService {
                     if (optionalMovie.isPresent()) {
                         // update existing movie (synopsis는 업데이트 안함, 필요시 추가 가능)
                         Movie existing = optionalMovie.get();
-                        existing.setRank(rank);
+                        existing.setRanking(rank);
                         existing.setDirector(directorName);
                         existing.setActors(actorStr);
                         existing.setGenres(genreStr);
@@ -225,12 +315,12 @@ public class MovieService {
                                 .mid("m_" + movieCd)
                                 .title(movieNm)
                                 .openDate(openDt)
-                                .rank(rank)
+                                .ranking(rank)
                                 .movieCd(movieCd)
                                 .director(directorName)
                                 .actors(actorStr)
                                 .genres(genreStr)
-                                .showTm(showTm)
+                                .showTm(convertShowTm(showTm))
                                 .nationNm(nationNm)
                                 .gradeNm(gradeNm)
                                 .synopsis(null) // 초기 줄거리 없음
@@ -238,10 +328,11 @@ public class MovieService {
 
                         insertMovie(dto);
                     }
+                    rank++;
                 }
             }
         } catch (Exception e) {
-            log.error("영화 데이터 수집 실패", e);
+            e.printStackTrace();
         }
     }
 
@@ -252,7 +343,7 @@ public class MovieService {
         Movie movie = movieRepository.findById(mid)
                 .orElseThrow(() -> new RuntimeException("영화 없음"));
 
-        List<ReplyDTO> replyDTOList = replyService.movieReplies(mid);
+        List<ReplyDTO> replyDTOList = replyService.contentReplies(mid);
 
         Map<String, Object> result = new HashMap<>();
         result.put("movie", movie);
@@ -276,29 +367,35 @@ public class MovieService {
     }
 
     // 전체 영화 목록 조회
+    // 최초 호출 시 DB에서 조회 후 캐시에 저장
+    @Cacheable(value = "movies", key = "'allMovies'")
     public List<Movie> getMovieAll() {
         log.info("영화 전체목록 조회");
         return movieRepository.findAll();
     }
 
-    // 영화 목록 조회
-    public List<Movie> getMovieRank(int num) {
-        List<Movie> result;
-        List<Movie> list = movieRepository.findAll(Sort.by("rank"));
-        if (list.size() > num) {
-            result = new ArrayList<>(list.subList(0, num));
-        } else {
-            result = new ArrayList<>(list);
+    public List<MovieDTO> getRandom(int num) {
+        List<MovieDTO> result = new ArrayList<>();
+        List<Movie> list = getMovieAll(); // 1. 원본 리스트가 비어있다면, 빈 리스트 반환
+        if (list.isEmpty()) {
+            return null;
+        }
+
+        // 2. 'num'과 'list'의 크기 중 더 작은 값을 선택하여 가져올 개수를 결정합니다.
+        int countToRetrieve = Math.min(num, list.size());
+        int ran = 0;
+        Set<Integer> eran = new HashSet<>();
+
+        // 3. countToRetrieve 크기만큼
+        while (countToRetrieve > eran.size()) {
+            ran = (int) (Math.random() * list.size());
+            eran.add(ran);
+        }
+        // 4. 결정된 개수만큼 앞에서부터 요소를 가져와 DTO로 변환하여 결과 리스트에 추가합니다.
+        for (Integer r : eran) {
+            result.add(entityToDto(list.get(r)));
         }
         return result;
-    }
-
-    public List<MovieDTO> getRandom(int num) {
-        List<MovieDTO> result;
-        List<Movie> list = movieRepository.findAll();
-        result = list.stream().map(movie -> entityToDto(movie)).collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(result);
-        return result.subList(0, Math.min(num, result.size()));
     }
 
     // 영화 삭제
@@ -313,7 +410,17 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
+    // 상영시간을 n시간 n분형태로 변환하여 반환
+    private String convertShowTm(Integer minutes) {
+        if (minutes == null || minutes == 0)
+            return "상영시간없음";
+        int hrs = minutes / 60;
+        int mins = minutes % 60;
+        return hrs + "시간 " + mins + "분";
+    }
+
     public MovieDTO entityToDto(Movie movie) {
+
         MovieDTO dto = MovieDTO.builder()
                 .mid(movie.getMid())
                 .movieCd(movie.getMovieCd())
@@ -321,16 +428,17 @@ public class MovieService {
                 .actors(movie.getActors())
                 .director(movie.getDirector())
                 .openDate(movie.getOpenDate())
-                .rank(movie.getRank())
+                .ranking(movie.getRanking())
                 .genres(movie.getGenres())
                 .showTm(movie.getShowTm())
                 .nationNm(movie.getNationNm())
                 .gradeNm(movie.getGradeNm())
                 .synopsis(movie.getSynopsis())
-                .imgUrl(movie.getImage().getImgName())
-                .replycnt(movie.getReplies().size())
-                .followcnt(movie.getFollowcnt())
+                .imgUrl((movie.getImage() == null) ? null : movie.getImage().getImgName())
+                .replycnt(movie.getReplies() != null ? movie.getReplies().size() : 0)
+                .followcnt(contentsService.getFollowCnt(movie.getMid()))
                 .build();
+
         return dto;
     }
 }

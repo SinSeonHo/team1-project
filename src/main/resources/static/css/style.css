@@ -680,6 +680,7 @@ ol {
 
 .trending__product {
   margin-bottom: 50px;
+  margin-top: 25px;
 }
 
 .popular__product {
@@ -693,6 +694,13 @@ ol {
 .product__item {
   margin-bottom: 30px;
 }
+/* 모바일 용 이미지 조정 */
+.content-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
 
 /* 메인페이지 영화이미지 간격조절 */
 .mainmovie {
@@ -704,25 +712,28 @@ ol {
 .search-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0px;
   background-color: #1a2238; /* 진한 남색 배경 */
-  padding: 12px 16px;
+  padding: 6px 6px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(10, 10, 30, 0.6);
-  max-width: 450px;
+  max-width: 350px;
   margin: 0 auto;
 }
 
 .search-box select,
 .search-box input[type="text"] {
   background-color: #0f1626; /* 더 어두운 남색 */
-  border: 1px solid #394867;
+  border: 0px solid #394867;
   color: #dbeafe; /* 밝은 파랑 글씨 */
   padding: 8px 10px;
-  border-radius: 4px;
+  border-radius: 4px 0 0 4px;
   font-size: 14px;
 }
 
+.search-box select {
+  border-radius: 4px 0 0 4px;
+}
 .search-box input[type="text"]::placeholder {
   color: #aab4cf;
 }
@@ -731,8 +742,8 @@ ol {
   background-color: #394867; /* 중간톤 남색 */
   color: #ffffff;
   border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
+  padding: 8px 8px;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -749,7 +760,7 @@ ol {
   background-position: center;
   background-repeat: no-repeat;
 
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .product__item__image {
@@ -777,12 +788,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 10px;
-  bottom: 1px;
+  left: 0%;
+  bottom: -23px;
 }
 
 /* 게임 팔로우 수 */
@@ -791,12 +803,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 10px;
-  bottom: 1px;
+  left: 0%;
+  bottom: -23px;
 }
 
 /* 영화댓글 수 */
@@ -805,12 +818,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 175px;
-  bottom: 1px;
+  right: 0%;
+  bottom: -23px;
 }
 
 /* 게임댓글 수 */
@@ -819,12 +833,13 @@ ol {
   font-weight: bold;
   color: #ffffff;
   background: #c47124;
+  /* background: rgba(196, 113, 36, 0); */
   display: inline-block;
   padding: 2px 10px;
   border-radius: 4px;
   position: absolute;
-  left: 80%;
-  bottom: 1px;
+  right: 0%;
+  bottom: -23px;
 }
 
 .product__item__text {
@@ -2006,7 +2021,7 @@ ol {
 }
 
 .login__social__links {
-  text-align: center;
+  text-align: left;
 }
 
 .login__social__links span {
@@ -2029,9 +2044,9 @@ ol {
 }
 
 .login__social__links ul li a {
-  color: #ffffff;
+  color: #000000;
   display: block;
-  font-size: 13px;
+
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -2039,18 +2054,6 @@ ol {
   padding: 14px 0;
   position: relative;
   margin: 0 auto;
-}
-
-.login__social__links ul li a.facebook {
-  background: #4267b2;
-}
-
-.login__social__links ul li a.google {
-  background: #ff4343;
-}
-
-.login__social__links ul li a.twitter {
-  background: #1da1f2;
 }
 
 .login__social__links ul li a i {
@@ -2219,9 +2222,6 @@ ol {
     top: -42px;
     padding: 0;
   }
-  .header__menu {
-    display: none;
-  }
   .slicknav_menu {
     background: transparent;
     padding: 0;
@@ -2323,9 +2323,6 @@ ol {
     right: 120px;
     top: -42px;
     padding: 0;
-  }
-  .header__menu {
-    display: none;
   }
   .slicknav_menu {
     background: transparent;
@@ -2535,4 +2532,95 @@ ol {
 
 .header__right {
   white-space: nowrap;
+}
+
+/* 0801 추가 영화 시놉시스, 공통 슬라이더, 공통 모달 */
+.synopsis {
+  display: block; /* span은 인라인 요소이므로 block으로 전환 */
+  white-space: pre-wrap; /* 줄바꿈 문자(\n)도 반영하고, 긴 문장도 자동 줄바꿈 */
+  word-break: break-word; /* 너무 긴 단어도 줄바꿈되도록 */
+  line-height: 1.5;
+  color: #ffffff !important; /* 글자색 흰색 */
+  font-weight: 600; /* 글자 굵기 (보통: 400, 굵게: 600~700) */
+}
+
+.synopsis_t {
+  font-weight: 600;
+}
+
+/* 0730 슬라이더 임시테스트 */
+.slider-container {
+  width: 100%;
+  overflow-x: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.slider {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.slider img {
+  width: 300px;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+}
+/* 모달추가 0730 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal img {
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 50px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+}
+
+.prev-btn {
+  left: 20px;
+}
+
+.next-btn {
+  right: 20px;
+}
+@media (max-width: 767px) {
+  .mobile-menu ul li {
+    border: white 2px;
+    color: white;
+  }
 }

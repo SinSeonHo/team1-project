@@ -40,16 +40,24 @@ public class MovieSearchImpl implements MovieSearch {
                     case "d":
                         searchBuilder.or(movie.director.containsIgnoreCase(keyword));
                         break;
+                    case "a":
+                        searchBuilder.or(movie.actors.containsIgnoreCase(keyword));
+                        break;
+                    case "c":
+                        searchBuilder.or(movie.nationNm.containsIgnoreCase(keyword));
+                        break;
+                    case "g":
+                        searchBuilder.or(movie.genres.containsIgnoreCase(keyword));
                 }
             }
             builder.and(searchBuilder);
         }
-        Pageable pageable = requestDTO.getPageable(Sort.by("rank").descending());
+        Pageable pageable = requestDTO.getPageable(Sort.by("ranking").descending());
 
         JPAQuery<Movie> query = queryFactory
                 .selectFrom(movie)
                 .where(builder)
-                .orderBy(movie.rank.asc()) // 우선 랭크 기준으로 정렬!
+                .orderBy(movie.ranking.asc()) // 우선 랭크 기준으로 정렬!
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 

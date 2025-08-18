@@ -1,5 +1,13 @@
 package com.example.ott.controller;
 
+<<<<<<< HEAD
+=======
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
+>>>>>>> dev
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,18 +31,34 @@ public class ReplyController {
     private final ReplyService replyService;
     private final UserService userService;
 
+    @GetMapping
+    public String replyform(Model model) {
+        model.addAttribute("m");
+        return "ott_contents/movieInfo::replyform";
+    }
+
+
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {
-        return replyService.updateReply(dto);
+        ReplyDTO replyDTO = replyService.updateReply(dto);
+        return replyDTO;
     }
 
     @PostMapping("/new")
-    public void postMovie(@RequestBody ReplyDTO dto) {
-        User user = userService.getUser(dto.getReplyer());
-        dto.setReplyerNickname(user.getNickname());
-        replyService.insert(dto);
-
-        return;
+    public ResponseEntity<Map<String, String>> postMovie(@RequestBody ReplyDTO dto) {
+        User user = userService.getUserById(dto.getReplyer());
+        dto.setReplyerNickname(user.getNickname()); // nickname 설정
+        int result = replyService.insert(dto);
+        switch (result) {
+            case 0:
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "입력되었습니다."));
+            case 1:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "컨텐츠를 찾을 수 없습니다."));
+            case 2:
+                return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "이미 리뷰를 작성했습니다."));
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "오류"));
+        }
     }
 
     @DeleteMapping("/{id}")

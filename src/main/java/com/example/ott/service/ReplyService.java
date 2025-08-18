@@ -6,65 +6,113 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
 import com.example.ott.entity.User;
+import com.example.ott.exception.ReportActionException;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
-import com.example.ott.repository.UserRepository;
+import com.example.ott.repository.ReportRepository;
+import com.example.ott.type.Status;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ReplyService {
     private final ReplyRepository replyRepository;
     private final MovieRepository movieRepository;
     private final GameRepository gameRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ReportRepository reportRepository;
 
-    public Reply insert(ReplyDTO dto) {
-        return replyRepository.save(dtoToEntityInsert(dto));
+    public int insert(ReplyDTO dto) {
+        User user = userService.getUserById(dto.getReplyer());
+
+        if (dto.getRef() == null) {
+            if (dto.getId() != null) {
+                Movie movie = movieRepository.findById(dto.getId())
+                        .orElseThrow(() -> new RuntimeException("Movie not found"));
+                if (replyRepository.findByReplyerAndMovieAndRefIsNull(user, movie).isPresent()) {
+                    return 2; // 이미 리뷰를 작성했습니다.
+                }
+            } else if (dto.getGid() != null) {
+                Game game = gameRepository.findById(dto.getGid())
+                        .orElseThrow(() -> new RuntimeException("Game not found"));
+                if (replyRepository.findByReplyerAndGameAndRefIsNull(user, game).isPresent()) {
+                    return 2; // 이미 리뷰를 작성했습니다.
+                }
+            }
+        }
+        replyRepository.save(dtoToEntityInsert(dto));
+        return 0;
     }
 
-    // 영화의 댓글들 가져오기
-    public List<ReplyDTO> movieReplies(String mid) {
-        Movie movie = movieRepository.findById(mid).get();
-        List<Reply> list = replyRepository.findByMovie(movie);
-        List<Reply> sortedReplies = sortRepliesWithChildren(list);
-        List<ReplyDTO> result = sortedReplies.stream().map(reply -> entityToDto(reply))
-                .collect(Collectors.toList());
-        return result;
-    }
-
-    // 게임의 댓글들 가져오기
-    public List<ReplyDTO> gameReplies(String id) {
-        Game game = gameRepository.findById(id).get();
-        List<Reply> list = replyRepository.findByGame(game);
-        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> entityToDto(reply))
+    // 콘텐츠의 댓글들 가져오기
+    public List<ReplyDTO> contentReplies(String id) {
+        List<Reply> list = new ArrayList<>();
+        if (id.contains("m")) {
+            Movie movie = movieRepository.findById(id).get();
+            list = replyRepository.findByMovie(movie);
+        } else if (id.contains("g")) {
+            Game game = gameRepository.findById(id).get();
+            list = replyRepository.findByGame(game);
+        }
+        List<ReplyDTO> result = sortRepliesWithChildren(list).stream().map(reply -> {
+            // 신고된 댓글이 삭제처리 된 경우 내용이 대체됨.
+            ReplyDTO dto = entityToDto(reply);
+            if (dto.getStatus().equals(Status.DELETED)) {
+                dto.setText("관리자에 의해 삭제된 게시물입니다.");
+            }
+            return dto;
+        })
                 .collect(Collectors.toList());
         return result;
     }
 
     // 댓글 내용 변경
     public ReplyDTO updateReply(ReplyDTO dto) {
+        // 신고가 접수된 게시물은 수정할 수 없음
         Reply reply = replyRepository.findById(dto.getRno()).get();
-        reply.changeText(dto.getText());
+
+        boolean isReported = reply.getStatus() != Status.NO_ACTION;
+
+        if (isReported) {
+            throw new ReportActionException("신고가 접수된 게시물로 수정할 수 없습니다.");
+        }
+
+        if (reply.getRef() == null) {
+
+            reply.changeText(dto.getText());
+        } else {
+            reply.changeText("@" + dto.getMention() + " " + dto.getText());
+        }
+
+        reply.changeRate(dto.getRate());
 
         return entityToDto(replyRepository.save(reply));
     }
 
     @Transactional
     public void deleteReply(Long id) {
+        Reply reply = replyRepository.findById(id).get();
+        List<Report> reports = reportRepository.findByReply(reply);
+        reports.forEach(report -> {
+            report.setReply(null);
+            reportRepository.save(report);
+        });
         List<Reply> list = replyRepository.findByRef(id);
         list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
         replyRepository.deleteById(id);
@@ -72,12 +120,13 @@ public class ReplyService {
 
     private ReplyDTO entityToDto(Reply reply) {
 
-        User user = userRepository.findById(reply.getReplyer().getId()).get();
+        User user = userService.getUserById(reply.getReplyer().getId());
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedDate = reply.getCreatedDate().format(formatter);
         String formattedUpDate = reply.getUpdatedDate().format(formatter);
-        String thumbnailPath;
+        String thumbnailPath, badge = null;
+
         if (reply.getReplyer().getImage() == null) {
             thumbnailPath = null;
         } else {
@@ -86,16 +135,21 @@ public class ReplyService {
         ReplyDTO dto = ReplyDTO.builder()
                 .rno(reply.getRno())
                 .text(reply.getText())
-                .replyer(reply.getReplyer().getId())
+                .replyer(user.getId())
                 .replyerNickname(user.getNickname())
+
+                .rate(reply.getRecommend())
+
                 .ref(reply.getRef())
                 .mention(reply.getMention())
                 .createdDate(formattedDate)
                 .updatedDate(formattedUpDate)
                 .thumbnailPath(thumbnailPath)
+                .badgePath(badge)
+                .status(reply.getStatus())
                 .build();
         if (reply.getMovie() != null) {
-            dto.setMid(reply.getMovie().getMid());
+            dto.setId(reply.getMovie().getMid());
         } else if (reply.getGame() != null) {
             dto.setGid(reply.getGame().getGid());
         }
@@ -105,23 +159,52 @@ public class ReplyService {
     private Reply dtoToEntityInsert(ReplyDTO dto) {
         Movie movie = null;
         Game game = null;
+        // 별점 제한
+        if (dto.getRef() == null) {
+            if (dto.getRate() < 0) {
+                dto.setRate(0);
+            } else if (dto.getRate() > 5) {
+                dto.setRate(5);
+            }
+        } else {
+            dto.setRate(0);
+        }
 
-        if (dto.getMid() != null) {
-            movie = Movie.builder().mid(dto.getMid()).build();
+        if (dto.getId() != null) {
+            movie = Movie.builder().mid(dto.getId()).build();
         } else if (dto.getGid() != null) {
             game = Game.builder().gid(dto.getGid()).build();
-        } else {
         }
         Reply reply = Reply.builder()
                 .text(dto.getText())
                 .replyer(User.builder().id(dto.getReplyer()).build())
                 .movie(movie)
                 .game(game)
-                // .webtoon(webToon)
                 .ref(dto.getRef())
                 .mention(dto.getMention())
+                .recommend(dto.getRate())
                 .build();
+        if (dto.getRef() != null) {
+            reply.changeText("@" + dto.getMention() + " " + reply.getText());
+        }
         return reply;
+    }
+
+    public double rating(List<ReplyDTO> replies) {
+        double rating = 0;
+        int size = 0;
+        double rate = 0;
+        for (ReplyDTO dto : replies) {
+            if (dto.getRate() > 0) {
+                rating += dto.getRate();
+                size++;
+            }
+        }
+        if (size > 0) {
+            rate = rating / size;
+            rate = Math.round(rate * 10) / 10.0;
+        }
+        return rate;
     }
 
     public List<Reply> sortRepliesWithChildren(List<Reply> allReplies) {
@@ -161,9 +244,20 @@ public class ReplyService {
         List<Reply> children = childrenMap.get(parent.getRno());
         if (children != null) {
             for (Reply child : children) {
-                addWithChildren(child, childrenMap, result); // 재귀: 자식의 자식까지 정렬
+                addWithChildren(child, childrenMap, result);
             }
         }
+    }
+
+    // 0812 신선호 신고기능때문에 추가
+    // ID로 댓글 조회 (Optional 반환)
+    public Optional<Reply> findById(Long id) {
+        return replyRepository.findById(id);
+    }
+
+    // 댓글 수 반환
+    public long getreplyCnt() {
+        return replyRepository.count();
     }
 
 }

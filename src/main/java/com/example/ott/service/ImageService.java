@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Log4j2
@@ -23,6 +25,45 @@ import java.util.UUID;
 public class ImageService {
 
     private final ImageRepository imageRepository;
+
+    // 이미지 스크린샷리스트 가져오기 0730 추가
+    public List<String> getScreenshotsByImageId(Long imageId) {
+        return imageRepository.findById(imageId)
+                .map(Image::getScreenshots)
+                .orElse(Collections.emptyList());
+    }
+
+    // @Transactional
+    // public ImageDTO saveImageForMovie(String mid, String uuid, String imgName,
+    // String path) {
+    // // 1. 영화 엔티티 조회 (movieId는 Long 또는 String 타입 mid에 맞게 조정)
+    // Movie movie = movieRepository.findById(mid)
+    // .orElseThrow(() -> new IllegalArgumentException("영화를 찾을 수 없습니다. id=" + mid));
+
+    // // 2. Image 엔티티 생성 및 저장
+    // Image image = Image.builder()
+    // .uuid(uuid)
+    // .imgName(imgName)
+    // .path(path)
+    // .movie(movie) // 연관관계 설정
+    // .build();
+
+    // Image savedImage = imageRepository.save(image);
+
+    // // 3. 영화 엔티티에 이미지 설정 후 저장 (양방향 연관관계 시 필요)
+    // movie.setImage(savedImage);
+    // movieRepository.save(movie);
+
+    // // 4. DTO 변환 및 반환
+    // ImageDTO dto = ImageDTO.builder()
+    // .inum(savedImage.getInum())
+    // .uuid(savedImage.getUuid())
+    // .imgName(savedImage.getImgName())
+    // .path(savedImage.getPath())
+    // .build();
+
+    // return dto;
+    // }
 
     @Value("${upload.base-dir}")
     private String baseDir;

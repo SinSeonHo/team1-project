@@ -1,7 +1,9 @@
 package com.example.ott.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, String>, MovieSear
     String findLastMovieId();
 
     Optional<Movie> findByMovieCd(String movieCd);
+
+    // 랭킹 낮은 순으로 10개
+    List<Movie> findTop10ByOrderByRankingAsc();
 }
