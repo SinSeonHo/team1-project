@@ -1,5 +1,6 @@
 package com.example.ott.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -8,17 +9,22 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.ott.dto.CountDatasDTO;
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
+import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
+import com.example.ott.entity.Reply;
+import com.example.ott.entity.Report;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.entity.UserRole;
-import com.example.ott.repository.ImageRepository;
-import com.example.ott.repository.UserRepository;
+import com.example.ott.repository.*;
 import com.example.ott.security.CustomUserDetails;
+import com.example.ott.type.Status;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +34,15 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    private final ReportRepository reportRepository;
+
+    private final UserGenrePreferenceRepository userGenrePreferenceRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ImageRepository imageRepository;
+    private final FollowedContentsRepository followedContentsRepository;
+    private final ReplyRepository replyRepository;
 
     // 계정 생성 + 자동 로그인
     public String registerAndLogin(TotalUserDTO totalUserDTO) {
@@ -50,6 +62,8 @@ public class UserService {
 
             userRole = UserRole.USER;
 
+        } else {
+            totalUserDTO.setEmail(null);
         }
 
         User user = User.builder()
@@ -97,31 +111,58 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // TODO reply 먼저
-    // 지워야돼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    @Transactional
     public void deleteUser(String id) {
+        User user = userRepository.findById(id).get();
+        // 지워야 될 거
+        // 1. user genre 취향
+        userGenrePreferenceRepository.findByUser(user).forEach(pre -> userGenrePreferenceRepository.delete(pre));
+        // 2. followed contents
+        List<FollowedContents> contents = followedContentsRepository.findByUser(user);
+        contents.forEach(content -> followedContentsRepository.delete(content));
+        List<Reply> replies = replyRepository.findByReplyer(user);
+        // 3. report
+        // 4. reply
+        replies.forEach(reply -> {
+            try {
+                List<Report> reports = reportRepository.findByReply(reply);
+                reports.forEach(report -> {
+                    report.setReply(null);
+                    reportRepository.save(report);
+                });
+
+            } catch (Exception e) {
+
+            }
+            List<Reply> list = replyRepository.findByRef(reply.getRno());
+            list.stream().forEach(rep -> replyRepository.deleteById(rep.getRno()));
+            replyRepository.deleteById(reply.getRno());
+        });
         userRepository.deleteById(id);
     }
 
-    // // 아이디, 비밀번호 변경 (예시)
-    // public String changeAccountInfo(SecurityUserDTO securityUserDTO) {
-    // // 암호화된 비밀번호로 체크하려면 matches 사용!
-    // User user = userRepository.findById(securityUserDTO.getId())
-    // .orElse(null);
+    // 신고 처리에 따라 경고 점수 부여
+    public void addWarningCount(String id, Status status) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저입니다."));
+        switch (status) {
+            case WARNING:
+                user.addWarnningCount(1);
+                break;
+            case DELETED:
+                user.addWarnningCount(3);
+                break;
 
-    // if (user == null || !passwordEncoder.matches(securityUserDTO.getPassword(),
-    // user.getPassword())) {
-    // return "입력하신 정보가 일치하지 않습니다.";
-    // }
-    // // 이미 사용중인 ID 체크
-    // if (userRepository.existsById(securityUserDTO.getId())) {
-    // return "이미 존재하는 Id입니다.";
-    // }
-    // user.changeAccountInfo(securityUserDTO.getId(),
-    // passwordEncoder.encode(securityUserDTO.getPassword()));
-    // userRepository.save(user);
-    // return "변경되었습니다";
-    // }
+            default:
+                break;
+
+        }
+        // 경고 누적 점수가 10점 초과시 로그인 제한 평생!!!!!!!!!!!!
+        if (user.getWarningCnt() > 10) {
+            user.setUserRole(UserRole.BAN);
+        }
+        // 반영
+        userRepository.save(user);
+    }
 
     public User getUserById(String id) {
         User user = null;
@@ -180,4 +221,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    // 회원 수 반환
+    public long getUserCnt() {
+        return userRepository.count();
+    }
 }

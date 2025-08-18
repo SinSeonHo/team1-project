@@ -680,6 +680,7 @@ ol {
 
 .trending__product {
   margin-bottom: 50px;
+  margin-top: 25px;
 }
 
 .popular__product {
@@ -692,6 +693,13 @@ ol {
 
 .product__item {
   margin-bottom: 30px;
+}
+/* 모바일 용 이미지 조정 */
+.content-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 메인페이지 영화이미지 간격조절 */

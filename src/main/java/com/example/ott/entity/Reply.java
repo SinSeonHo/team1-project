@@ -7,6 +7,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.example.ott.type.Status;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -56,6 +58,10 @@ public class Reply {
     @Column(nullable = true)
     private String mention;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.NO_ACTION; // 댓글 신고 결과
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdDate; // 댓글 작성 시간
@@ -71,5 +77,11 @@ public class Reply {
     // 추천 수 변경 메서드
     public void changeRate(int recommend) {
         this.recommend = recommend;
+    }
+
+    // 댓글 상태 변환
+    public void setStatus(Status status) {
+        this.status = status;
+
     }
 }

@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
     private final TempSocialSignupDTO temp;
 
     private Map<String, Object> attributes;
-    
+
     private LocalDateTime createdDate;
 
     private LocalDateTime updatedDate;
@@ -81,9 +81,9 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
                 .userRole(UserRole.PENDING)
                 .build();
 
-        this.attributes = Map.of();
-        this.createdDate = null; // 아직 저장 전이라 날짜 없음
-        this.updatedDate = null; // 아직 저장 전이라 날짜 없음
+        this.attributes = (attributes != null) ? attributes : Map.of();
+        this.createdDate = null;
+        this.updatedDate = null;
         this.temp = tempDTO;
     }
 
@@ -140,5 +140,10 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
         if (temp != null && temp.getEmail() != null)
             return temp.getEmail();
         return "anonymous";
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return securityUserDTO.getUserRole() != UserRole.BAN; // BAN이면 비활성화
     }
 }

@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-2 col-md-6 col-sm-9" th:each="movie : ${movies}">
+          <div class="col-lg-2 col-md-6 col-sm-9 content-item" th:each="movie : ${movies}">
             <div class="product__item">
               <div class="product__item__pic">
                 <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">

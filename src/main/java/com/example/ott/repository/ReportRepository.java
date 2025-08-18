@@ -1,73 +1,58 @@
 package com.example.ott.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.ott.entity.Reply;
 import com.example.ott.entity.Report;
 import com.example.ott.entity.User;
-import com.example.ott.entity.Reply;
+import com.example.ott.type.Reason;
+import com.example.ott.type.Status;
 
-/**
- * Report 엔티티에 대한 JPA Repository 인터페이스
- * - 기본 CRUD 제공 (JpaRepository 상속)
- * - 상태, 신고자, 댓글 별 조회 및 페이징용 커스텀 쿼리 포함
- */
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
-        /**
-         * 특정 신고자(User)로 신고 목록 조회
-         */
-        List<Report> findByReporter(User reporter);
+  /** 단일 상태 조회 */
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  List<Report> findByStatus(Status status);
 
-        /**
-         * 특정 댓글(Reply)에 대한 신고 목록 조회
-         */
-        List<Report> findByReply(Reply reply);
+  /** 신고자 + 상태 조회 */
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  List<Report> findByReporterAndStatus(User reporter, Status status);
 
-        /**
-         * 상태(status)로 신고 목록 조회 (예: "PENDING", "DONE")
-         */
-        List<Report> findByStatus(String status);
+  // --- 공통 목록 (N+1 방지) ---
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  Page<Report> findAll(Pageable pageable);
 
-        /**
-         * 신고자와 상태로 필터링 조회
-         */
-        List<Report> findByReporterAndStatus(User reporter, String status);
+  // --- 다중 필터 (서비스에서 null/empty 제거/분기 보장) ---
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  @Query("""
+      select r
+      from Report r
+      where r.reason in :reasons
+        and r.status in :statuses
+      """)
+  Page<Report> findAllByFilters(@Param("reasons") Collection<Reason> reasons,
+      @Param("statuses") Collection<Status> statuses,
+      Pageable pageable);
 
-        /**
-         * 상태별 페이징 조회
-         */
-        Page<Report> findByStatus(String status, Pageable pageable);
+  // 분기 호출용(하나만 필터일 때)
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  Page<Report> findByReasonIn(Collection<Reason> reasons, Pageable pageable);
 
-        /**
-         * 전체 페이징 조회
-         * JpaRepository 기본 제공 (따로 선언할 필요 없음)
-         * Page<Report> findAll(Pageable pageable);
-         */
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  Page<Report> findByStatusIn(Collection<Status> statuses, Pageable pageable);
 
-        /**
-         * 키워드만 포함 검색 (상태 무관) 페이징
-         * reporter.id, reporter.nickname, reason 필드에서 대소문자 구분 없이 검색
-         */
-        @Query("SELECT r FROM Report r WHERE " +
-                        "LOWER(r.reporter.id) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                        "LOWER(r.reporter.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                        "LOWER(r.reason) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-        Page<Report> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+  @EntityGraph(attributePaths = { "reporter", "reply" })
+  Page<Report> findByStatus(Status status, Pageable pageable);
 
-        /**
-         * 상태 + 키워드 모두 포함 검색 페이징
-         */
-        @Query("SELECT r FROM Report r WHERE r.status = :status AND (" +
-                        "LOWER(r.reporter.id) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                        "LOWER(r.reporter.nickname) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                        "LOWER(r.reason) LIKE LOWER(CONCAT('%', :keyword, '%')))")
-        Page<Report> findByStatusAndKeyword(@Param("status") String status,
-                        @Param("keyword") String keyword,
-                        Pageable pageable);
+  List<Report> findByReply(Reply reply);
+
+  List<Report> findByReporter(User reporter);
 }

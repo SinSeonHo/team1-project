@@ -1,5 +1,7 @@
 package com.example.ott.dto;
 
+import com.example.ott.type.Status;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,4 +38,7 @@ public class ReplyDTO {
     private String thumbnailPath;
     // 뱃지 경로
     private String badgePath;
+
+    @Builder.Default
+    private Status status = Status.NO_ACTION;
 }

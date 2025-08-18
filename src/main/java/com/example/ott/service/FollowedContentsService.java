@@ -146,11 +146,14 @@ public class FollowedContentsService {
         Page<FollowedContentsDTO> followedContentsDTOs = followedContentsList.map(followedContents -> {
             String imageUrl = "";
             switch (followedContents.getContents().getContentsType()) {
+                // 이미지 없으면 기본 이미지 리턴하게 수정
                 case MOVIE:
-                    imageUrl = followedContents.getContents().getMovie().getImage().getPath();
+                    imageUrl = followedContents.getContents().getMovie().getImage() == null ? "images/sample.jpg"
+                            : followedContents.getContents().getMovie().getImage().getPath();
                     break;
                 case GAME:
-                    imageUrl = followedContents.getContents().getGame().getImage().getPath();
+                    imageUrl = followedContents.getContents().getGame().getImage() == null ? "images/sample.jpg"
+                            : followedContents.getContents().getGame().getImage().getPath();
                     break;
 
                 default:
@@ -166,6 +169,11 @@ public class FollowedContentsService {
         });
 
         return followedContentsDTOs;
+    }
+
+    // 팔로우 수 반환
+    public long getFollowedContentsCnt() {
+        return followedContentsRepository.count();
     }
 
 }

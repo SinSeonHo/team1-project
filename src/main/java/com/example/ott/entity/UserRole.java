@@ -12,7 +12,8 @@ public enum UserRole {
     USER("USER"),
     MANAGER("USER,MANAGER"),
     ADMIN("USER,MANAGER,ADMIN"),
-    PENDING("PENDING");
+    PENDING("PENDING"),
+    BAN("BAN");
 
     private final String roles;
 

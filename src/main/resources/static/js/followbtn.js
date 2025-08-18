@@ -12,7 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
           // 응답은 무시하고, 버튼 상태만 프론트에서 토글
           button.classList.toggle("follow");
           const isNowFollowed = button.classList.contains("follow");
-          button.textContent = isNowFollowed ? "Followed" : "Follow";
+          if (isNowFollowed) {
+            button.firstElementChild.classList.add("fa-solid");
+            button.firstElementChild.classList.remove("fa-regular");
+          } else {
+            button.firstElementChild.classList.add("fa-regular");
+            button.firstElementChild.classList.remove("fa-solid");
+          }
           isNowFollowed ? alert("팔로우 됨") : alert("팔로우 해제됨");
         } else {
           alert("서버 오류 발생!");

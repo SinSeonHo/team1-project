@@ -1,9 +1,12 @@
 package com.example.ott.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.Game;
@@ -22,5 +25,11 @@ public interface ContentsRepository extends JpaRepository<Contents, String>, Con
 
     @Query(value = "SELECT * FROM contents ORDER BY RAND() LIMIT 1", nativeQuery = true)
     Optional<Contents> pickRandom();
+
+  // MySQL
+  @Query(value = "SELECT * FROM contents ORDER BY RAND()", nativeQuery = true)
+  List<Contents> pickRandom(Pageable pageable);
+
+
 
 }

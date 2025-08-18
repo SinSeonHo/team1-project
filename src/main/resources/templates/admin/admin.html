@@ -6,23 +6,15 @@
     <link rel="stylesheet" th:href="@{/admin.css}" />
 
     <!-- CSRF 메타태그 추가 -->
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <th:block layout:fragment="metadata">
+      <!-- 없으면 렌더링 안 함 -->
+      <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}" />
+      <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}" />
+    </th:block>
 
     <!-- JS 분리 후 외부 파일로 불러오기 -->
     <script th:src="@{/js/admin.js}"></script>
     <style>
-      .btn {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-      }
-      .btn:hover {
-        background-color: #0056b3;
-      }
       /* 버튼 컨테이너를 화면 가운데로 */
       .button-container {
         display: flex; /* 플렉스 박스 사용 */
@@ -56,7 +48,7 @@
           게임 이미지 불러오기
         </button>
         <!-- 관리자 신고 리스트 페이지 -->
-        <a th:href="@{/admin/report/list}" class="btn">관리자 신고 리스트 페이지</a>
+        <a th:href="@{/report/list}" class="btn btn-primary">관리자 신고 리스트 페이지</a>
       </div>
     </div>
   </body>

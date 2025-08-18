@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layout}">
+    <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/overlay.css}">
+    <link rel="stylesheet" th:href="@{/css/homePage.css}">
+  </th:block>
+  <main layout:fragment="content">
+    <!-- Hero -->
+    <section id="hero-70">
+      <img class="hero-img" th:src="@{/images/homepage/homeP.jpg}" alt="배너 이미지" />
+      <div class="overlay"></div>
+      <div class="container h-100">
+        <div class="row h-100">
+          <div class="col-12 col-md-6 d-flex align-items-center">
+            <div class="copy py-5">
+              <h1 class="display-4 fw-bold mb-3"><b>인기 콘텐츠 추천</b></h1>
+              <p class="lead mb-4 text-white">바쁜 일상, 취미는 놓치지 마세요 <br />꼭 필요한 정보만 드립니다</p>
+              <a class="site-btn btn-lg" href="#top10">지금 알아보기</a>
+            </div>
+          </div>
+          <div class="d-none d-md-block col-md-6"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Counters -->
+    <section class="py-0 py-xl-5 stats-counters" th:object="${countDatasDTO}">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-sm-6 col-xl-3">
+            <div class="counter-card counter--yellow rounded-3">
+              <span class="counter-icon mb-0"><i class="fa-solid fa-play mr-1"></i></span>
+              <div class="ms-4 h6 fw-normal mb-0 counter-text">
+                <div class="d-flex">
+                  <h5
+                    class="purecounter mb-0 fw-bold"
+                    th:attr="data-purecounter-start=0,
+                               data-purecounter-end=*{contentsCnt},
+                               data-purecounter-delay=200,
+                               data-purecounter-duration=800"
+                    th:text="*{contentsCnt}"
+                  >
+                    0
+                  </h5>
+                </div>
+                <p class="mb-0">영화&게임 콘텐츠 개수</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-xl-3">
+            <div class="counter-card counter--blue rounded-3">
+              <span class="counter-icon mb-0"><i class="fa-regular fa-user mr-1"></i></span>
+              <div class="ms-4 h6 fw-normal mb-0 counter-text">
+                <div class="d-flex">
+                  <h5
+                    class="purecounter mb-0 fw-bold"
+                    th:attr="data-purecounter-start=0,
+                               data-purecounter-end=*{userCnt},
+                               data-purecounter-delay=200,
+                               data-purecounter-duration=800"
+                    th:text="*{userCnt}"
+                  >
+                    0
+                  </h5>
+                </div>
+                <p class="mb-0">홈페이지 가입자 수</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-xl-3">
+            <div class="counter-card counter--purple rounded-3">
+              <span class="counter-icon mb-0"><i class="fa-regular fa-heart mr-1"></i></span>
+              <div class="ms-4 h6 fw-normal mb-0 counter-text">
+                <div class="d-flex">
+                  <h5
+                    class="purecounter mb-0 fw-bold"
+                    th:attr="data-purecounter-start=0,
+                               data-purecounter-end=*{followedCnt},
+                               data-purecounter-delay=200,
+                               data-purecounter-duration=800"
+                    th:text="*{followedCnt}"
+                  >
+                    0
+                  </h5>
+                </div>
+                <p class="mb-0">콘텐츠 팔로우 총 개수</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-xl-3">
+            <div class="counter-card counter--teal rounded-3">
+              <span class="counter-icon mb-0"><i class="fa-regular fa-comment-dots"></i></span>
+              <div class="ms-4 h6 fw-normal mb-0 counter-text">
+                <div class="d-flex">
+                  <h5
+                    class="purecounter mb-0 fw-bold"
+                    th:attr="data-purecounter-start=0,
+                               data-purecounter-end=*{replyCnt},
+                               data-purecounter-delay=300,
+                               data-purecounter-duration=800"
+                    th:text="*{replyCnt}"
+                  >
+                    0
+                  </h5>
+                </div>
+                <p class="mb-0">작성된 댓글의 총 개수 (개)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP10 탭 & 패널 -->
+    <section class="content-now w-100 mt-5" id="top10">
+      <div class="container">
+        <div class="top10-tabs" role="tablist" aria-label="Top10 Tabs">
+          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="moviePanel" data-target="#moviePanel"><i class="fa-solid fa-clapperboard"></i><span>영화 TOP 10</span></button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="gamePanel" data-target="#gamePanel"><i class="fa-solid fa-gamepad"></i><span>게임 TOP 10</span></button>
+        </div>
+
+        <!-- 영화 -->
+        <div class="tab-panel active" id="moviePanel" role="tabpanel">
+          <div class="section-title mb-3"><h4 class="mb-0">영화 TOP 10</h4></div>
+          <div class="slider js-slider" id="nowSlider">
+            <button class="nav prev" type="button" aria-label="이전">&lsaquo;</button>
+            <ul class="slider-track" id="nowTrack">
+              <li class="slide-card" th:each="movie, stat : ${movieTop10}">
+                <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" class="slide-link">
+                  <img th:src="@{'/images/movieimages/' + ${movie.imgUrl}}" onerror="this.onerror=null; this.src='/images/sample.jpg';" alt="영화 이미지" loading="lazy" />
+                  <span class="rank" th:text="${stat.index + 1}">1</span>
+                </a>
+              </li>
+            </ul>
+            <button class="nav next" type="button" aria-label="다음">&rsaquo;</button>
+          </div>
+        </div>
+
+        <!-- 게임 -->
+        <div class="tab-panel" id="gamePanel" role="tabpanel">
+          <div class="section-title mb-3"><h4 class="mb-0">게임 TOP 10</h4></div>
+          <div class="slider js-slider" id="gameSlider">
+            <button class="nav prev" type="button" aria-label="이전">&lsaquo;</button>
+            <ul class="slider-track" id="gameTrack">
+              <li class="slide-card" th:each="game, stat : ${gameTop10}">
+                <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" class="slide-link">
+                  <img th:src="@{'/images/gameimages/' + ${game.imgUrl}}" onerror="this.onerror=null; this.src='/images/sample.jpg';" alt="게임 이미지" loading="lazy" />
+                  <span class="rank" th:text="${stat.index + 1}">1</span>
+                </a>
+              </li>
+            </ul>
+            <button class="nav next" type="button" aria-label="다음">&rsaquo;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 팔로우 기반 추천 -->
+    <section class="follow-recs">
+      <div class="container" th:with="items=${recommendContentsDTO}">
+        <div class="section-title title-row">
+          <h4 class="mb-0">당신을 위한 추천</h4>
+          <small class="text-muted">이런 콘텐츠는 어떠신가요?</small>
+        </div>
+
+        <!-- 실제 데이터 -->
+        <ul class="row g-4 list-unstyled mb-0" th:if="${items != null and !#lists.isEmpty(items)}">
+          <li class="col-12 col-md-6" th:each="item, stat : ${items}" th:if="${stat.index} < 2">
+            <div class="spot-card">
+              <div class="spot-cover">
+                <img th:if="${item.contentsType != null and item.contentsType.name() == 'MOVIE'}" th:src="@{'/' + ${item.imgUrl}}" onerror="this.onerror=null; this.src='/images/sample.jpg';" alt="" loading="lazy" />
+                <img th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}" th:src="@{'/' + ${item.imgUrl}}" onerror="this.onerror=null; this.src='/images/sample.jpg';" alt="" loading="lazy" />
+                <img th:if="${item.contentsType == null}" th:src="@{'/images/sample.jpg'}" alt="" loading="lazy" />
+                <span class="spot-chip">
+                  <i class="fa-solid fa-tags"></i>
+                  <span th:text="${item.genreNames != null ? #strings.listJoin(item.genreNames, ' / ') : '추천'}">추천</span>
+                </span>
+              </div>
+
+              <div class="spot-body">
+                <div class="spot-meta">
+                  <i class="fa-solid fa-clapperboard" th:if="${item.contentsType != null and item.contentsType.name() == 'MOVIE'}"></i>
+                  <i class="fa-solid fa-gamepad" th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}"></i>
+                  <span th:text="${item.ranking > 0 ? item.ranking : stat.index + 1}">1</span>
+                  <span>·</span>
+                  <span th:text="${item.genreNames != null ? #strings.listJoin(item.genreNames, ' / ') : ''}">SF / 드라마</span>
+                </div>
+
+                <h5 class="spot-title" th:text="${item.title}">콘텐츠 제목</h5>
+                <p class="spot-reason">팔로우한 장르와 잘 맞아요</p>
+
+                <div class="spot-actions">
+                  <a class="btn btn-primary" th:if="${item.contentsType != null and item.contentsType.name() == 'MOVIE'}" th:href="@{/api/movies/read/{mid}(mid=${item.contentsId})}">자세히</a>
+                  <a class="btn btn-primary" th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}" th:href="@{/api/games/read/{gid}(gid=${item.contentsId})}">자세히</a>
+                  
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- 데이터 없을 때 샘플 -->
+        <ul class="row g-4 list-unstyled mb-0" th:if="${items == null or #lists.isEmpty(items)}">
+          <li class="col-12 col-md-6">
+            <div class="spot-card">
+              <div class="spot-cover">
+                <img th:src="@{/images/sample.jpg}" alt="" loading="lazy" />
+                <span class="spot-chip"><i class="fa-solid fa-tags"></i><span>SF</span></span>
+              </div>
+              <div class="spot-body">
+                <div class="spot-meta"><i class="fa-solid fa-clapperboard"></i><span>2023</span><span>·</span><span>드라마</span></div>
+                <h5 class="spot-title">예시 영화 A</h5>
+                <p class="spot-reason">팔로우 장르와 분위기가 유사해요</p>
+                <div class="spot-actions">
+                  <a class="btn btn-primary" href="#">자세히</a>
+                  
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="col-12 col-md-6">
+            <div class="spot-card">
+              <div class="spot-cover">
+                <img th:src="@{/images/sample.jpg}" alt="" loading="lazy" />
+                <span class="spot-chip"><i class="fa-solid fa-tags"></i><span>RPG</span></span>
+              </div>
+              <div class="spot-body">
+                <div class="spot-meta"><i class="fa-solid fa-gamepad"></i><span>2021</span><span>·</span><span>RPG</span></div>
+                <h5 class="spot-title">예시 게임 A</h5>
+                <p class="spot-reason">팔로우 취향과 플레이 스타일이 비슷해요</p>
+                <div class="spot-actions">
+                  <a class="btn btn-primary" href="#">자세히</a>
+                  
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <th:block layout:fragment="script">
+      <script th:src="@{/js/homePage.js}"></script>
+    </th:block>
+  </main>
+</html>

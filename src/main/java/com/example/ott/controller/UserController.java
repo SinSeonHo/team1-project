@@ -1,31 +1,34 @@
 package com.example.ott.controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -36,13 +39,10 @@ import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TempSocialSignupDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
-import com.example.ott.entity.FollowedContents;
 import com.example.ott.entity.Image;
-import com.example.ott.entity.UserRole;
-import com.example.ott.handler.AuthSuccessHandler;
-import com.example.ott.security.CustomUserDetails;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.ImageService;
+import com.example.ott.service.TestService;
 import com.example.ott.service.UserService;
 import com.example.ott.type.SessionKeys;
 
@@ -65,81 +65,90 @@ public class UserController {
     private final ImageService imageService;
     private final FollowedContentsService followedContentsService;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final TestService testService;
 
     @GetMapping("/register")
     public String getRegister(Model model, HttpServletRequest request) {
 
-        // 1) 세션에서 TEMP_SOCIAL 꺼내기 (있을 때만)
-        HttpSession session = request.getSession(false); // 세션 없으면 null
+        HttpSession session = request.getSession(false);
         if (session != null) {
             TempSocialSignupDTO temp = (TempSocialSignupDTO) session.getAttribute(SessionKeys.TEMP_SOCIAL);
             if (temp != null && !model.containsAttribute("totalUserDTO")) {
-                // 세션의 임시 소셜 데이터를 TotalUserDTO에 매핑
                 TotalUserDTO dto = new TotalUserDTO();
-
                 dto.setName(temp.getName());
                 dto.setNickname(temp.getNickname());
                 dto.setEmail(temp.getEmail());
                 dto.setGender(temp.getGender());
-
                 model.addAttribute("totalUserDTO", dto);
             }
         }
 
-        // 2) 세션 없거나 tempDTO 없으면 기존 방식 유지
         if (!model.containsAttribute("totalUserDTO")) {
-            TotalUserDTO dto = new TotalUserDTO();
-            model.addAttribute("totalUserDTO", dto);
+            model.addAttribute("totalUserDTO", new TotalUserDTO());
         }
 
         return "user/register";
     }
 
     @PostMapping("/register")
-    public String postRegister(@Validated(ValidationOrder.class) TotalUserDTO totalUserDTO, BindingResult result,
+    public String postRegister(
+            @Validated(ValidationOrder.class) TotalUserDTO totalUserDTO,
+            BindingResult result,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes,
             HttpSession session, Model model) {
 
         if (result.hasErrors()) {
-            // 에러 메시지나 입력값을 FlashAttribute로 임시 저장
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.totalUserDTO", result);
             redirectAttributes.addFlashAttribute("totalUserDTO", totalUserDTO);
-            return "/user/register";
+            // 플래시 속성은 redirect와 함께 써야 합니다.
+            return "redirect:/user/register";
         }
 
-        // DB에 회원정보 저장
+        // 1) DB 저장 (및 필요한 후처리)
         userService.registerAndLogin(totalUserDTO);
 
-        // 2) 소셜(PENDING) 가입인지 여부 판단
+        // 2) 소셜 플로우 여부 판단 (세션에 TEMP_SOCIAL 있으면 소셜)
         boolean isSocialFlow = (session != null && session.getAttribute(SessionKeys.TEMP_SOCIAL) != null);
-        if (isSocialFlow) {
-            // ---- 소셜 회원가입: 현재 세션은 이미 인증됨(PENDING). 권한만 USER로 갱신 ----
-            Authentication current = SecurityContextHolder.getContext().getAuthentication();
-            if (current != null && current.getPrincipal() instanceof CustomUserDetails cud) {
-                cud.getSecurityUserDTO().setUserRole(UserRole.USER); // 권한 업데이트
-                UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(cud,
-                        current.getCredentials(), cud.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(newAuth);
-                request.getSession().setAttribute(
-                        org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                        SecurityContextHolder.getContext());
 
-                session.removeAttribute(SessionKeys.TEMP_SOCIAL);
-            }
+        if (isSocialFlow) {
+            // --- 소셜 회원가입: UserDetails 로드 -> 새 Authentication으로 교체 ---
+            UserDetails userDetails = userDetailsService.loadUserByUsername(totalUserDTO.getId());
+
+            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities());
+
+            newAuth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(newAuth);
+            SecurityContextHolder.setContext(context);
+
+            request.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
+            // 임시 소셜 세션키 정리
+            session.removeAttribute(SessionKeys.TEMP_SOCIAL);
 
         } else {
-
-            // 일반 회원가입 AuthenticationManager로 인증
+            // --- 일반 회원가입: 아이디/비번으로 인증 수행 ---
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(totalUserDTO.getId(), totalUserDTO.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            request.getSession().setAttribute(
-                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                    SecurityContextHolder.getContext());
-        }
-        model.addAttribute("userId", totalUserDTO.getId());
+                    new UsernamePasswordAuthenticationToken(
+                            totalUserDTO.getId(),
+                            totalUserDTO.getPassword()));
 
+            SecurityContext context = SecurityContextHolder.createEmptyContext();
+            context.setAuthentication(auth);
+            SecurityContextHolder.setContext(context);
+
+            request.getSession(true).setAttribute(
+                    HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+        }
+
+        model.addAttribute("userId", totalUserDTO.getId());
         return "redirect:/";
     }
 
@@ -159,7 +168,7 @@ public class UserController {
         model.addAttribute("currentSize", size);
         model.addAttribute("hasMore", followedContentsList.getTotalElements() > size);
 
-        return "/user/userProfile";
+        return "user/userProfile";
     }
 
     @GetMapping("/modifyUserProfile")
@@ -168,11 +177,11 @@ public class UserController {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
 
         model.addAttribute("userProfileDTO", userProfileDTO);
-        return "/user/modifyUserProfile";
+        return "user/modifyUserProfile";
     }
 
     // 프로필 수정
-    @PostMapping("/modifyUserProfile")
+    @PostMapping("modifyUserProfile")
     public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
             RedirectAttributes rttr, Model model) {
 
@@ -198,11 +207,18 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String getLogin(Model model) {
+    public String getLogin(HttpServletRequest request, Model model) {
         if (!model.containsAttribute("securityUserDTO")) {
             model.addAttribute("securityUserDTO", new SecurityUserDTO());
         }
-        return "/user/login";
+
+        Exception ex = (Exception) request.getSession().getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        if (ex != null) {
+            model.addAttribute("loginErrorMessage", ex.getMessage());
+            request.getSession().removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+        }
+        return "user/login";
+
     }
 
     // 프로필 사진 업로드
@@ -222,15 +238,34 @@ public class UserController {
 
     // 어드민 권한 주소
     @GetMapping("/upgrade")
-    public String upgradeToAdmin(@AuthenticationPrincipal UserDetails userDetails, RedirectAttributes rttr) {
+    public String upgradeToAdmin(@AuthenticationPrincipal UserDetails userDetails,
+            HttpServletRequest request,
+            RedirectAttributes rttr) {
         if (userDetails == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "로그인이 필요합니다.");
         }
 
-        userService.upgradeToAdmin(userDetails.getUsername());
-        rttr.addFlashAttribute("msg", "관리자 권한이 부여되었습니다!");
+        // 1) DB에서 권한을 USER -> ADMIN(ROLE_ADMIN)으로 업데이트
+        String username = userDetails.getUsername();
+        userService.upgradeToAdmin(username);
 
-        return "redirect:/user/userProfile?id=" + userDetails.getUsername();
+        // 2) 최신 사용자 상태를 재로딩해서 새 Authentication으로 교체
+        UserDetails refreshed = userDetailsService.loadUserByUsername(username);
+        UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+                refreshed,
+                null,
+                refreshed.getAuthorities());
+        newAuth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(newAuth);
+        SecurityContextHolder.setContext(context);
+        request.getSession(true).setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+
+        // 3) 알림 후 프로필로 이동
+        rttr.addFlashAttribute("msg", "관리자 권한이 부여되었습니다!");
+        return "redirect:/user/userProfile?id=" + username;
     }
 
     @GetMapping("/userConsent")
@@ -238,9 +273,16 @@ public class UserController {
 
     }
 
-    @GetMapping("/loginTest")
-    public void getMethodName() {
+    @GetMapping(value = "/testCode", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> makeUser() {
+        // addTestUser()가 Long(생성 ID)을 리턴하면 아래처럼 담아주고,
+        // void라면 id 관련 라인만 빼세요.
+        testService.addTestUser();
 
+        return ResponseEntity.ok(
+                Map.of(
+                        "status", "OK",
+                        "action", "addTestUser"));
     }
 
 }

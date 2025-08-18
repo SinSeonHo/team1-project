@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" layout:decorate="~{layouts/layout}">
+  <th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/report.css}">
+  </th:block>
+        <th:block layout:fragment="metadata">
+        <meta name="current-user-id"
+      th:content="${#authorization.expression('isAuthenticated()') ? #authentication.principal.securityUserDTO.id : ''}" />
+
+     </th:block>
   <body>
     <div layout:fragment="content">
       <!-- 자식 템플릿 전용 스타일 (head 밖, content 내부 최상단에 둠) -->
@@ -49,6 +57,8 @@
         <!-- 상세정보 -->
         <section class="anime-details spad">
           <div class="container">
+
+
             <div class="anime__details__content">
               <div class="row">
                 <div class="col-lg-3">
@@ -90,8 +100,10 @@
                         class="follow-btn"
                         th:classappend="${isFollowed} ? ' follow' : ''"
                         th:data-mid="${movieInfo.mid}"
-                        th:text="${isFollowed} ? 'Followed' : 'Follow'"
-                      ></button>
+                      >
+                      <i th:if="${isFollowed}" class="fa-solid fa-heart"></i>
+                      <i th:if="${!isFollowed}" class="fa-regular fa-heart"></i>
+                    </button>
                     </div>
                   </div>
                 </div>
@@ -175,17 +187,7 @@
                   >
                     수정
                   </button>
-                  <button
-                    type="button"
-                    class="mention-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
-                    th:data-rno="${reply.rno}"
-                  >
-                    댓글
-                  </button> 
-                  <button class="report-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name != 'anonymousUser'}"
-                    th:data-rno="${reply.rno}">🚨</button>
+
                   <!-- 리뷰는 별점 표시 -->
                   <span>
                     <i
@@ -195,6 +197,47 @@
                       th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
                     ></i>
                   </span>
+                  <button
+                    type="button"
+                    class="delete-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="삭제"
+                    title="삭제"
+                  >
+                    ✖
+                  </button>
+                  <button
+                    type="button"
+                    class="update-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="수정하기"
+                    title="수정하기"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="mention-btn btn btn-sm text-white"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="댓글 달기"
+                    title="댓글 달기"
+                  >
+                    <i class="fa-solid fa-comment"></i>
+                  </button> 
+                  <button
+                    class="report-btn btn btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser' 
+                                  and reply.replyer != #authentication.name}"
+                    th:data-rno="${reply.rno}"
+                    th:data-replyer-nickname="${reply.replyerNickname}"
+                    aria-label="신고"
+                    title="신고"
+                  >
+                    🚨
+                  </button>
                   <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
                 </div>
               </div>
@@ -223,7 +266,7 @@
               <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
               <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
               <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
-              <button class="btn btn-cancel" type="button" style="font-size: medium">지우기</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
             </form>
 
             <div th:if="${#authentication.name == 'anonymousUser'}">
@@ -234,17 +277,53 @@
           <!-- 댓글 작성 폼 끝 -->
         </div>
         <!-- col-lg-6 mx-auto -->
+         <th:block layout:fragment="report-modal">
+        <!-- ───────────── 신고 모달 (일반) ───────────── -->
+<!-- 신고 모달 -->
+<div id="reportModal" class="report-backdrop" aria-hidden="true">
+  <div class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+    <div class="report-header">
+      <h5 id="reportTitle">댓글 신고</h5>
+      <button type="button" class="report-close" aria-label="닫기">×</button>
+    </div>
 
+    <div class="report-body">
+      <div class="mb-2">
+        <small>대상 닉네임</small>
+        <div id="reportTarget" class="font-weight-bold"></div>
+      </div>
+
+      <label for="reportReason" class="mb-1">신고 사유</label>
+      <select id="reportReason" name="reason" required>
+        <option value="" selected disabled>선택하세요</option>
+        <option value="INAPPROPRIATE_NICKNAME">부적절한 닉네임</option>
+        <option value="SPOILER">스포일러</option>
+        <option value="PROFANITY">욕설</option>
+        <option value="ADVERTISEMENT">광고/홍보</option>
+      </select>
+    </div>
+
+    <div class="report-footer">
+      <button type="button" class="btn btn-secondary btn-cancel-report">취소</button>
+      <button type="button" class="btn btn-primary btn-submit-report">신고 제출</button>
+    </div>
+  </div>
+</div>
+
+        </th:block>
         <!-- 스크립트 -->
-        <script th:src="@{/js/reply.js}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+          <th:block layout:fragment="script">
         <script>
           const id = "[[${movieInfo.mid}]]";
           const csrf = "[[${_csrf.token}]]";
         </script>
-        <script th:src="@{/js/followbtn.js}"></script>
-        <script th:src="@{/js/imgSlider.js}"></script>
-        <script th:src="@{/js/imgModal.js}"></script>
+          <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+          <script th:src="@{/js/reply.js}"></script>
+          <script th:src="@{/js/followbtn.js}"></script>
+          <script th:src="@{/js/imgSlider.js}"></script>
+          <script th:src="@{/js/imgModal.js}"></script>
+          <script th:src="@{/js/report.js}"></script>
+        </th:block>
       </div>
       <!-- gradient-bg -->
     </div>

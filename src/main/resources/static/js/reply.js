@@ -31,8 +31,43 @@ replyForm.addEventListener("submit", (e) => {
         alert("댓글이 수정되었습니다.");
         location.reload();
       })
-      .catch(() => {
-        alert("댓글 수정 실패");
+      .catch((err) => {
+        const res = err?.response;
+        let msg = "댓글 수정 실패";
+
+        if (res) {
+          const ct = (res.headers && res.headers["content-type"]) || "";
+
+          if (ct.includes("text/plain")) {
+            // @RestControllerAdvice에서 ResponseEntity<String> 으로 보낸 경우
+            msg = res.data || msg;
+          } else if (ct.includes("application/json")) {
+            // { code, message } 형태 등
+            if (typeof res.data === "string") {
+              try {
+                const j = JSON.parse(res.data);
+                msg = j.message || j.error || msg;
+              } catch {
+                msg = res.data || msg;
+              }
+            } else if (res.data && typeof res.data === "object") {
+              msg = res.data.message || res.data.error || msg;
+            }
+          }
+
+          // 상태코드별 기본 메시지 보강
+          if (res.status === 423) {
+            // 서버에서 423 LOCKED로 내려주는 편집 잠금 케이스
+            msg = msg || "신고된 댓글은 수정할 수 없습니다.";
+          } else if (res.status === 409) {
+            msg = msg || "현재 상태에서는 수정할 수 없습니다.";
+          }
+        } else {
+          // 네트워크/타임아웃 등
+          msg = "네트워크 오류가 발생했습니다. 잠시 후 다시 시도하세요.";
+        }
+
+        alert(msg);
       });
   } else {
     // 댓글 추가
@@ -93,6 +128,9 @@ document.querySelectorAll(".update-btn").forEach((e) => {
       highlightStars(parseInt(data.rate));
     } else {
       // 댓글이라면
+      // 멘션 제거
+      replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
+
       const mention = document.querySelector(".mention");
       mention.innerHTML = "멘션: " + mentionname + " ✖";
       starsContainer.classList.add("hide");
@@ -158,9 +196,6 @@ document.querySelectorAll(".mention-btn").forEach((re) => {
     replyForm.ref.value = rno;
     replyForm.rno.value = null;
     // textarea 멘션 추가
-    replyForm.text.value = replyForm.text.value.replace(/@\S+\s*/g, "").trim();
-    replyForm.text.value = `@${reviewer} ` + (replyForm.text.value == undefined ? " " : replyForm.text.value);
-
     const mention = document.querySelector(".mention");
     mention.innerHTML = "멘션: " + reviewer + " ✖";
     // 멘션 제거버튼 기능 추가
