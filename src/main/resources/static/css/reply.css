@@ -1,0 +1,48 @@
+.hide {
+  display: none;
+}
+.mention {
+  font-size: medium;
+}
+.re-reply-tag {
+  float: left;
+  padding: 10px 5px;
+  margin: 0px 15px;
+  border: 2px solid gray;
+  border-top: 0;
+  border-right: 0;
+}
+
+.rating i {
+  font-size: 20px;
+  color: #e89f12;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.rating-form {
+  margin-top: 12px;
+}
+
+#replyForm textarea {
+  width: 100%;
+  font-size: 15px;
+  color: #000000 !important;
+  padding-left: 20px;
+  padding-top: 12px;
+  border: none;
+  border-radius: 5px;
+  resize: none;
+  margin-bottom: 24px;
+}
+
+form button {
+  font-size: 11px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: #e53637;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 2px;
+}

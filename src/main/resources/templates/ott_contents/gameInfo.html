@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+      <th:block layout:fragment="metadata">
+        <meta name="current-user-id"
+      th:content="${#authorization.expression('isAuthenticated()') ? #authentication.principal.securityUserDTO.id : ''}" />
+
+     </th:block>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block layout:fragment="@{/report.css}"></th:block>
+    <title>GameInfo</title>
+      <th:block layout:fragment="css">
+  <link rel="stylesheet" th:href="@{/css/report.css}">
+  </th:block>
+    <style>
+      /* 강제 덮어쓰기 */
+      .anime__details__widget ul li span {
+        width: auto !important;
+        display: inline !important;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div layout:fragment="content">
+      <div class="gradient-bg">
+        <!-- 게임상세페이지 -->
+        <div class="breadcrumb-option">
+          <div class="container">
+            <div class="col-lg-12">
+              <a th:href="@{/}">Home</a>
+              <a href="#">></a>
+              <a th:href="@{/api/games/list}">GameList</a>
+              <a href="#">></a>
+              <a href="#">GameInfo</a>
+            </div>
+          </div>
+        </div>
+        <!-- Anime Section Begin -->
+
+        <section class="anime-details spad">
+          <div class="container">
+            <div class="anime__details__content">
+              <div class="row">
+                <div class="col-lg-5">
+                  <img
+                    th:src="@{${gameInfo.image != null} ? '/images/gameimages/' + ${gameInfo.image.imgName} : '/images/sample.jpg'}"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="게임 이미지"
+                    loading="lazy"
+                    class="anime__details__pic"
+                  />
+                </div>
+                <div class="col-lg-7" id="gameInfo">
+                  <div class="anime__details__text">
+                    <div class="anime__details__title">
+                      <h3 th:text="${gameInfo.title}"></h3>
+                      <!-- <h4 th:text="시놉시스" class="synopsis_t"></h4>
+                      <span th:text="${gameInfo.synopsis}" class="synopsis"></span> -->
+                    </div>
+
+                    <div class="anime__details__widget">
+                      <div class="row">
+                        <!-- 왼쪽 열: 상위 5개 정보 -->
+                        <div class="col-lg-6 col-md-6">
+                          <ul class="list-unstyled">
+                            <li><span>동시접속자</span> <span th:text="${gameInfo.ccu} + '명'"></span></li>
+                            <li><span>장르</span><span th:text="${gameInfo.genres}"></span></li>
+                            <li>
+                              <span>가격</span>
+                              <span>
+                                <span
+                                  style="color: gray; text-decoration: line-through; margin-right: 8px"
+                                  th:if="${gameInfo.discountRate != 0}"
+                                  th:text="|${gameInfo.originalPrice}|"
+                                ></span>
+                                <!-- 가격 존재여부에따라 무료 or 할인중 or 일반금액 보여주기 -->
+                                <!-- 무료인 경우 -->
+                                <span th:if="${gameInfo.price == '무료플레이'}" style="font-weight: bold">
+                                  Free To Play
+                                </span>
+                                <!-- 할인 중인 경우 -->
+                                <span
+                                  th:if="${gameInfo.discountRate > 0}"
+                                  style="font-weight: bold"
+                                  th:text="|${gameInfo.price} (-${gameInfo.discountRate}%)|"
+                                >
+                                </span>
+
+                                <!-- 할인 없음 + 무료도 아님 -->
+                                <span
+                                  th:if="${gameInfo.discountRate == 0 and gameInfo.price != '무료플레이'}"
+                                  style="font-weight: bold"
+                                  th:text="${gameInfo.price}"
+                                >
+                                </span>
+                              </span>
+                            </li>
+                            <li><span>좋아요 수</span><span th:text="${gameInfo.positive} + '개'"></span></li>
+                            <li><span>싫어요 수</span><span th:text="${gameInfo.negative} + '개'"></span></li>
+                          </ul>
+                        </div>
+
+                        <!-- 오른쪽 열: 하위 5개 정보 -->
+                        <div class="col-lg-6 col-md-6">
+                          <ul class="list-unstyled">
+                            <li><span>개발사</span><span th:text="${gameInfo.developer}"></span></li>
+                            <li><span>배급사</span><span th:text="${gameInfo.publisher}"></span></li>
+                            <li><span>플랫폼</span><span th:text="${gameInfo.platform}"></span></li>
+                            <li>
+                              <span>이용연령등급</span>
+                              <span
+                                th:text="${gameInfo.ageRating}"
+                                th:classappend="${gameInfo.ageRating == '청소년 이용불가'} ? 'text-danger' : ''"
+                              >
+                              </span>
+                            </li>
+
+                            <li><span>순위</span><span th:text="${gameInfo.ranking}"></span></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="anime__details__btn" th:if="${#authentication.name != 'anonymousUser'}">
+                      <!-- 팔로우버튼 누르면 유저상세페이지에 해당 컨텐츠 띄워줌 -->
+                      <button
+                        class="follow-btn"
+                        th:classappend="${isFollowed} ? ' follow' : ''"
+                        th:data-mid="${gameInfo.gid}"
+                      >
+                        <i th:if="${isFollowed}" class="fa-solid fa-heart"></i>
+                        <i th:if="${!isFollowed}" class="fa-regular fa-heart"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 스크린샷 이미지 리스트 추가 0730 -->
+            <div class="slider-container" id="sliderContainer">
+              <div class="slider" id="slider">
+                <img
+                  th:each="url : ${screenshotUrls}"
+                  th:src="${url}"
+                  alt="스크린샷 이미지"
+                  style="border-radius: 10px"
+                />
+              </div>
+            </div>
+
+            <!-- 모달창 0730 추가 -->
+            <div id="modal" class="modal" style="display: none">
+              <span id="modalClose" class="modal-close">&times;</span>
+              <button id="prevBtn" class="nav-btn prev-btn">&#10094;</button>
+              <img id="modalImg" src="" alt="확대 이미지" />
+              <button id="nextBtn" class="nav-btn next-btn">&#10095;</button>
+            </div>
+            <div class="center-line"></div>
+          </div>
+        </section>
+
+        <!-- 댓글 영역 -->
+        <div class="col-lg-6 mx-auto">
+          <div class="anime__details__review">
+            <div class="section-title">
+              <h5 id="replyCnt" th:text="'댓글 '+${replies.size} + 개"></h5>
+            </div>
+            <!-- 별점 -->
+            <div class="rating mb-3">
+              <span th:text="' 평균 '+${rating}+'점'">평균 별점</span>
+            </div>
+            <!-- 댓글 시작 -->
+            <div th:each="reply : ${replies}">
+              <div class="anime__review__item">
+                <div class="re-reply-tag" th:if="${reply.ref != null}"></div>
+                <div class="anime__review__item__pic">
+                  <!-- 로그인: 프로필 이미지 프로필 이미지가 없을 경우, 기본 이미지출력 -->
+
+                  <img
+                    th:src="${reply.thumbnailPath == null} ? '/images/sample.jpg' :'/images/view/' + ${reply.thumbnailPath}"
+                    alt="프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </div>
+
+                <div
+                  class="anime__review__item__text reply"
+                  th:data-rno="${reply.rno}"
+                  th:data-replyer="${reply.replyer}"
+                  th:data-replyerNickname="${reply.replyerNickname}"
+                  th:data-text="${reply.text}"
+                  th:data-mid="${reply.gid}"
+                  th:data-mention="${reply.mention}"
+                  th:data-rate="${reply.rate}"
+                  th:data-ref="${reply.ref}"
+                >
+                  <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
+                  <!-- <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span> -->
+                  <span class="text-secondary" th:text="' - ' +${reply.updatedDate}"> 작성자 - 1 Hour ago</span>
+                  <button
+                    type="button"
+                    class="delete-btn btn btn-secondary btn-sm"
+                    th:data-rno="${reply.rno}"
+                    th:if="${#authentication.name == reply.replyer}"
+                  >
+                    ✖
+                  </button>
+                  <button
+                    type="button"
+                    class="update-btn btn btn-secondary btn-sm"
+                    th:data-rno="${reply.rno}"
+                    th:if="${#authentication.name == reply.replyer}"
+                  >
+                    수정
+                  </button>
+                  <!-- <button
+                    type="button"
+                    class="mention-btn btn btn-secondary btn-sm"
+                    th:data-rno="${reply.rno}"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                  >
+                    댓글
+                  </button> -->
+                  <!-- 트리거 버튼 -->
+
+
+                  <!-- 리뷰는 별점 표시 -->
+                  <span>
+                    <i
+                      th:if="${reply.ref == null}"
+                      th:each="idx : ${#numbers.sequence(0, 4)}"
+                      class="fa-star"
+                      th:classappend="${reply.rate > idx ? 'fa':'fa-regular'}"
+                    ></i>
+                  </span>
+                  <button
+                    type="button"
+                    class="delete-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="삭제"
+                    title="삭제"
+                  >
+                    ✖
+                  </button>
+                  <button
+                    type="button"
+                    class="update-btn btn btn-sm text-white"
+                    th:if="${#authentication.name == reply.replyer}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="수정하기"
+                    title="수정하기"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="mention-btn btn btn-sm text-white"
+                    th:if="${#authentication.name != 'anonymousUser'}"
+                    th:data-rno="${reply.rno}"
+                    aria-label="댓글 달기"
+                    title="댓글 달기"
+                  >
+                    <i class="fa-solid fa-comment"></i>
+                  </button> 
+                  <button
+                    class="report-btn btn btn-sm"
+                    th:if="${#authentication.name != 'anonymousUser' 
+                                  and reply.replyer != #authentication.name}"
+                    th:data-rno="${reply.rno}"
+                    th:data-replyer-nickname="${reply.replyerNickname}"
+                    aria-label="신고"
+                    title="신고"
+                  >
+                    🚨
+                  </button>
+                  
+                  <pre><p th:text="${reply.text}">댓글 텍스트</p></pre>
+                </div>
+              </div>
+            </div>
+            <!-- 댓글 리스트 끝 -->
+          </div>
+
+          <!-- 댓글 작성 폼 -->
+          <div class="anime__details__form">
+            <div class="section-title">
+              <h5>댓글 작성</h5>
+            </div>
+            <span class="mention badge badge-secondary btn p-2"></span>
+            <form id="replyForm" method="post" th:if="${#authentication.name != 'anonymousUser'}">
+              <!-- 별점 -->
+              <div class="rating-form">
+                <input type="hidden" name="rate" />
+                <span class="rating" name="rate">
+                  <i th:each="idx : ${#numbers.sequence(1, 5)}" class="fa-regular fa-star" th:data-value="${idx}"></i>
+                </span>
+              </div>
+              <input type="hidden" name="gid" th:value="${gameInfo.gid}" />
+              <input type="hidden" name="rno" />
+              <input type="hidden" name="replyer" th:value="${#authentication.name}" />
+              <input type="hidden" name="mention" />
+              <input type="hidden" name="ref" />
+              <textarea name="text" id="replytext" placeholder="Your Comment"></textarea>
+              <div class="mb-4"><span id="currentCharCount">0</span> / <span id="maxChar">200</span>글자</div>
+              <button class="btn btn-insert modalBtn" type="submit" style="font-size: medium">등록</button>
+              <button class="btn btn-cancel" type="button" style="font-size: medium">취소</button>
+            </form>
+            <div th:if="${#authentication.name == 'anonymousUser'}">
+              <a href="/user/login" class="btn site-btn" style="color: #eee">로그인</a>
+            </div>
+            <div class="p-4"></div>
+          </div>
+          <!-- 댓글 작성 폼 끝 -->
+        </div>
+        <!-- gradient-bg 닫기 -->
+      </div>
+      <!-- 신고 모달 -->
+      <div id="reportModal" class="report-backdrop" aria-hidden="true">
+        <div class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+          <div class="report-header">
+            <h5 id="reportTitle">댓글 신고</h5>
+            <button type="button" class="report-close" aria-label="닫기">×</button>
+          </div>
+
+          <div class="report-body">
+            <div class="mb-2">
+              <small>대상 닉네임</small>
+              <div id="reportTarget" class="font-weight-bold"></div>
+            </div>
+
+            <label for="reportReason" class="mb-1">신고 사유</label>
+            <select id="reportReason" name="reason" required>
+              <option value="" selected disabled>선택하세요</option>
+              <option value="INAPPROPRIATE_NICKNAME">부적절한 닉네임</option>
+              <option value="SPOILER">스포일러</option>
+              <option value="PROFANITY">욕설</option>
+              <option value="ADVERTISEMENT">광고/홍보</option>
+            </select>
+          </div>
+
+          <div class="report-footer">
+            <button type="button" class="btn btn-secondary btn-cancel-report">취소</button>
+            <button type="button" class="btn btn-primary btn-submit-report">신고 제출</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 전역 스크립트 -->
+      <script>
+        const id = "[[${gameInfo.gid}]]";
+        const csrf = "[[${_csrf.token}]]";
+      </script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script th:src="@{/js/reply.js}"></script>
+      <script th:src="@{/js/followbtn.js}"></script>
+      <script th:src="@{/js/imgSlider.js}"></script>
+      <script th:src="@{/js/imgModal.js}"></script>
+      <script th:src="@{/js/report.js}"></script>
+    </div>
+  </body>
+</html>

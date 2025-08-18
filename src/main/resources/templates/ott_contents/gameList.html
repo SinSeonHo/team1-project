@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <!-- <html> -->
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block layout:fragment="css">
+      <!-- 개별 페이지 css 작성 -->
+      <style>
+        .trending__product {
+          padding: 0 10%;
+        }
+        .discount-badge {
+          position: absolute;
+          top: 10px;
+          right: 5%;
+          background-color: #e63946; /* 붉은색 */
+          color: white;
+          padding: 4px 8px;
+          font-weight: bold;
+          border-radius: 4px;
+          font-size: 0.9rem;
+          z-index: 10;
+        }
+        .product__item__pic {
+          position: relative; /* 배치 기준 */
+        }
+      </style>
+    </th:block>
+    <th:block layout:fragment="title">
+      <title>GameList</title>
+    </th:block>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="trending__product">
+        <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="section-title">
+              <h4>게임리스트</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="btn__all">
+              <!-- <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a> -->
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 col-md-6 col-sm-6 content-item" th:each="game : ${games}">
+            <div class="product__item">
+              <div class="product__item__pic">
+                <div>
+                  <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}">
+                    <img
+                      th:src="@{'/images/gameimages/' + ${game.imgUrl}}"
+                      onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                      alt="게임 이미지"
+                      loading="lazy"
+                      class="product__item__pic"
+                    />
+                    <!-- 팔로우수  -->
+                    <div class="comment_game"><i class="fa-solid fa-heart"></i>&nbsp;[[${game.followcnt}]]</div>
+                    <!-- 댓글갯수  -->
+                    <div class="view_game"><i class="fa-solid fa-comment"></i>&nbsp;[[${game.replycnt}]]</div>
+                  </a>
+                  <!-- 할인율이 0이 아니면 '할인중' 표시 -->
+                  <div class="discount-badge" th:if="${game.discountRate != 0}">SALE !!!</div>
+                  <!-- <div class="ep">18 / 18</div> -->
+                  <!-- 추후 평점위치 <div class="comment"><i class="fa fa-comments"></i> 11</div> -->
+                  <!-- 추후 댓글갯수위치 <div class="view"><i class="fa fa-eye"></i> 9141</div> -->
+                </div>
+              </div>
+
+              <div class="product__item__text">
+                <ul>
+                  <li th:text="${game.genres}">genres</li>
+                </ul>
+                <h5>
+                  <a th:href="@{/api/games/read/{gid}(gid=${game.gid})}" th:text="${game.title}"></a>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button id="scrollToTopBtn" title="맨 위로"><i class="fa fa-arrow-up"></i></button>
+        </div>
+      </div>
+      <!-- api 응답 값 추출 -->
+      <!-- <div th:each="game : ${games}">
+      <p th:text="${game.gid}"></p>
+      <p th:text="${game.title}"></p>
+      <p th:text="${game.genres}"></p>
+    </div> -->
+    </div>
+
+    <th:block layout:fragment="script">
+      <!-- 개별 페이지 script 작성 -->
+      <script th:src="@{/js/scroll.js}"></script>
+    </th:block>
+  </body>
+</html>

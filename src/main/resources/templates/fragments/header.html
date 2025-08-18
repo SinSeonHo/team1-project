@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <header class="header" th:fragment="header">
+    <script th:src="@{/js/chart-menu.js}"></script>
+    <div class="container">
+      <div class="row">
+        <div>
+          <div class="header__logo"></div>
+        </div>
+
+        <div class="col-lg-7 col-md-12">
+          <div class="header__nav">
+            <nav class="header__menu mobile-menu">
+              <ul>
+                <li><a th:href="@{/}">Sol</a></li>
+                <li>
+                  <a th:href="@{/api/movies/list}">Movie List</a>
+                </li>
+                <li><a th:href="@{/api/games/list}">Game List</a></li>
+                <li>
+                  <a th:href="@{/chart}">통계</a>
+                  <ul class="dropdown">
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REP00CFA52B028345FCAAEB504271E20234"
+                        >장르 종류별 분포</a
+                      >
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REP0963E2B240B440BD8DF86808345C0AAA"
+                        >연령별 선호 장르</a
+                      >
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REPE9E4D442110F4D7987411918C52AB69F">회원 현황</a>
+                    </li>
+                    <li>
+                      <a href="#" class="report-link" data-rcode="REPBC8878CD59FB43A6864642264263CABD"
+                        >남여 선호 장르</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <!-- <li><a href="http://localhost:8080/report?rCode=REP00CFA52B028345FCAAEB504271E20234">Chart</a></li> -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{/admin/home}">관리자</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <div class="col-lg-5 col-sm-12 d-flex align-items-center">
+          <div class="header-btns">
+            <div class="primary-btn d-flex">
+              <!-- 검색창 -->
+              <form
+                action="/contents"
+                method="get"
+                class="search-box"
+                style="display: flex; gap: 2px; align-items: center"
+              >
+                <!-- <select name="content" id="content" onchange="updateCityOptions()">
+                  <option value="m">영화</option>
+                  <option value="g">게임</option>
+                </select>
+                <select name="type" id="type">
+                  <option value="t">제목</option>
+                  <option value="g">장르</option>
+                  <option value="d">감독명</option>
+                  <option value="a">배우명</option>
+                </select> -->
+                <input type="text" name="keyword" id="search" placeholder="검색어" />
+                <input type="submit" value="검색" />
+              </form>
+
+              <!-- PENDDING 권한이면 전부 숨김 -->
+
+              <div class="col-lg-5" style="display: flex; align-items: center; gap: 10px">
+                <!-- 로그아웃 버튼 -->
+                <form
+                  th:if="${#authorization.expr('isAuthenticated()')}"
+                  th:action="@{/logout}"
+                  method="post"
+                  style="display: inline"
+                >
+                  <button type="submit" class="btn btn-outline-primary btn-sm ms-1 mr-2">로그아웃</button>
+                </form>
+
+                <!-- 로그인: 프로필 이미지 -->
+                <a
+                  th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl != null}"
+                  th:href="@{/user/userProfile(id=${userId})}"
+                >
+                  <img
+                    th:src="'/images/view/' + ${profileImageUrl}"
+                    alt="프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
+
+                <!-- 로그인: 기본 이미지 -->
+                <a
+                  th:if="${#authorization.expr('isAuthenticated()') and profileImageUrl == null}"
+                  th:href="@{/user/userProfile(id=${userId})}"
+                >
+                  <img
+                    src="/images/sample.jpg"
+                    alt="기본 프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
+
+                <!-- 비로그인 -->
+                <a th:if="${#authorization.expr('isAnonymous()')}" th:href="@{/user/login}">
+                  <img
+                    src="/images/sample.jpg"
+                    alt="기본 프로필"
+                    class="rounded-circle border border-primary shadow-sm"
+                    style="width: 40px; height: 40px; object-fit: cover; background: #eee"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="mobile-menu-wrap"></div>
+    </div>
+    <style>
+      @media (max-width: 768px) {
+        .section-title {
+          margin-top: 30px;
+        }
+      }
+    </style>
+  </header>
+</html>

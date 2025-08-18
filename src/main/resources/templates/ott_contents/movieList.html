@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <!-- <html> -->
+  <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <th:block layout:fragment="css">
+      <!-- 개별 페이지 css 작성 -->
+      <style>
+        .trending__product {
+          padding: 0 10%;
+        }
+        img {
+          height: 500px;
+          width: 250px;
+        }
+      </style>
+    </th:block>
+    <th:block layout:fragment="title">
+      <title>MovieList</title>
+    </th:block>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <div class="trending__product">
+        <div class="row">
+          <div class="col-lg-8 col-md-8 col-sm-8">
+            <div class="section-title">
+              <h4>영화리스트</h4>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="btn__all"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-2 col-md-6 col-sm-9 content-item" th:each="movie : ${movies}">
+            <div class="product__item">
+              <div class="product__item__pic">
+                <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}">
+                  <img
+                    th:src="@{'/images/movieimages/' + ${movie.imgUrl}}"
+                    onerror="this.onerror=null; this.src='/images/sample.jpg';"
+                    alt="영화 이미지"
+                    loading="lazy"
+                    class="product__item__pic"
+                  />
+                  <!-- 팔로우수  -->
+                  <div class="comment_movie"><i class="fa-solid fa-heart"></i>&nbsp;[[${movie.followcnt}]]</div>
+                  <!-- 댓글갯수  -->
+                  <div class="view_movie"><i class="fa-solid fa-comment"></i>&nbsp;[[${movie.replycnt}]]</div>
+                </a>
+              </div>
+
+              <div class="product__item__text">
+                <ul class="genre">
+                  <li th:text="${movie.nationNm}"></li>
+                  <li th:text="${movie.genres}"></li>
+                </ul>
+                <h5>
+                  <a th:href="@{/api/movies/read/{mid}(mid=${movie.mid})}" th:text="${movie.title}"></a>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button id="scrollToTopBtn" title="맨 위로"><i class="fa fa-arrow-up"></i></button>
+        </div>
+      </div>
+    </div>
+    <th:block layout:fragment="script">
+      <!-- 개별 페이지 script 작성 -->
+      <script th:src="@{/js/scroll.js}"></script>
+    </th:block>
+  </body>
+</html>

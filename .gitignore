@@ -1,0 +1,50 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+
+
+# Add any directories, files, or patterns you don't want to be tracked by version control
+node_modules/
+.DS_Store
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### draw.io 파일무시 ###
+*.drawio
+
+### application properties 민감정보 ###
+application-oauth.properties
+
+### imgges 내 파일 무시 ###
+src/main/resources/static/images/**
+src/main/resources/static/upload/**
+!src/main/resources/static/images/homepage/

@@ -1,0 +1,45 @@
+/* 레이아웃 */
+/* 섹션(고정 높이 + 겹치기용 포지셔닝) */
+#hero-70 {
+  height: 638px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 배경 이미지: 무크롭 + 오른쪽 정렬 */
+#hero-70 .hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right center;
+  display: block;
+}
+
+/* 좌측 가독성 오버레이 */
+#hero-70 .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+}
+
+/* 텍스트 스타일 */
+#hero-70 .copy {
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+/* 히어로 아래, 화면 남은 높이를 채우는 영역 (배경 지정 없음) */
+#after-hero {
+  min-height: calc(100vh - 638px); /* 히어로 높이에 맞춰 남은 영역 확보 */
+  padding-block: clamp(24px, 4vw, 56px);
+}
+
+/* 두 칸을 '세로'로 동일 비율로 쪼개기 */
+#after-hero .stack {
+  display: grid;
+  grid-template-rows: 1fr 1fr; /* 위/아래 1:1 */
+  gap: clamp(16px, 2.5vw, 24px);
+  min-height: inherit; /* 위에서 확보한 높이 채움 */
+}

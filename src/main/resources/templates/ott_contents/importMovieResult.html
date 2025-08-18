@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>데이터 처리 결과</title>
+  </head>
+  <body>
+    <h1>결과</h1>
+    <p th:text="${message}">메시지가 표시될 영역</p>
+    <!-- api 응답 값 추출 -->
+    <div th:each="movie : ${movies}">
+      <p th:text="${movie.mid}"></p>
+      <p th:text="${movie.title}"></p>
+    </div>
+    <a href="/">메인으로 돌아가기</a>
+  </body>
+</html>

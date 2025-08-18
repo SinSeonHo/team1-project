@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layouts/layout}">
+  <!-- <th:block layout:fragment="css">    
+        <link rel="stylesheet" th:href="@{/css/login.css}">
+  </th:block> -->
+  <th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+  </th:block>
+
+  <main layout:fragment="content" th:object="${securityUserDTO}">
+    <!-- 타이틀 -->
+    <section class="normal-breadcrumb set-bg">
+      <!-- th:style="|background-image: url('@{${bgImage}}'); background-size: cover; background-position: center;|" -->
+      >
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <div class="normal__breadcrumb__text">
+              <h2>로그인</h2>
+              <p>환영합니다!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- 공간 -->
+    <section class="login spad">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="login__form">
+              <h3 class="">로그인</h3>
+              <form th:action="@{/user/login}" method="post">
+                <div class="input__item">
+                  <input
+                    type="text"
+                    placeholder="아이디 입력"
+                    class="form-control-lg mb-3"
+                    id="username"
+                    name="username"
+                  />
+                  <span class="fas fa-user"></span>
+                </div>
+                <div class="input__item">
+                  <input
+                    type="password"
+                    placeholder="비밀번호 입력"
+                    class="form-control-lg mb-3"
+                    id="password"
+                    name="password"
+                  />
+                  <span class="fas fa-lock"></span>
+                </div>
+
+                <button type="submit" class="site-btn ">로그인하기</button>
+              </form>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="login__register">
+              <h3>계정이 없다면?</h3>
+              <button type="button" class="registerBtn site-btn">회원가입하기</button>
+            </div>
+          </div>
+        </div>
+        <div class="login__social">
+          <div class="row d-flex justify-content-center">
+            <div class="col-lg-6">
+              <div class="login__social__links">
+                <span class="">or</span>
+                <ul>
+                  <li>
+                    <a href="#" class="google google-login"
+                      ><i class=""></i>
+                      <img th:src="@{/social/googleSquare.png}" alt="구글로고" class="social-login-img" />
+                      구글로 로그인하기</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" class="kakao kakao-login"
+                      ><i class=""></i
+                      ><img th:src="@{/social/kakaoSquareReal.png}" alt="카카오로고" class="social-login-img" />
+                      카카오로 로그인하기</a
+                    >
+                  </li>
+                  <li>
+                    <a href="#" class="naver naver-login"
+                      ><i class=""></i>
+                      <img th:src="@{/social/naverSquare.png}" alt="네이버로고" class="social-login-img" />
+                      네이버로 로그인하기</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+      <th:block layout:fragment="script">
+        <script th:src="@{/js/login.js}"></script>
+        <script th:if="${loginErrorMessage}" th:inline="javascript">
+          const msg = /*[[${loginErrorMessage}]]*/ '로그인에 실패했습니다.';
+          alert(msg);
+        </script>
+      </th:block>
+  </main>
+</html>
