@@ -195,7 +195,7 @@
                 <div class="spot-actions">
                   <a class="btn btn-primary" th:if="${item.contentsType != null and item.contentsType.name() == 'MOVIE'}" th:href="@{/api/movies/read/{mid}(mid=${item.contentsId})}">자세히</a>
                   <a class="btn btn-primary" th:if="${item.contentsType != null and item.contentsType.name() == 'GAME'}" th:href="@{/api/games/read/{gid}(gid=${item.contentsId})}">자세히</a>
-                  <button class="btn btn-ghost" type="button">보관함 추가</button>
+                  
                 </div>
               </div>
             </div>
@@ -216,7 +216,7 @@
                 <p class="spot-reason">팔로우 장르와 분위기가 유사해요</p>
                 <div class="spot-actions">
                   <a class="btn btn-primary" href="#">자세히</a>
-                  <button class="btn btn-ghost" type="button">보관함 추가</button>
+                  
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@
                 <p class="spot-reason">팔로우 취향과 플레이 스타일이 비슷해요</p>
                 <div class="spot-actions">
                   <a class="btn btn-primary" href="#">자세히</a>
-                  <button class="btn btn-ghost" type="button">보관함 추가</button>
+                  
                 </div>
               </div>
             </div>
