@@ -104,7 +104,7 @@
               class="form-control"
               name="id"
               th:if="${!social}"
-              th:value="${err} ? null : totalUserDTO.id}"
+              th:value="${err} ? null : totalUserDTO.id"
               th:placeholder="${(err and !social) ? #fields.errors('id')[0] : '아이디'}"
               th:classappend="${(err and !social) ? 'input-error' : ''}"
             />
