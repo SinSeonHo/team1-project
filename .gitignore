@@ -47,4 +47,4 @@ application-oauth.properties
 ### imgges 내 파일 무시 ###
 src/main/resources/static/images/**
 src/main/resources/static/upload/**
-!src/main/resources/static/images/homepage/**
+!src/main/resources/static/images/homepage/
