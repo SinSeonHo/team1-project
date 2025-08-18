@@ -66,7 +66,11 @@
     </style>
   </th:block>
   <div layout:fragment="header"></div>
-  <main layout:fragment="content" th:object="${totalUserDTO}">
+  <main
+    layout:fragment="content"
+    th:object="${totalUserDTO}"
+    th:with="isSocial=${not #strings.isEmpty(totalUserDTO.email)}"
+  >
     <div class="container mt-5">
       <div class="d-flex flex-column justify-content-center align-items-center">
         <h2 class="mb-2">회원정보 입력</h2>
@@ -77,7 +81,7 @@
               type="text"
               class="form-control w-100"
               name="name"
-              th:value="${err} ? null : ${totalUserDTO.name}"
+              th:value="${err} ? ${totalUserDTO.name} : ''"
               th:placeholder="${err} ? ${#fields.errors('name')[0]} : '이름'"
               th:classappend="${err} ? 'input-error' : ''"
             />
@@ -90,72 +94,72 @@
               type="text"
               class="form-control w-100"
               name="nickname"
-              th:value="${err} ? null : ${totalUserDTO.nickname}"
+              th:value="${err} ? ${totalUserDTO.nickname} : '' "
               th:placeholder="${err} ? ${#fields.errors('nickname')[0]} : '별명'"
               th:classappend="${err} ? 'input-error' : ''"
             />
             <span class="fas fa-solid fa-circle-user input-icon" th:classappend="${err} ? 'false-icon' : ''"></span>
           </div>
           <!-- 아이디 -->
-          <div class="input-item" th:with="err=${#fields.hasErrors('id')}, social=${totalUserDTO.email != null}">
+          <div class="input-item" th:with="err=${#fields.hasErrors('id')}, isSocial=${totalUserDTO.email != null}">
             <!-- 일반 가입 -->
             <input
               type="text"
               class="form-control"
               name="id"
-              th:if="${!social}"
-              th:value="${err} ? null : totalUserDTO.id}"
-              th:placeholder="${(err and !social) ? #fields.errors('id')[0] : '아이디'}"
-              th:classappend="${(err and !social) ? 'input-error' : ''}"
+              th:if="${!isSocial}"
+              th:value="${err} ? ${totalUserDTO.id} : ''"
+              th:placeholder="${(err and !isSocial) ? #fields.errors('id')[0] : '아이디'}"
+              th:classappend="${(err and !isSocial) ? 'input-error' : ''}"
             />
 
             <!-- 소셜 로그인 표시용(제출되지 않음) -->
-            <input type="text" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
+            <input type="text" class="form-control" th:if="${isSocial}" placeholder="소셜 계정" disabled />
 
             <!-- 실제 제출값: JS에서 이메일 기반으로 특수문자 제거 후 넣어줌 -->
-            <input type="hidden" name="id" th:if="${social}" />
-            <span class="fas fa-id-badge input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
+            <input type="hidden" name="id" th:if="${isSocial}" />
+            <span class="fas fa-id-badge input-icon" th:classappend="${(err and !isSocial) ? 'false-icon' : ''}"></span>
           </div>
 
           <!-- 비밀번호 -->
           <div
             class="input-item"
             style="position: relative"
-            th:with="err=${#fields.hasErrors('password')}, social=${totalUserDTO.email != null}"
+            th:with="err=${#fields.hasErrors('password')}, isSocial=${totalUserDTO.email != null}"
           >
             <input
               type="password"
               class="form-control"
               name="password"
-              th:if="${!social}"
-              th:placeholder="${(err and !social) ? #fields.errors('password')[0] : '비밀번호'}"
-              th:classappend="${(err and !social) ? 'input-error' : ''}"
+              th:if="${!isSocial}"
+              th:placeholder="${(err and !isSocial) ? #fields.errors('password')[0] : '비밀번호'}"
+              th:classappend="${(err and !isSocial) ? 'input-error' : ''}"
             />
-            <input type="password" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
-            <input type="hidden" name="password" th:value="${totalUserDTO.email}" th:if="${social}" />
-            <span class="fas fa-lock input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
-            <span class="fas fa-eye toggle-password" th:if="${!social}"></span>
+            <input type="password" class="form-control" th:if="${isSocial}" placeholder="소셜 계정" disabled />
+            <input type="hidden" name="password" th:value="${totalUserDTO.email}" th:if="${isSocial}" />
+            <span class="fas fa-lock input-icon" th:classappend="${(err and !isSocial) ? 'false-icon' : ''}"></span>
+            <span class="fas fa-eye toggle-password" th:if="${!isSocial}"></span>
           </div>
 
           <!-- 비밀번호 확인 -->
           <div
             class="input-item"
             style="position: relative"
-            th:with="err=${#fields.hasErrors('checkPassword')}, social=${totalUserDTO.email != null}"
+            th:with="err=${#fields.hasErrors('checkPassword')}, isSocial=${totalUserDTO.email != null}"
           >
             <input
               type="password"
               class="form-control"
               name="checkPassword"
-              th:if="${!social}"
-              th:value="${err} ? null : totalUserDTO.checkPassword"
-              th:placeholder="${(err and !social) ? #fields.errors('checkPassword')[0] : '비밀번호 확인'}"
-              th:classappend="${(err and !social) ? 'input-error' : ''}"
+              th:if="${!isSocial}"
+              th:value="${err} ? ${totalUserDTO.checkPassword} : ''"
+              th:placeholder="${(err and !isSocial) ? #fields.errors('checkPassword')[0] : '비밀번호 확인'}"
+              th:classappend="${(err and !isSocial) ? 'input-error' : ''}"
             />
-            <input type="password" class="form-control" th:if="${social}" placeholder="소셜 계정" disabled />
-            <input type="hidden" name="checkPassword" th:value="${totalUserDTO.email}" th:if="${social}" />
-            <span class="fas fa-lock input-icon" th:classappend="${(err and !social) ? 'false-icon' : ''}"></span>
-            <span class="fas fa-eye toggle-password" th:if="${!social}"></span>
+            <input type="password" class="form-control" th:if="${isSocial}" placeholder="소셜 계정" disabled />
+            <input type="hidden" name="checkPassword" th:value="${totalUserDTO.email}" th:if="${isSocial}" />
+            <span class="fas fa-lock input-icon" th:classappend="${(err and !isSocial) ? 'false-icon' : ''}"></span>
+            <span class="fas fa-eye toggle-password" th:if="${!isSocial}"></span>
           </div>
 
           <!-- 나이 -->
@@ -164,7 +168,7 @@
               type="number"
               class="form-control"
               name="age"
-              th:value="${err} ? null : ${totalUserDTO.age}"
+              th:value="${err} ? ${totalUserDTO.age} :  ''"
               th:placeholder="${err} ? ${#fields.errors('age')[0]} : '나이'"
               min="0"
               max="100"
@@ -186,7 +190,7 @@
             </select>
             <span class="fas fa-venus-mars input-icon"></span>
           </div>
-          <input type="hidden" name="email" th:value="${totalUserDTO.email}" />
+          <input type="hidden" name="email" th:if="${isSocial}" th:value="${totalUserDTO.email}" />
         </form>
 
         <div class="input-item">
@@ -216,7 +220,7 @@
         if (!registerForm || !submitBtn) return;
 
         // Thymeleaf 값 주입 (서버에서 치환됨)
-        const isSocial = /*[[${totalUserDTO.email != null}]]*/ false;
+        const isSocial = /*[[${not #strings.isEmpty(totalUserDTO.email)}]]*/ false;
         const emailVal = /*[[${totalUserDTO.email}]]*/ "";
 
         // 이메일 -> 안전한 아이디(영/숫자만)로 변환

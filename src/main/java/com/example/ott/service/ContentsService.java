@@ -127,6 +127,7 @@ public class ContentsService {
                     .title(content.getTitle())
                     .genres(movieRepository.findById(content.getContentsId()).get().getGenres())
                     .ranking(content.getMovie().getRanking())
+                    .imgUrl(content.getMovie().getImage().getPath())
                     .build();
             dto.setReplyCnt(content.getMovie().getReplies().size());
             return dto;
@@ -139,6 +140,7 @@ public class ContentsService {
                     .title(content.getTitle())
                     .genres(gameRepository.findById(content.getContentsId()).get().getGenres())
                     .ranking(content.getGame().getRanking())
+                    .imgUrl(content.getGame().getImage().getPath())
                     .build();
             dto.setImgUrl(content.getGame().getImage().getPath());
             return dto;
@@ -154,7 +156,8 @@ public class ContentsService {
     // 팔로우 기반 추천(or 랜덤)
     public List<ContentsDTO> getRecommendContents(String userId) {
         boolean hasId = false;
-        if (userId == null) hasId = false;
+        if (userId == null)
+            hasId = false;
 
         // 0) 추천 조회
         List<ContentRecommendation> recs = Optional
