@@ -46,7 +46,7 @@ public class HomeController {
         public String getHome(Model model, PageRequestDTO requestDTO,
                         @AuthenticationPrincipal UserDetails userDetails) {
                 // TOP 10 콘텐츠 들
-                
+
                 List<MovieDTO> movieTop10 = movieService.getTop10();
 
                 movieTop10.forEach(movie -> log.info("영화 정보 : {}", movie));
@@ -72,7 +72,7 @@ public class HomeController {
                 // recommendContentsDTO.forEach(dto -> );
                 log.info("추천 콘텐츠 사이즈 {}", recommendContentsDTO.size());
 
-                return "/home";
+                return "home";
         }
 
         @GetMapping("/contents")

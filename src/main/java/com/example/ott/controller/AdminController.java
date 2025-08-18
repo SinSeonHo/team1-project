@@ -18,7 +18,7 @@ public class AdminController {
 
     @GetMapping("/home")
     public String adminPage() {
-        return "/admin/admin"; // templates/admin/admin.html 렌더링
+        return "admin/admin"; // templates/admin/admin.html 렌더링
     }
 
     // 관리자 게임 이미지 크롤링

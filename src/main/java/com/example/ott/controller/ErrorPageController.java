@@ -10,7 +10,7 @@ public class ErrorPageController {
 
     @GetMapping("/emailAlreadyExists")
     public String getEmailAlreadyExists() {
-        return "/error/emailAlreadyExists";
+        return "error/emailAlreadyExists";
     }
 
 }

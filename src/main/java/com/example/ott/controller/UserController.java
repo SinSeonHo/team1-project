@@ -168,7 +168,7 @@ public class UserController {
         model.addAttribute("currentSize", size);
         model.addAttribute("hasMore", followedContentsList.getTotalElements() > size);
 
-        return "/user/userProfile";
+        return "user/userProfile";
     }
 
     @GetMapping("/modifyUserProfile")
@@ -177,11 +177,11 @@ public class UserController {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
 
         model.addAttribute("userProfileDTO", userProfileDTO);
-        return "/user/modifyUserProfile";
+        return "user/modifyUserProfile";
     }
 
     // 프로필 수정
-    @PostMapping("/modifyUserProfile")
+    @PostMapping("modifyUserProfile")
     public String postUserProfile(@Valid UserProfileDTO userProfileDTO, BindingResult bindingResult,
             RedirectAttributes rttr, Model model) {
 
@@ -217,7 +217,7 @@ public class UserController {
             model.addAttribute("loginErrorMessage", ex.getMessage());
             request.getSession().removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
         }
-        return "/user/login";
+        return "user/login";
 
     }
 
