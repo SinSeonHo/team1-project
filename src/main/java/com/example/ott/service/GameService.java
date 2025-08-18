@@ -1,6 +1,7 @@
 package com.example.ott.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -77,10 +78,14 @@ public class GameService {
         try {
             System.out.println("Python 게임 크롤러 실행 시작");
 
-            ProcessBuilder pbImage = new ProcessBuilder("python",
-                    "python/gameImageCrwal.py");
+            // Python venv와 스크립트 절대경로 지정
+            String python = "/opt/ott-crawler/venv/bin/python";
+            String script = "/opt/ott-crawler/app/gameImageCrwal.py";
+
+            ProcessBuilder pbImage = new ProcessBuilder(python, script);
+            pbImage.directory(new File("/opt/ott-crawler/app")); // 작업 디렉토리 고정
             Map<String, String> envImage = pbImage.environment();
-            envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+            envImage.put("PYTHONIOENCODING", "UTF-8"); // 한글/UTF-8 출력 안전
 
             Process processImage = pbImage.start();
 

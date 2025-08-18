@@ -71,7 +71,7 @@
                   th:href="@{/user/userProfile(id=${userId})}"
                 >
                   <img
-                    src="/images/sample.jpg"
+                    th:src="@{/images/sample.jpg}"
                     alt="기본 프로필"
                     class="rounded-circle border border-primary shadow-sm"
                     style="width: 40px; height: 40px; object-fit: cover; background: #eee"
@@ -81,7 +81,7 @@
                 <!-- 비로그인 -->
                 <a th:if="${#authorization.expr('isAnonymous()')}" th:href="@{/user/login}">
                   <img
-                    src="/images/sample.jpg"
+                    th:src="@{/images/sample.jpg}"
                     alt="기본 프로필"
                     class="rounded-circle border border-primary shadow-sm"
                     style="width: 40px; height: 40px; object-fit: cover; background: #eee"

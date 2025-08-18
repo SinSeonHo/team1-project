@@ -1,6 +1,7 @@
 package com.example.ott.service;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
@@ -78,14 +79,17 @@ public class MovieService {
         try {
             System.out.println("Python 영화 크롤러 실행 시작");
 
-            // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
-            ProcessBuilder pbSynopsis = new ProcessBuilder("python",
-                    "python/movieSynopsisCrwal.py");
-            Map<String, String> env = pbSynopsis.environment();
-            env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+            // venv Python & 스크립트 경로
+            String python = "/opt/ott-crawler/venv/bin/python";
+            String synopsisScript = "/opt/ott-crawler/app/movieSynopsisCrwal.py";
+            String imageScript = "/opt/ott-crawler/app/movieImageCrwal.py";
+
+            // 1. 영화 줄거리 크롤러 실행
+            ProcessBuilder pbSynopsis = new ProcessBuilder(python, synopsisScript);
+            pbSynopsis.directory(new File("/opt/ott-crawler/app"));
+            pbSynopsis.environment().put("PYTHONIOENCODING", "UTF-8");
             Process processSynopsis = pbSynopsis.start();
 
-            // 표준 출력 읽기 (stdout)
             new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(
                         new InputStreamReader(processSynopsis.getInputStream()))) {
@@ -98,7 +102,6 @@ public class MovieService {
                 }
             }).start();
 
-            // 에러 출력 읽기 (stderr)
             new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(
                         new InputStreamReader(processSynopsis.getErrorStream()))) {
@@ -114,16 +117,14 @@ public class MovieService {
             int exitCodeSynopsis = processSynopsis.waitFor();
             System.out.println("영화 줄거리 크롤러 종료. Exit code: " + exitCodeSynopsis);
 
+            // 2. 성공했을 때 영화 이미지 크롤러 실행
             if (exitCodeSynopsis == 0) {
-                // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
                 System.out.println("Python 영화 포스터 크롤링 시작");
-                ProcessBuilder pbImage = new ProcessBuilder("python",
-                        "python/movieImageCrwal.py");
-                Map<String, String> envImage = pbImage.environment();
-                envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
+                ProcessBuilder pbImage = new ProcessBuilder(python, imageScript);
+                pbImage.directory(new File("/opt/ott-crawler/app"));
+                pbImage.environment().put("PYTHONIOENCODING", "UTF-8");
                 Process processImage = pbImage.start();
 
-                // 표준 출력 읽기 (stdout)
                 new Thread(() -> {
                     try (BufferedReader reader = new BufferedReader(
                             new InputStreamReader(processImage.getInputStream()))) {
@@ -136,7 +137,6 @@ public class MovieService {
                     }
                 }).start();
 
-                // 에러 출력 읽기 (stderr)
                 new Thread(() -> {
                     try (BufferedReader reader = new BufferedReader(
                             new InputStreamReader(processImage.getErrorStream()))) {
