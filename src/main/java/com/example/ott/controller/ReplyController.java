@@ -1,15 +1,13 @@
 package com.example.ott.controller;
 
-<<<<<<< HEAD
-=======
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
->>>>>>> dev
-import org.springframework.web.bind.annotation.DeleteMapping;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,7 +34,6 @@ public class ReplyController {
         model.addAttribute("m");
         return "ott_contents/movieInfo::replyform";
     }
-
 
     @PutMapping("/update")
     public ReplyDTO putReply(@RequestBody ReplyDTO dto) {

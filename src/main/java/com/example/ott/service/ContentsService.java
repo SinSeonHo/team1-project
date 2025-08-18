@@ -1,14 +1,12 @@
 package com.example.ott.service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -21,19 +19,18 @@ import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.entity.Contents;
 import com.example.ott.entity.ContentsGenre;
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.UserGenrePreferenceRepository;
+import com.example.ott.type.ContentsType;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2
+
 @RequiredArgsConstructor
 public class ContentsService {
 

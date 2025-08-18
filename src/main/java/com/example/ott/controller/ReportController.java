@@ -1,5 +1,25 @@
 package com.example.ott.controller;
 
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.example.ott.dto.ReportDTO;
 import com.example.ott.entity.Report;
 import com.example.ott.service.ReportService;
@@ -10,23 +30,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 
 @Controller
-@Log4j2
+
 @RequiredArgsConstructor
 @RequestMapping("/report")
 public class ReportController {
@@ -42,10 +48,6 @@ public class ReportController {
             Model model) {
         Page<ReportDTO> page = reportService.getReports(reasons, statuses, pageable);
 
-        // 요약 + toString() 한 방
-        log.info("page summary number={}, size={}, totalElements={}, totalPages={}",
-                page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages());
-        log.info("page content = {}", page.getContent()); // List<Report> -> 각 Report.toString() 사용
         model.addAttribute("page", page);
         model.addAttribute("reasons", reasons);
         model.addAttribute("statuses", statuses);
@@ -75,7 +77,6 @@ public class ReportController {
                 .status(req.getStatus())
                 .reason(req.getReason())
                 .build();
-        log.info("dto 정보 : {}", dto);
         reportService.updateReportStatus(dto);
         return ResponseEntity.noContent().build(); // 204
     }

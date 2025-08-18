@@ -1,35 +1,35 @@
 package com.example.ott.handler;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Component;
 
 import com.example.ott.dto.TempSocialSignupDTO;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
-import com.example.ott.entity.UserRole;
 import com.example.ott.repository.UserRepository;
 import com.example.ott.security.CustomUserDetails;
 import com.example.ott.type.SessionKeys;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import com.example.ott.type.UserRole;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -162,10 +162,7 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                     if (!isBlank(e)) {
                         email = e; // 값이 있으면 플래그와 무관하게 바로 사용
                     } else {
-                        // (디버깅용) 동의 플래그를 참고하고 싶다면 로깅만
-                        Boolean hasEmail = asBoolean(acct.get("has_email"));
-                        Boolean needsAgree = asBoolean(acct.get("email_needs_agreement"));
-                        // log.debug("kakao has_email={}, needs_agreement={}", hasEmail, needsAgree);
+
                     }
                 }
                 break;

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.ott.entity.Game;
-import com.example.ott.entity.Movie;
 import com.example.ott.repository.search.GameSearchRepository;
 
 public interface GameRepository extends JpaRepository<Game, String>, GameSearchRepository {

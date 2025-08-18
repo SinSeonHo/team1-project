@@ -1,5 +1,7 @@
 package com.example.ott.entity;
 
+import com.example.ott.type.ContentsType;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

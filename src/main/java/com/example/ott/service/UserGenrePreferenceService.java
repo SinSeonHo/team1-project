@@ -1,6 +1,5 @@
 package com.example.ott.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,9 +17,7 @@ import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.UserGenrePreferenceRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class UserGenrePreferenceService {
@@ -54,7 +51,7 @@ public class UserGenrePreferenceService {
 
                     userGenrePreferenceRepository.save(userGenrePreference);
                 } catch (Exception e) {
-                    log.info("이 구간에 에러가 있어요! \n userGenrePreference : {}", userGenrePreference);
+
                 }
 
             }

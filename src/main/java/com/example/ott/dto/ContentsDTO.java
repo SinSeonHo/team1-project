@@ -3,7 +3,7 @@ package com.example.ott.dto;
 import java.util.Arrays;
 import java.util.List;
 
-import com.example.ott.entity.ContentsType;
+import com.example.ott.type.ContentsType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

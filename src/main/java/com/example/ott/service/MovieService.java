@@ -15,10 +15,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,11 +28,9 @@ import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
-import com.example.ott.entity.Contents;
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Movie;
-import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.MovieRepository;
+import com.example.ott.type.ContentsType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +49,7 @@ public class MovieService {
 
     public List<MovieDTO> getTop10() {
         List<Movie> movies = movieRepository.findTop10ByOrderByRankingAsc();
-        movies.forEach(movie -> log.info("영화 정보 : {}", movie));
+
         List<MovieDTO> dtos = movies.stream().map(movie -> entityToDto(movie)).collect(Collectors.toList());
         return dtos;
     }

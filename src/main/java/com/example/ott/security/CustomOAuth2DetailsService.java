@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -20,17 +16,16 @@ import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
 import com.example.ott.repository.UserRepository;
 import com.example.ott.type.Gender;
+import com.example.ott.type.UserRole;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
-@Log4j2
+
 public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // (미사용이면 제거해도 됨)
 
     private static final String ERR_EMAIL_MISSING = "email_missing";
     private static final String ERR_PROVIDER_UNSUPPORTED = "provider_unsupported";
@@ -92,7 +87,6 @@ public class CustomOAuth2DetailsService extends DefaultOAuth2UserService {
         }
 
         customAttributes.put("social", social);
-        log.info("email 정보 : {}", email);
         customAttributes.put("resolved_email", email);
 
         // 이메일 없음 → 실패

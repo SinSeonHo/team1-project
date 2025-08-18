@@ -1,22 +1,19 @@
 package com.example.ott.security;
 
 import java.time.LocalDateTime;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TempSocialSignupDTO;
-import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
-import com.example.ott.entity.UserRole;
+import com.example.ott.type.UserRole;
 
 public class CustomUserDetails implements UserDetails, OAuth2User {
 

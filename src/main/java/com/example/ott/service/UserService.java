@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.example.ott.dto.CountDatasDTO;
-import com.example.ott.dto.SecurityUserDTO;
 import com.example.ott.dto.TotalUserDTO;
 import com.example.ott.dto.UserProfileDTO;
 import com.example.ott.entity.FollowedContents;
@@ -22,12 +20,16 @@ import com.example.ott.entity.Reply;
 import com.example.ott.entity.Report;
 import com.example.ott.entity.Socials;
 import com.example.ott.entity.User;
-import com.example.ott.entity.UserRole;
-import com.example.ott.repository.*;
+import com.example.ott.repository.FollowedContentsRepository;
+import com.example.ott.repository.ImageRepository;
+import com.example.ott.repository.ReplyRepository;
+import com.example.ott.repository.ReportRepository;
+import com.example.ott.repository.UserGenrePreferenceRepository;
+import com.example.ott.repository.UserRepository;
 import com.example.ott.security.CustomUserDetails;
 import com.example.ott.type.Status;
+import com.example.ott.type.UserRole;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

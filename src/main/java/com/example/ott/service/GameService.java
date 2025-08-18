@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,12 +13,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,19 +24,12 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.GameDTO;
-import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
 import com.example.ott.dto.ReplyDTO;
-import com.example.ott.entity.Contents;
-import com.example.ott.entity.ContentsType;
 import com.example.ott.entity.Game;
-
-import com.example.ott.entity.Image;
-import com.example.ott.entity.Movie;
-import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.GameRepository;
-
+import com.example.ott.type.ContentsType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -56,7 +44,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final ReplyService replyService;
-    private final ModelMapper modelMapper;
+
     private final ContentsService contentsService;
 
     public List<GameDTO> getTop10() {

@@ -1,16 +1,15 @@
 package com.example.ott.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
-import com.example.ott.entity.Report;
 import com.example.ott.entity.User;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 

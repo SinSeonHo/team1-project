@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.example.ott.dto.ReplyDTO;
-import com.example.ott.entity.User;
-import com.example.ott.exception.ReportActionException;
 import com.example.ott.entity.Game;
 import com.example.ott.entity.Movie;
 import com.example.ott.entity.Reply;
 import com.example.ott.entity.Report;
+import com.example.ott.entity.User;
+import com.example.ott.exception.ReportActionException;
 import com.example.ott.repository.GameRepository;
 import com.example.ott.repository.MovieRepository;
 import com.example.ott.repository.ReplyRepository;
@@ -26,9 +26,7 @@ import com.example.ott.type.Status;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class ReplyService {

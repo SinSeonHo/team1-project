@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.ott.type.Gender;
+import com.example.ott.type.UserRole;
 
 import jakarta.persistence.*;
 import lombok.*;

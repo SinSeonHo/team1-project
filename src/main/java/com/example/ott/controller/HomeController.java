@@ -1,8 +1,6 @@
 package com.example.ott.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,12 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.ott.dto.ContentsDTO;
 import com.example.ott.dto.CountDatasDTO;
-
 import com.example.ott.dto.GameDTO;
 import com.example.ott.dto.MovieDTO;
 import com.example.ott.dto.PageRequestDTO;
 import com.example.ott.dto.PageResultDTO;
-import com.example.ott.entity.Contents;
 import com.example.ott.service.ContentsService;
 import com.example.ott.service.FollowedContentsService;
 import com.example.ott.service.GameService;
@@ -30,9 +26,7 @@ import com.example.ott.service.ReplyService;
 import com.example.ott.service.UserService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
@@ -49,8 +43,6 @@ public class HomeController {
                 // TOP 10 콘텐츠 들
 
                 List<MovieDTO> movieTop10 = movieService.getTop10();
-
-                movieTop10.forEach(movie -> log.info("영화 정보 : {}", movie));
                 model.addAttribute("movieTop10", movieTop10);
                 List<GameDTO> gameTop10 = gameService.getTop10();
                 model.addAttribute("gameTop10", gameTop10);
@@ -70,8 +62,6 @@ public class HomeController {
                 String id = (userDetails != null) ? userDetails.getUsername() : null;
                 List<ContentsDTO> recommendContentsDTO = contentsService.getRecommendContents(id);
                 model.addAttribute("recommendContentsDTO", recommendContentsDTO);
-                recommendContentsDTO.forEach(dto -> log.info("dto 정보 : {} \n", dto));
-                log.info("추천 콘텐츠 사이즈 {}", recommendContentsDTO.size());
 
                 return "home";
         }

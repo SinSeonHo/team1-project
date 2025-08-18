@@ -3,8 +3,9 @@ package com.example.ott.dto;
 import java.util.Map;
 
 import com.example.ott.entity.Socials;
-import com.example.ott.entity.UserRole;
+
 import com.example.ott.type.Gender;
+import com.example.ott.type.UserRole;
 
 import lombok.Builder;
 import lombok.Data;

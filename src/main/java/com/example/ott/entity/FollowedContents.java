@@ -1,7 +1,5 @@
 package com.example.ott.entity;
 
-import com.example.ott.type.ContentsType;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

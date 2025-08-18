@@ -60,25 +60,6 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <!-- JSTL -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
-
-        <!-- Tomcat Jasper -->
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-        </dependency>
-
-		<!-- aud7-embedded.jar --> 
-		<dependency>
-			<groupId>com.matrix</groupId>
-			<artifactId>aud7-embedded</artifactId>
-			<version>1.0.0</version>
-		</dependency>
 
 
 

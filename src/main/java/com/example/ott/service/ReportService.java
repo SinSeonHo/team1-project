@@ -23,12 +23,11 @@ import com.example.ott.type.Reason;
 import com.example.ott.type.Status;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 /**
  * 신고(Report) 관련 비즈니스 로직 처리 서비스 클래스
  */
-@Log4j2
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -120,7 +119,7 @@ public class ReportService {
             reply.setStatus(Status.RECEIVED);
             replyRepository.save(reply);
         }
-        log.info("report 정보 : {}", report);
+
         return reportRepository.save(report);
     }
 

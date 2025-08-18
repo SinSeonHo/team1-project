@@ -17,9 +17,7 @@ import com.example.ott.repository.ContentsRepository;
 import com.example.ott.repository.FollowedContentsRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class FollowedContentsService {
@@ -66,7 +64,6 @@ public class FollowedContentsService {
         // 팔로우 여부 확인
         boolean isFollowed = isFollowed(user, contentsId);
         Contents contents = contentsRepository.findById(contentsId).get();
-        log.info("팔로우 여부 확인 {}", isFollowed);
         if (isFollowed) {
             // 팔로우 된 콘텐츠
             FollowedContents followedContents = followedContentsRepository.findByUserAndContents(user, contents);
@@ -96,7 +93,6 @@ public class FollowedContentsService {
                 userGenrePreferenceService.addUserPreference(user, contents);
 
             } catch (Exception e) {
-                log.info("이 구간에서 문제가 있어요. \n user : {} \n contents {}", user, contents);
                 e.printStackTrace();
             }
         }
@@ -142,7 +138,7 @@ public class FollowedContentsService {
         // User user = userService.getUserByNickname(nickname);
 
         Page<FollowedContents> followedContentsList = followedContentsRepository.findByUserId(nickname, pageable);
-        log.info("FollowedContents 조회 결과 수: {}", followedContentsList.getTotalElements());
+
         Page<FollowedContentsDTO> followedContentsDTOs = followedContentsList.map(followedContents -> {
             String imageUrl = "";
             switch (followedContents.getContents().getContentsType()) {

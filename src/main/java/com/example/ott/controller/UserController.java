@@ -1,7 +1,6 @@
 package com.example.ott.controller;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
@@ -52,10 +51,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Controller
-@Log4j2
+
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
@@ -156,12 +154,10 @@ public class UserController {
     @GetMapping("/userProfile")
     public String getUserProfile(String id, Model model, @RequestParam(defaultValue = "6") int size) {
         UserProfileDTO userProfileDTO = userService.getUserProfile(id);
-        log.info("유저 닉네임 : {}", userProfileDTO.getNickname());
+
         Pageable pageable = PageRequest.of(0, size);
         // 해당 user가 follow한 contents List 조회
         Page<FollowedContentsDTO> followedContentsList = followedContentsService.getFollowedContentsList(id, pageable);
-
-        log.info("이미지 확인");
 
         model.addAttribute("userProfileDTO", userProfileDTO);
         model.addAttribute("followedContentsList", followedContentsList);
