@@ -77,7 +77,7 @@ public class MovieService {
 
             // 첫 번째 파이썬 스크립트 실행 (영화 줄거리 크롤러)
             ProcessBuilder pbSynopsis = new ProcessBuilder("python",
-                    "C:/SOURCE/team1-project/python/movieSynopsisCrwal.py");
+                    "python/movieSynopsisCrwal.py");
             Map<String, String> env = pbSynopsis.environment();
             env.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
             Process processSynopsis = pbSynopsis.start();
@@ -115,7 +115,7 @@ public class MovieService {
                 // 두 번째 파이썬 스크립트 실행 (영화 이미지 크롤러)
                 System.out.println("Python 영화 포스터 크롤링 시작");
                 ProcessBuilder pbImage = new ProcessBuilder("python",
-                        "C:/SOURCE/team1-project/python/movieImageCrwal.py");
+                        "python/movieImageCrwal.py");
                 Map<String, String> envImage = pbImage.environment();
                 envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
                 Process processImage = pbImage.start();

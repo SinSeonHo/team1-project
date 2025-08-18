@@ -19,7 +19,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = { "movie", "game" })
-
 @Entity
 public class Contents {
 

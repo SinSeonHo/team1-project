@@ -83,7 +83,7 @@ public class GameService {
             System.out.println("Python 게임 크롤러 실행 시작");
 
             ProcessBuilder pbImage = new ProcessBuilder("python",
-                    "C:/SOURCE/team1-project/python/gameImageCrwal.py");
+                    "python/gameImageCrwal.py");
             Map<String, String> envImage = pbImage.environment();
             envImage.put("NLS_LANG", "AMERICAN_AMERICA.UTF8");
 
