@@ -132,16 +132,23 @@ public class ReportService {
         // reply가 null이어도 안전하게 값 추출
         Long replyId = Optional.ofNullable(reply)
                 .map(Reply::getRno)
-                .orElse(null); // 빈 값: null
+                .orElse(null); // 없으면 null
 
         String replyNickName = Optional.ofNullable(reply)
                 .map(Reply::getReplyer)
                 .map(User::getNickname)
-                .orElse(""); // 빈 값: 빈 문자열
+                .orElse(""); // 없으면 빈 문자열
 
-        String text = Optional.ofNullable(reply)
-                .map(Reply::getText)
-                .orElse("");
+        // ✅ 영화/게임 id 추출 (타입에 맞춰 String/Long 중 맞는 걸로 변경)
+        String movieId = Optional.ofNullable(reply)
+                .map(Reply::getMovie)
+                .map(m -> m.getMid()) // m.getMid() 타입이 String/Long인지에 맞게 선언
+                .orElse(null);
+
+        String gameId = Optional.ofNullable(reply)
+                .map(Reply::getGame)
+                .map(g -> g.getGid()) // g.getGid() 타입 맞게
+                .orElse(null);
 
         return ReportDTO.builder()
                 .id(report.getId())
@@ -151,9 +158,12 @@ public class ReportService {
                 .reason(report.getReason())
                 .reportDate(report.getCreatedDate())
                 .handleDate(report.getUpdatedDate())
-                .text(report.getText())
                 .status(report.getStatus())
-                .text(text)
+                // 🔧 여기의 text는 '신고 내용(report.text)'를 넣는 게 맞습니다.
+                .text(report.getText())
+                // ✅ 추가 필드 세팅
+                .movieId(movieId)
+                .gameId(gameId)
                 .build();
     }
 

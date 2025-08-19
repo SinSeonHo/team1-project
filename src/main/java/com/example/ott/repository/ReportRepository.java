@@ -55,4 +55,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
   List<Report> findByReply(Reply reply);
 
   List<Report> findByReporter(User reporter);
+
 }

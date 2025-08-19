@@ -76,15 +76,6 @@ public class HomeController {
                 return "ott_contents/contentList";
         }
 
-        @ResponseBody
-        @GetMapping("/auth")
-        public Authentication gAuthentication() {
-                SecurityContext context = SecurityContextHolder.getContext();
-                Authentication authentication = context.getAuthentication();
-
-                return authentication;
-        }
-
         private static long ceilTo10(long v) {
                 if (v <= 0)
                         return 0L; // 음수/0이면 0으로

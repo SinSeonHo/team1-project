@@ -201,22 +201,7 @@
                   <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
                   <!-- <span class="text-secondary" th:if="${reply.mention}" th:text="' - '+${reply.mention}+에게"></span> -->
                   <span class="text-secondary" th:text="' - ' +${reply.updatedDate}"> 작성자 - 1 Hour ago</span>
-                  <button
-                    type="button"
-                    class="delete-btn btn btn-secondary btn-sm"
-                    th:data-rno="${reply.rno}"
-                    th:if="${#authentication.name == reply.replyer}"
-                  >
-                    ✖
-                  </button>
-                  <button
-                    type="button"
-                    class="update-btn btn btn-secondary btn-sm"
-                    th:data-rno="${reply.rno}"
-                    th:if="${#authentication.name == reply.replyer}"
-                  >
-                    수정
-                  </button>
+
                   <!-- <button
                     type="button"
                     class="mention-btn btn btn-secondary btn-sm"

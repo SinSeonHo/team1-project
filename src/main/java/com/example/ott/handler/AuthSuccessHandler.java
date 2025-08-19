@@ -72,10 +72,29 @@ public class AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 return;
             }
 
-            // 1) 다른 유저가 이미 사용 중이면 중단
+            // 1) 다른 유저가 이미 사용 중이면 중단 + 강제 로그아웃
             User existingByEmail = userRepository.findByEmail(email);
             if (existingByEmail != null && !existingByEmail.getId().equals(linkingUserId)) {
+
+                // 세션 플래그는 어차피 로그아웃 시 세션이 날아가지만,
+                // 혹시 무상태/커스텀 저장소를 쓴다면 선제적으로 지워둠
                 clearLinkFlag(request);
+
+                // ★ 강제 로그아웃: 세션 무효화 + SecurityContext 비움
+                new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler()
+                        .logout(request, response, authentication);
+
+                // (선택) remember-me 사용 중이면 쿠키도 함께 제거
+                // new
+                // org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler("remember-me")
+                // .logout(request, response, authentication);
+
+                // (선택) OAuth2AuthorizedClientService/Repository를 쓰는 경우, 저장된 토큰도 제거하고 싶다면 별도로
+                // 처리:
+                // authorizedClientService.removeAuthorizedClient(provider,
+                // authentication.getName());
+
+                // 에러 페이지로 이동
                 response.sendRedirect(request.getContextPath() + "/error/emailAlreadyExists");
                 return;
             }

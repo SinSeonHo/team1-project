@@ -25,4 +25,7 @@ public class ReportDTO {
     private Status status; // 처리 상태
     private String text;
 
+    private String movieId; // mid가 String이면 String, Long이면 Long로 맞추세요
+    private String gameId; // gid가 String이면 String, Long이면 Long로 맞추세요
+
 }

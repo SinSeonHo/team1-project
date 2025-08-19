@@ -179,13 +179,21 @@
               <td th:text="${report.reason}">PROFANITY</td>
 
               <td>
+                <span th:if="${report.replyId == null}">-</span>
+
                 <a
-                  th:if="${report.replyId != null}"
-                  th:href="@{/posts/{postId}(postId=${report.replyId})}"
+                  th:if="${report.replyId != null and report.movieId != null}"
+                  th:href="@{/api/movies/read/{mid}(mid=${report.movieId})}"
                   target="_blank"
                   >보기</a
                 >
-                <span th:if="${report.replyId == null}">-</span>
+
+                <a
+                  th:if="${report.replyId != null and report.gameId != null}"
+                  th:href="@{/api/games/read/{gid}(gid=${report.gameId})}"
+                  target="_blank"
+                  >보기</a
+                >
               </td>
 
               <!-- 신고 일시 (원본 로직) -->

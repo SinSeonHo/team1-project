@@ -171,22 +171,7 @@
                 >
                   <span class="replyer text-light" th:text="${reply.replyerNickname}"></span>
                   <span class="text-secondary" th:text="' - ' + ${reply.updatedDate}">작성자 - 1 Hour ago</span>
-                  <button
-                    type="button"
-                    class="delete-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name == reply.replyer}"
-                    th:data-rno="${reply.rno}"
-                  >
-                    ✖
-                  </button>
-                  <button
-                    type="button"
-                    class="update-btn btn btn-secondary btn-sm"
-                    th:if="${#authentication.name == reply.replyer}"
-                    th:data-rno="${reply.rno}"
-                  >
-                    수정
-                  </button>
+
 
                   <!-- 리뷰는 별점 표시 -->
                   <span>
